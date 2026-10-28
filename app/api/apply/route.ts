@@ -1,4 +1,6 @@
-import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
+import { NextResponse, after } from "next/server";
+import { notifySlack } from "@/lib/notify";
 import { FORMS, FORM_TYPES, LIMITS, type FormType } from "@/lib/forms";
 
 // 신청서 접수: 서버에서 항목을 검증한 뒤 Supabase applications 테이블에 저장합니다.
@@ -62,28 +64,34 @@ export async function POST(req: Request) {
   const company =
     str(raw.company, LIMITS.short) || str(raw.channelName, LIMITS.short) || str(raw.brand, LIMITS.short) || null;
 
+  // ID를 미리 만들어 두어야 슬랙 알림에 관리자 페이지 링크를 넣을 수 있습니다.
+  // (공개 키에는 조회 권한이 없어서 저장 결과를 돌려받을 수 없기 때문)
+  const record = {
+    id: randomUUID(),
+    created_at: new Date().toISOString(),
+    type,
+    lang,
+    name,
+    company,
+    email,
+    phone,
+    message: message || null,
+    details,
+    privacy_agreed: true,
+  } as const;
+
   let res: Response;
   try {
     res = await fetch(`${url}/rest/v1/applications`, {
-    method: "POST",
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json",
-      Prefer: "return=minimal",
-    },
-    body: JSON.stringify({
-      type,
-      lang,
-      name,
-      company,
-      email,
-      phone,
-      message: message || null,
-      details,
-      privacy_agreed: true,
-    }),
-    cache: "no-store",
+      method: "POST",
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(record),
+      cache: "no-store",
     });
   } catch (err) {
     console.error("Supabase unreachable", err);
@@ -94,5 +102,8 @@ export async function POST(req: Request) {
     console.error("Supabase insert failed", res.status, await res.text().catch(() => ""));
     return NextResponse.json({ error: "server" }, { status: 502 });
   }
+
+  // 응답을 먼저 돌려준 뒤 슬랙 알림을 보냅니다 (신청자는 기다리지 않음).
+  after(() => notifySlack(record));
   return NextResponse.json({ ok: true });
 }

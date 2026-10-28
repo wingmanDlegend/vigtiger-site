@@ -38,6 +38,8 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 - 상세 화면: 신청 내용 전체(선택지는 한글 라벨로 표시), 내부 메모 저장
 - 엑셀(CSV) 내려받기: 현재 보고 있는 탭·필터 그대로. 유형 탭에서 받으면 항목별로 칸이 나뉩니다.
 
+새 신청이 저장되면 `SLACK_WEBHOOK_URL` 로 지정한 슬랙 채널에 알림이 가고, 알림의 버튼으로 해당 신청의 관리자 화면을 바로 열 수 있습니다. 알림이 실패해도 접수는 정상 저장됩니다.
+
 데이터는 Supabase 프로젝트 `vigtiger-site` 의 `applications` 테이블에 있습니다.
 테이블은 RLS로 "등록만" 허용되어 있어 공개 키로는 읽을 수 없고, 관리자 페이지는 서버에서 비밀 키로만 조회합니다.
 
@@ -49,6 +51,7 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 | `SUPABASE_PUBLISHABLE_KEY` | Supabase publishable(공개) 키 | 신청서 등록 |
 | `SUPABASE_SECRET_KEY` | Supabase secret 키 (`sb_secret_…`), **Sensitive** 로 저장 | 관리자 페이지 조회·수정 |
 | `ADMIN_PASSWORD` | 관리자 페이지 비밀번호, **Sensitive** 로 저장 | 관리자 로그인 |
+| `SLACK_WEBHOOK_URL` | (선택) 슬랙 Incoming Webhook 주소, **Sensitive** 로 저장 | 새 신청 슬랙 알림 |
 | `NEXT_PUBLIC_SITE_URL` | (선택) 대표 주소. 기본값 `https://vigtiger.com` | SEO |
 
 비밀번호나 secret 키를 바꾸면 기존 관리자 로그인은 모두 풀립니다.
