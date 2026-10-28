@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FORMS, LIMITS, type Field, type FormType, type Lang } from "@/lib/forms";
 import { getDict, homePath } from "@/lib/dictionary";
 import { Check } from "./Icons";
+import { track } from "@/lib/track";
 
 type Status = "idle" | "sending" | "done" | "error";
 
@@ -70,6 +71,7 @@ export default function ApplyForm({ lang, type }: { lang: Lang; type: FormType }
         return;
       }
       setStatus("done");
+      track("generate_lead", { form_type: type, form_lang: lang });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError(t.errorServer);

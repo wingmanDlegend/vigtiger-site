@@ -52,9 +52,18 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 | `SUPABASE_SECRET_KEY` | Supabase secret 키 (`sb_secret_…`), **Sensitive** 로 저장 | 관리자 페이지 조회·수정 |
 | `ADMIN_PASSWORD` | 관리자 페이지 비밀번호, **Sensitive** 로 저장 | 관리자 로그인 |
 | `SLACK_WEBHOOK_URL` | (선택) 슬랙 Incoming Webhook 주소, **Sensitive** 로 저장 | 새 신청 슬랙 알림 |
+| `NEXT_PUBLIC_GA_ID` | (선택) GA4 측정 ID (`G-XXXXXXXXXX`). 비우면 GA를 싣지 않음 | 방문 분석 |
 | `NEXT_PUBLIC_SITE_URL` | (선택) 대표 주소. 기본값 `https://vigtiger.com` | SEO |
 
 비밀번호나 secret 키를 바꾸면 기존 관리자 로그인은 모두 풀립니다.
+
+## 방문 분석 (Google Analytics 4)
+
+`NEXT_PUBLIC_GA_ID` 를 설정하고 다시 배포하면 공개 페이지(한/영)에 GA4가 실립니다. 관리자 페이지에는 싣지 않습니다.
+
+- 페이지 이동은 GA4 '향상된 측정'의 브라우저 기록 기반 페이지 변경으로 자동 집계됩니다.
+- 신청서 접수에 성공하면 `generate_lead` 이벤트를 보냅니다 (매개변수 `form_type`: creator·advertiser·partner, `form_lang`: ko·en). 이름·연락처 등 개인정보는 보내지 않습니다.
+- 개인정보처리방침 6조에 쿠키·행태정보 수집과 거부 방법을 적어 두었습니다.
 
 ## 로컬 실행
 

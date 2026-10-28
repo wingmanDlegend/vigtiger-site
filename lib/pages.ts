@@ -219,23 +219,30 @@ const ko = {
         ],
       },
       {
-        h: "6. 파기 절차와 방법",
+        h: "6. 자동 수집 장치(쿠키)의 설치·운영 및 거부",
+        p: [
+          "회사는 홈페이지 이용 현황을 분석해 서비스를 개선하기 위해 Google LLC의 Google Analytics를 사용하며, 이 과정에서 쿠키를 통해 방문 페이지, 이용 시간, 접속 기기·브라우저, 대략적인 접속 지역 등 행태정보가 수집될 수 있습니다. 이름·연락처 등 신청서에 입력한 정보는 Google Analytics로 전송하지 않습니다.",
+          "이용자는 브라우저 설정에서 쿠키 저장을 거부하거나 삭제할 수 있고, Google 애널리틱스 차단 브라우저 부가기능(tools.google.com/dlpage/gaoptout)으로 수집을 거부할 수 있습니다. 쿠키를 거부해도 홈페이지 이용과 신청에는 제한이 없습니다.",
+        ],
+      },
+      {
+        h: "7. 파기 절차와 방법",
         p: ["보유 기간이 지나거나 처리 목적이 달성된 개인정보는 복구할 수 없는 방법으로 지체 없이 삭제합니다."],
       },
       {
-        h: "7. 이용자의 권리",
+        h: "8. 이용자의 권리",
         p: ["이용자는 언제든지 자신의 개인정보 열람, 정정, 삭제, 처리 정지를 요청할 수 있습니다. 아래 연락처로 요청하시면 지체 없이 조치하겠습니다."],
       },
       {
-        h: "8. 안전성 확보 조치",
+        h: "9. 안전성 확보 조치",
         p: ["신청서 데이터는 암호화된 통신(HTTPS)으로 전송되며, 접근 권한이 있는 담당자만 조회할 수 있도록 관리합니다."],
       },
       {
-        h: "9. 개인정보 보호책임자",
+        h: "10. 개인정보 보호책임자",
         p: ["성명: 심성화 (대표이사)", "이메일: vigtiger@vigtiger.com · 전화: 02-544-6290"],
       },
       {
-        h: "10. 고지 의무",
+        h: "11. 고지 의무",
         p: ["이 방침의 내용이 바뀌면 시행 7일 전부터 홈페이지를 통해 알립니다."],
       },
     ],
@@ -461,20 +468,27 @@ const en: Pages = {
           "Vercel, Inc. — hosts the website and processes form submissions",
         ],
       },
-      { h: "6. Deletion", p: ["Information past its retention period, or no longer needed, is deleted promptly in a way that cannot be recovered."] },
       {
-        h: "7. Your rights",
+        h: "6. Cookies and analytics",
+        p: [
+          "We use Google Analytics (Google LLC) to understand how the website is used and to improve it. Through cookies it may collect usage information such as pages visited, time spent, device and browser type, and approximate location. Information you enter in our forms, such as your name or phone number, is never sent to Google Analytics.",
+          "You can block or delete cookies in your browser settings, or opt out with the Google Analytics Opt-out Browser Add-on (tools.google.com/dlpage/gaoptout). Declining cookies does not limit your use of the website or our forms.",
+        ],
+      },
+      { h: "7. Deletion", p: ["Information past its retention period, or no longer needed, is deleted promptly in a way that cannot be recovered."] },
+      {
+        h: "8. Your rights",
         p: ["You can ask to access, correct, delete, or stop the processing of your information at any time. Contact us below and we will act without delay."],
       },
       {
-        h: "8. Security",
+        h: "9. Security",
         p: ["Application data is sent over encrypted connections (HTTPS), and only authorized staff can view it."],
       },
       {
-        h: "9. Privacy officer",
+        h: "10. Privacy officer",
         p: ["Name: Sungwha Shim (CEO)", "Email: vigtiger@vigtiger.com · Phone: +82-2-544-6290"],
       },
-      { h: "10. Changes", p: ["If this policy changes, we will post a notice on this website at least 7 days before it takes effect."] },
+      { h: "11. Changes", p: ["If this policy changes, we will post a notice on this website at least 7 days before it takes effect."] },
     ],
   },
 };

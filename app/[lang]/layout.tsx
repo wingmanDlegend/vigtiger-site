@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { LANGS, getDict, isLang } from "@/lib/dictionary";
 import { SITE_URL } from "@/lib/site";
+import Analytics from "@/components/Analytics";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -58,7 +59,10 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
