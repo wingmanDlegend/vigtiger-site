@@ -116,12 +116,15 @@ export default function ApplyForm({ lang, type }: { lang: Lang; type: FormType }
         <div className="field">
           <label className="field-label" htmlFor="f-phone">
             {t.phone}
+            {req}
           </label>
           <input
             id="f-phone"
             name="phone"
             type="tel"
             className="input"
+            required
+            minLength={8}
             maxLength={50}
             autoComplete="tel"
             placeholder={t.phonePh}

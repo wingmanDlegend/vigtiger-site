@@ -1,0 +1,86 @@
+:root {
+  --ink: #111111;
+  --muted: #5a5a5a;
+  --line: #e4e0da;
+  --bg: #f4f2ee;
+  --paper: #ffffff;
+  --accent: #ff6a1f;
+  --font: "Apple SD Gothic Neo", "AppleSDGothicNeo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.55; word-break: keep-all; }
+a { color: var(--ink); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+
+.a-top { background: var(--ink); color: #fff; }
+.a-top-in { max-width: 1280px; margin: 0 auto; padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; }
+.a-brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font-weight: 800; }
+.a-mark { width: 28px; height: 28px; border-radius: 6px; background: var(--accent); color: var(--ink); display: flex; align-items: center; justify-content: center; font-weight: 900; }
+.a-brand small { color: #a8a8a8; font-weight: 500; }
+.a-top-links { display: flex; align-items: center; gap: 16px; }
+.a-top-links a, .a-top-links button { color: #e6e6e6; font: inherit; font-size: 13px; background: none; border: 0; cursor: pointer; text-decoration: underline; padding: 8px 0; }
+
+.a-wrap { max-width: 1280px; margin: 0 auto; padding: 24px 20px 64px; display: flex; flex-direction: column; gap: 18px; }
+.a-h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+
+.a-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.a-tab { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #cfcac2; background: var(--paper); text-decoration: none; font-weight: 700; font-size: 14px; }
+.a-tab[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.a-tab b { font-weight: 800; font-size: 12px; background: rgba(0,0,0,0.07); border-radius: 999px; padding: 1px 8px; }
+.a-tab[aria-current="page"] b { background: rgba(255,255,255,0.18); }
+
+.a-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.a-filter { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.a-input, .a-select, .a-textarea { font: inherit; font-size: 14px; border: 1.5px solid #c9c4bc; border-radius: 8px; padding: 9px 12px; background: var(--paper); color: var(--ink); min-height: 40px; }
+.a-input { width: 240px; max-width: 100%; }
+.a-textarea { width: 100%; min-height: 140px; resize: vertical; line-height: 1.6; }
+.a-btn { font: inherit; font-size: 14px; font-weight: 700; min-height: 40px; padding: 0 16px; border-radius: 8px; border: 1.5px solid var(--ink); background: var(--ink); color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.a-btn.is-ghost { background: var(--paper); color: var(--ink); }
+.a-btn:disabled { opacity: 0.6; cursor: progress; }
+
+.a-card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; }
+.a-table-box { overflow-x: auto; }
+.a-table { width: 100%; border-collapse: collapse; min-width: 980px; }
+.a-table th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 700; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; background: #faf9f7; }
+.a-table td { padding: 12px 14px; border-bottom: 1px solid #efebe5; vertical-align: top; }
+.a-table tr:last-child td { border-bottom: 0; }
+.a-table tr:hover td { background: #fcfbf9; }
+.a-name { font-weight: 800; text-decoration: none; }
+.a-name:hover { text-decoration: underline; }
+.a-sub { color: var(--muted); font-size: 12px; }
+.a-nowrap { white-space: nowrap; }
+.a-summary { color: #333; max-width: 320px; }
+.a-note-dot { display: inline-block; margin-left: 6px; font-size: 11px; font-weight: 700; color: #b23e00; }
+
+.a-badge { display: inline-block; border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+.a-type { display: inline-block; border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 700; background: #f0ece6; white-space: nowrap; }
+.a-quick { display: flex; gap: 6px; align-items: center; }
+.a-quick .a-select { min-height: 32px; padding: 4px 8px; font-size: 13px; }
+.a-quick .a-btn { min-height: 32px; padding: 0 10px; font-size: 12px; }
+
+.a-empty { padding: 48px 20px; text-align: center; color: var(--muted); }
+.a-pager { display: flex; gap: 8px; align-items: center; justify-content: flex-end; padding: 12px 14px; border-top: 1px solid var(--line); }
+
+.a-detail { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+.a-detail-main { flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+.a-detail-side { flex: 1 1 300px; min-width: 0; }
+.a-sec { padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.a-sec h2 { font-size: 15px; font-weight: 800; }
+.a-dl { margin: 0; display: flex; flex-direction: column; }
+.a-dl div { display: flex; flex-wrap: wrap; gap: 2px 16px; padding: 10px 0; border-top: 1px solid #efebe5; }
+.a-dl div:first-child { border-top: 0; }
+.a-dl dt { flex: 0 0 150px; color: var(--muted); font-weight: 700; font-size: 13px; }
+.a-dl dd { flex: 1 1 260px; margin: 0; white-space: pre-wrap; }
+.a-msg { white-space: pre-wrap; background: #faf9f7; border-radius: 10px; padding: 14px 16px; }
+.a-label { font-size: 13px; font-weight: 800; }
+.a-saved { font-size: 13px; font-weight: 700; color: #11552a; }
+.a-error { font-size: 13px; font-weight: 700; color: #a12a00; background: #fff0ec; border-radius: 8px; padding: 10px 12px; }
+.a-back { font-weight: 700; text-decoration: none; }
+.a-back:hover { text-decoration: underline; }
+
+.a-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.a-login-box { width: 100%; max-width: 380px; padding: 32px 28px; display: flex; flex-direction: column; gap: 16px; }
+.a-login-box .a-input { width: 100%; }
+.a-setup { font-size: 13px; color: #5a3d00; background: #fff6df; border-radius: 10px; padding: 14px 16px; line-height: 1.7; }
+.a-setup code { background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 4px; }

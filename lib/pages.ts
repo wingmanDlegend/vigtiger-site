@@ -201,7 +201,7 @@ const ko = {
       {
         h: "1. 수집하는 개인정보 항목과 방법",
         p: [
-          "필수: 이름(활동명), 이메일. 선택: 연락처, 회사·브랜드·채널 정보(채널명·URL·구독자 규모 등), 문의 내용.",
+          "필수: 이름(활동명), 이메일, 연락처. 선택: 회사·브랜드·채널 정보(채널명·URL·구독자 규모 등), 문의 내용.",
           "홈페이지의 크리에이터·광고주·상품 파트너 신청서를 통해 이용자가 직접 입력한 정보만 수집합니다.",
         ],
       },
@@ -444,7 +444,7 @@ const en: Pages = {
       {
         h: "1. What we collect and how",
         p: [
-          "Required: name (or creator name) and email. Optional: phone, company/brand/channel details (channel name, URL, audience size, etc.) and your message.",
+          "Required: name (or creator name), email and phone. Optional: company/brand/channel details (channel name, URL, audience size, etc.) and your message.",
           "We only collect what you enter yourself in the creator, advertiser and product partner application forms.",
         ],
       },

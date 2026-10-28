@@ -35,7 +35,8 @@ export async function POST(req: Request) {
   const email = str(body.email, LIMITS.short);
   const phone = str(body.phone, 50);
   const message = str(body.message, LIMITS.message);
-  if (!name || !EMAIL_RE.test(email) || body.privacyAgreed !== true) {
+  const phoneDigits = phone.replace(/\D/g, "");
+  if (!name || !EMAIL_RE.test(email) || phoneDigits.length < 8 || phoneDigits.length > 15 || body.privacyAgreed !== true) {
     return NextResponse.json({ error: "invalid" }, { status: 400 });
   }
 
@@ -77,7 +78,7 @@ export async function POST(req: Request) {
       name,
       company,
       email,
-      phone: phone || null,
+      phone,
       message: message || null,
       details,
       privacy_agreed: true,
