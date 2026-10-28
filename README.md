@@ -59,7 +59,7 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 
 ## 방문 분석 (Google Analytics 4)
 
-공개 페이지(한/영)에 Google 태그 `G-17F4EG2VG3` 이 실립니다(`components/Analytics.tsx`). 이 태그의 대상으로 GA4 속성 `G-17F4EG2VG3`(기존)과 `G-9DKRM93S6V`(2026 홈페이지)가 연결돼 있어 두 속성 모두 집계됩니다. 측정 ID가 아닌 **태그 ID**를 넣어야 하며, 대상 ID만 넣으면 스크립트가 404로 실패합니다. 다른 속성으로 바꾸려면 `NEXT_PUBLIC_GA_ID` 를 설정하고 다시 배포하세요. 관리자 페이지에는 싣지 않습니다.
+공개 페이지(한/영)에 Google 태그 `G-17F4EG2VG3` 이 실립니다(`components/Analytics.tsx`). 데이터는 GA4 속성 `G-17F4EG2VG3` 에 쌓입니다. 측정 ID가 아닌 **태그 ID**를 넣어야 하며, 대상 ID만 넣으면 스크립트가 404로 실패합니다. 다른 속성으로 바꾸려면 `NEXT_PUBLIC_GA_ID` 를 설정하고 다시 배포하세요. 관리자 페이지에는 싣지 않습니다.
 
 - 페이지 이동은 GA4 '향상된 측정'의 브라우저 기록 기반 페이지 변경으로 자동 집계됩니다.
 - 신청서 접수에 성공하면 `generate_lead` 이벤트를 보냅니다 (매개변수 `form_type`: creator·advertiser·partner, `form_lang`: ko·en). 이름·연락처 등 개인정보는 보내지 않습니다.
