@@ -2,18 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { LANGS, getDict, isLang } from "@/lib/dictionary";
+import { SITE_URL } from "@/lib/site";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
 }
 
-// 정식 도메인(vigtiger.com) 연결 후에는 Vercel 환경변수 NEXT_PUBLIC_SITE_URL 을 https://www.vigtiger.com 으로 지정하세요.
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
