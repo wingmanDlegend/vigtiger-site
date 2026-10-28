@@ -5,8 +5,11 @@ export const isLang = (v: string): v is Lang => v === "ko" || v === "en";
 
 // 한국어는 접두사 없이, 영어는 /en 아래로 링크합니다.
 export const homePath = (lang: Lang) => (lang === "ko" ? "/" : "/en");
-export const applyPath = (lang: Lang, type: FormType) =>
-  lang === "ko" ? `/apply/${type}` : `/en/apply/${type}`;
+export const applyPath = (lang: Lang, type: FormType, interest?: string) =>
+  (lang === "ko" ? `/apply/${type}` : `/en/apply/${type}`) + (interest ? `?interest=${interest}` : "");
+
+export type PageSlug = "about" | "services/advirtual" | "services/shopping" | "services/to" | "privacy";
+export const pagePath = (lang: Lang, slug: PageSlug) => (lang === "ko" ? `/${slug}` : `/en/${slug}`);
 
 export const CONTACT = {
   kakao: "http://pf.kakao.com/_xlxnjrG/chat",
@@ -23,7 +26,7 @@ const ko = {
     description:
       "(주)대범한사람들은 유튜브 크리에이터와 브랜드의 광고, 커머스 운영, 제품 체험을 한 번에 연결하는 소셜 커머스 전문 기업입니다.",
   },
-  nav: { about: "회사소개", services: "서비스", team: "팀", contact: "협업 문의", cta: "상담 신청", switchTo: "ENG", menu: "주요 메뉴", footerMenu: "하단 메뉴" },
+  nav: { about: "회사소개", services: "서비스", advirtual: "애드버추얼", shopping: "쇼핑올인원", to: "티오(TO)", team: "팀", contact: "협업 문의", cta: "상담 신청", switchTo: "ENG", menu: "주요 메뉴", footerMenu: "하단 메뉴", mobileMenu: "메뉴", privacy: "개인정보처리방침", more: "자세히 보기", home: "홈" },
   hero: {
     eyebrow: "소셜 커머스 전문 기업 · Since 2020",
     title: ["크리에이터의 영향력을,", "팔리는 비즈니스로."],
@@ -211,7 +214,7 @@ const en: Dict = {
     description:
       "VIGTIGER Inc. connects YouTube creators and brands through in-video advertising, commerce operations and product try-outs.",
   },
-  nav: { about: "About", services: "Services", team: "Team", contact: "Contact", cta: "Get in touch", switchTo: "한국어", menu: "Main menu", footerMenu: "Footer menu" },
+  nav: { about: "About", services: "Services", advirtual: "Advirtual", shopping: "Shopping All-in-One", to: "TO", team: "Team", contact: "Contact", cta: "Get in touch", switchTo: "한국어", menu: "Main menu", footerMenu: "Footer menu", mobileMenu: "Menu", privacy: "Privacy policy", more: "Learn more", home: "Home" },
   hero: {
     eyebrow: "Social commerce company · Since 2020",
     title: ["Turn creator influence", "into a business that sells."],

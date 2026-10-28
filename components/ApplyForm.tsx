@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { FORMS, LIMITS, type Field, type FormType, type Lang } from "@/lib/forms";
 import { getDict, homePath } from "@/lib/dictionary";
@@ -13,6 +13,17 @@ export default function ApplyForm({ lang, type }: { lang: Lang; type: FormType }
   const def = FORMS[type];
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // 서비스 페이지에서 ?interest=to 처럼 들어오면 해당 관심 서비스를 미리 체크해 둡니다.
+  useEffect(() => {
+    const interest = new URLSearchParams(window.location.search).get("interest");
+    if (!interest || !formRef.current) return;
+    const box = formRef.current.querySelector<HTMLInputElement>(
+      `input[name="interests"][value="${CSS.escape(interest)}"]`,
+    );
+    if (box) box.checked = true;
+  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -84,7 +95,7 @@ export default function ApplyForm({ lang, type }: { lang: Lang; type: FormType }
   const req = <span className="req">{t.required}</span>;
 
   return (
-    <form className="form" onSubmit={onSubmit} noValidate={false}>
+    <form className="form" onSubmit={onSubmit} ref={formRef}>
       <div className="form-row">
         <div className="field">
           <label className="field-label" htmlFor="f-name">

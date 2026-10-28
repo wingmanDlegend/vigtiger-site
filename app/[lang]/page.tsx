@@ -2,31 +2,35 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { ArrowRight, ArrowUpRight, Bag, Chat, Mail, Phone } from "@/components/Icons";
-import { CONTACT, applyPath, getDict, isLang } from "@/lib/dictionary";
-
-const Lines = ({ lines }: { lines: string[] }) => (
-  <>
-    {lines.map((l, i) => (
-      <span key={l}>
-        {l}
-        {i < lines.length - 1 && <br />}
-      </span>
-    ))}
-  </>
-);
+import { ArrowRight, ArrowUpRight } from "@/components/Icons";
+import {
+  AdvirtualChart,
+  ContactSection,
+  Lines,
+  MockFrame,
+  PressCard,
+  StatsBand,
+  Steps,
+  TeamSection,
+} from "@/components/Sections";
+import { CONTACT, applyPath, getDict, isLang, pagePath } from "@/lib/dictionary";
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   const t = getDict(lang);
   const s = t.services;
+  const More = ({ href }: { href: string }) => (
+    <Link className="link-arrow" href={href}>
+      {t.nav.more}
+      <ArrowRight />
+    </Link>
+  );
 
   return (
     <>
-      <Header lang={lang} />
+      <Header lang={lang} onHome />
       <main id="top">
-        {/* Hero */}
         <section className="container hero">
           <div className="hero-copy">
             <p className="hero-eyebrow">{t.hero.eyebrow}</p>
@@ -44,49 +48,11 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
               </a>
             </div>
           </div>
-          <figure className="mock">
-            <div className="mock-frame" role="img" aria-label={t.hero.mock.alt}>
-              <div className="mock-head" />
-              <div className="mock-body" />
-              <span className="mock-label">{t.hero.mock.video}</span>
-              <div className="mock-ad">
-                <span>{t.hero.mock.adTag}</span>
-                <span>{t.hero.mock.adTitle}</span>
-              </div>
-              <div className="mock-shop">
-                <span className="mock-shop-icon">
-                  <Bag />
-                </span>
-                <span className="mock-shop-text">
-                  <b>{t.hero.mock.shopTitle}</b>
-                  <small>{t.hero.mock.shopSub}</small>
-                </span>
-              </div>
-              <div className="mock-progress" />
-            </div>
-            <figcaption>{t.hero.mock.caption}</figcaption>
-          </figure>
+          <MockFrame lang={lang} />
         </section>
 
-        {/* Stats */}
-        <section className="stats" aria-label={t.stats.label}>
-          <div className="container stats-inner">
-            <dl className="stats-list">
-              {t.stats.items.map((it) => (
-                <div className="stat" key={it.label}>
-                  <dt>{it.label}</dt>
-                  <dd>
-                    {it.value}
-                    <small>{it.unit}</small>
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <p className="stats-note">{t.stats.note}</p>
-          </div>
-        </section>
+        <StatsBand lang={lang} />
 
-        {/* Who we work with */}
         <section id="about" className="container section stack-48">
           <div className="section-head">
             <p className="eyebrow">{t.about.eyebrow}</p>
@@ -116,7 +82,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           </div>
         </section>
 
-        {/* Services */}
         <section id="services" className="services">
           <div className="container section services-inner">
             <div className="section-head" style={{ paddingBottom: 16 }}>
@@ -135,36 +100,9 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                     <li key={p}>{p}</li>
                   ))}
                 </ul>
+                <More href={pagePath(lang, "services/advirtual")} />
               </div>
-              <div className="service-side chart">
-                <p className="chart-title">{s.advirtual.chart.title}</p>
-                <div className="bar-row">
-                  <div className="bar-label">
-                    <span>{s.advirtual.chart.ppl}</span>
-                    <span>{s.advirtual.chart.pplValue}</span>
-                  </div>
-                  <div className="bar" aria-hidden="true" />
-                </div>
-                <div className="bar-row">
-                  <div className="bar-label is-strong">
-                    <span>{s.advirtual.chart.av}</span>
-                    <span>{s.advirtual.chart.avValue}</span>
-                  </div>
-                  <div className="bar is-accent" aria-hidden="true" />
-                </div>
-                <dl className="cost">
-                  <div>
-                    <dt>{s.advirtual.chart.costPpl}</dt>
-                    <dd>{s.advirtual.chart.costPplValue}</dd>
-                  </div>
-                  <div>
-                    <dt>{s.advirtual.chart.costAv}</dt>
-                    <dd>
-                      <b>{s.advirtual.chart.costAvValue}</b>
-                    </dd>
-                  </div>
-                </dl>
-              </div>
+              <AdvirtualChart lang={lang} />
             </article>
 
             <article className="service">
@@ -173,6 +111,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 <h3>{s.shopping.name}</h3>
                 <p className="service-tagline">{s.shopping.tagline}</p>
                 <p className="service-body">{s.shopping.body}</p>
+                <More href={pagePath(lang, "services/shopping")} />
               </div>
               <div className="service-side ops">
                 <p className="ops-title">{s.shopping.stepsTitle}</p>
@@ -196,105 +135,25 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 <p className="service-tagline">{s.to.tagline}</p>
                 <p className="service-body">{s.to.body}</p>
                 <div className="links-row">
-                  <Link className="link-arrow" href={applyPath(lang, "creator")}>
-                    {t.apply.types.creator.short}
-                    <ArrowRight />
-                  </Link>
-                  <a className="link-arrow" href={CONTACT.toProducts} target="_blank" rel="noopener noreferrer" style={{ color: "#444444", fontWeight: 700 }}>
+                  <More href={pagePath(lang, "services/to")} />
+                  <a className="link-arrow muted-link" href={CONTACT.toProducts} target="_blank" rel="noopener noreferrer">
                     {s.to.listLink}
                     <ArrowUpRight />
                   </a>
                 </div>
               </div>
-              <ol className="service-side steps">
-                {s.to.steps.map((step, i) => (
-                  <li key={step.title}>
-                    <span className="steps-num" aria-hidden="true">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="steps-text">
-                      <b>{step.title}</b>
-                      <span>{step.desc}</span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
+              <Steps steps={s.to.steps} className="service-side" />
             </article>
           </div>
         </section>
 
-        {/* Team */}
-        <section id="team" className="container section team">
-          <div className="team-head">
-            <p className="eyebrow">{t.team.eyebrow}</p>
-            <h2 className="h2">
-              <Lines lines={t.team.title} />
-            </h2>
-            <p className="lead">{t.team.body}</p>
-          </div>
-          <ol className="timeline">
-            {t.team.timeline.map((row) => (
-              <li key={row.when}>
-                <span className="timeline-when">{row.when}</span>
-                <span className="timeline-what">
-                  <span style={row.sub || row.strong ? { fontWeight: 700 } : undefined}>{row.what}</span>
-                  {row.sub && <small>{row.sub}</small>}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <TeamSection lang={lang} more />
 
-        {/* Press */}
         <section className="container" aria-label={t.press.label} style={{ paddingBottom: 112 }}>
-          <a className="press" href={CONTACT.press} target="_blank" rel="noopener noreferrer">
-            <span className="press-text">
-              <small>{t.press.label}</small>
-              <b>{t.press.title}</b>
-            </span>
-            <span className="link-arrow">
-              {t.press.cta}
-              <ArrowUpRight />
-            </span>
-          </a>
+          <PressCard lang={lang} />
         </section>
 
-        {/* Contact */}
-        <section id="contact" className="contact">
-          <div className="container contact-inner">
-            <div className="section-head" style={{ gap: 14 }}>
-              <p className="eyebrow">{t.contact.eyebrow}</p>
-              <h2>
-                <Lines lines={t.contact.title} />
-              </h2>
-            </div>
-            <div className="cards" style={{ gap: 16 }}>
-              {t.contact.cards.map((c) => (
-                <Link className="apply-card" key={c.type} href={applyPath(lang, c.type)}>
-                  <small>{c.who}</small>
-                  <b>
-                    {c.label}
-                    <ArrowRight size={20} />
-                  </b>
-                </Link>
-              ))}
-            </div>
-            <div className="contact-links">
-              <a href={CONTACT.kakao} target="_blank" rel="noopener noreferrer">
-                <Chat />
-                {t.contact.kakao}
-              </a>
-              <a href={`mailto:${CONTACT.email}`}>
-                <Mail />
-                {CONTACT.email}
-              </a>
-              <a href={`tel:${CONTACT.phoneTel}`}>
-                <Phone />
-                {CONTACT.phone}
-              </a>
-            </div>
-          </div>
-        </section>
+        <ContactSection lang={lang} />
       </main>
       <Footer lang={lang} />
     </>
