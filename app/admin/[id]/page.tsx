@@ -4,6 +4,7 @@ import { getApplication } from "@/lib/admin/db";
 import { STATUS_LABEL, STATUS_STYLE, TYPE_LABEL, detailRows, kst } from "@/lib/admin/format";
 import AdminTop from "../AdminTop";
 import EditForm from "./EditForm";
+import DeleteBox from "./DeleteBox";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
           </div>
           <aside className="a-detail-side">
             <EditForm id={a.id} status={a.status} note={a.admin_note ?? ""} updatedAt={kst(a.updated_at)} />
+            <DeleteBox id={a.id} type={a.type} name={a.name} />
           </aside>
         </div>
       </main>

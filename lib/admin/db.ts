@@ -92,6 +92,21 @@ export async function updateApplication(id: string, patch: { status?: Status; ad
   if (!res.ok) throw new Error(`저장 실패 (${res.status}): ${await res.text()}`);
 }
 
+/** 신청 1건 영구 삭제 (되돌릴 수 없음). 실제로 지워진 행이 없으면 오류. */
+export async function deleteApplication(id: string) {
+  if (!isUuid(id)) throw new Error("잘못된 ID");
+  const { url, headers } = cfg();
+  const res = await fetch(`${url}/rest/v1/applications?id=eq.${id}`, {
+    method: "DELETE",
+    headers: { ...headers, Prefer: "return=representation" },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`삭제 실패 (${res.status}): ${await res.text()}`);
+  const rows: { name?: string }[] = await res.json();
+  if (rows.length === 0) throw new Error("이미 삭제되었거나 찾을 수 없는 신청입니다.");
+  return rows[0];
+}
+
 export async function exportApplications(qs: Omit<ListQuery, "page" | "pageSize">) {
   const all: Application[] = [];
   for (let page = 1; page < 200; page++) {

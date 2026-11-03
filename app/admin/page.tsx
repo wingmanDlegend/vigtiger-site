@@ -7,7 +7,7 @@ import AdminTop from "./AdminTop";
 
 export const dynamic = "force-dynamic";
 
-type SP = Promise<{ type?: string; status?: string; q?: string; page?: string }>;
+type SP = Promise<{ type?: string; status?: string; q?: string; page?: string; deleted?: string }>;
 
 export default async function AdminHome({ searchParams }: { searchParams: SP }) {
   if (!(await isAuthed())) redirect("/admin/login");
@@ -48,6 +48,9 @@ export default async function AdminHome({ searchParams }: { searchParams: SP }) 
       <AdminTop />
       <main className="a-wrap">
         <h1 className="a-h1">신청 접수 내역</h1>
+        {sp.deleted === "1" && (
+          <p className="a-saved" role="status">신청 1건을 삭제했습니다.</p>
+        )}
 
         <nav className="a-tabs" aria-label="신청 유형">
           <a className="a-tab" href={href({ type: undefined, page: undefined })} aria-current={!type ? "page" : undefined}>
