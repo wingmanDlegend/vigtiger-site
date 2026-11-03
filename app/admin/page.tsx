@@ -73,7 +73,7 @@ export default async function AdminHome({ searchParams }: { searchParams: SP }) 
               ))}
             </select>
             <label className="a-sub" htmlFor="f-q">검색</label>
-            <input id="f-q" name="q" className="a-input" defaultValue={q} placeholder="이름·회사·이메일·연락처" />
+            <input id="f-q" name="q" className="a-input" defaultValue={q} placeholder="이름·회사·이메일·연락처·관심 제품" />
             <button className="a-btn" type="submit">적용</button>
             {(status || q) && (
               <a className="a-btn is-ghost" href={href({ status: undefined, q: undefined, page: undefined })}>초기화</a>

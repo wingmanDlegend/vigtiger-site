@@ -42,7 +42,7 @@ export async function listApplications(qs: ListQuery) {
   if (qs.type && ["creator", "advertiser", "partner"].includes(qs.type)) p.set("type", `eq.${qs.type}`);
   if (qs.status && (STATUSES as readonly string[]).includes(qs.status)) p.set("status", `eq.${qs.status}`);
   const q = (qs.q ?? "").replace(/[,()*%\\]/g, " ").trim().slice(0, 60);
-  if (q) p.set("or", `(name.ilike.*${q}*,company.ilike.*${q}*,email.ilike.*${q}*,phone.ilike.*${q}*)`);
+  if (q) p.set("or", `(name.ilike.*${q}*,company.ilike.*${q}*,email.ilike.*${q}*,phone.ilike.*${q}*,details->>interestProducts.ilike.*${q}*)`);
   const from = (page - 1) * pageSize;
   const res = await fetch(`${url}/rest/v1/applications?${p}`, {
     headers: { ...headers, Prefer: "count=exact", Range: `${from}-${from + pageSize - 1}`, "Range-Unit": "items" },

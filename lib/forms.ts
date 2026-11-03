@@ -83,6 +83,15 @@ export const FORMS: Record<
         ],
       },
       {
+        key: "interestProducts",
+        kind: "text",
+        label: { ko: "관심 있는 제품", en: "Products you're interested in" },
+        placeholder: {
+          ko: "예: 단백질 라떼, 무선 청소기 (여러 개면 쉼표로 구분)",
+          en: "e.g. protein latte, cordless vacuum (separate with commas)",
+        },
+      },
+      {
         key: "commerceExp",
         kind: "radio",
         label: { ko: "커머스·공동구매 경험", en: "Commerce or group-buy experience" },
