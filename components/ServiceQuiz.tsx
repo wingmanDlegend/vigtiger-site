@@ -7,6 +7,7 @@ import type { Lang } from "@/lib/forms";
 import { applyPath, pagePath } from "@/lib/dictionary";
 import { getFun, type ServiceKey } from "@/lib/fun";
 import { track } from "@/lib/track";
+import { confetti } from "@/lib/confetti";
 import { ArrowRight } from "./Icons";
 import Tiger from "./Tiger";
 
@@ -18,6 +19,18 @@ export default function ServiceQuiz({ lang }: { lang: Lang }) {
   const [step, setStep] = useState(-1); // -1: 시작 전, 0..n-1: 질문, n: 결과
   const [answers, setAnswers] = useState<number[]>([]);
   const panel = useRef<HTMLDivElement>(null);
+  const [roar, setRoar] = useState(false);
+  const tigerBtn = useRef<HTMLButtonElement>(null);
+  const fun = getFun(lang).tiger;
+
+  function poke() {
+    if (roar) return;
+    setRoar(true);
+    const r = tigerBtn.current?.getBoundingClientRect();
+    confetti({ x: r ? r.left + r.width / 2 : undefined, y: r ? r.top + r.height / 2 : undefined, count: 70 });
+    track("easter_egg", { kind: "quiz_tiger" });
+    setTimeout(() => setRoar(false), 1300);
+  }
 
   const focusPanel = () => requestAnimationFrame(() => panel.current?.focus({ preventScroll: true }));
 
@@ -55,7 +68,10 @@ export default function ServiceQuiz({ lang }: { lang: Lang }) {
             {t.title[1]}
           </h2>
           <p className="lead">{t.body}</p>
-          <Tiger className="quiz-tiger" size={112} mood={done ? "wink" : "happy"} />
+          <button type="button" ref={tigerBtn} className={`quiz-tiger${roar ? " is-roar" : ""}`} onClick={poke} aria-label={fun.label}>
+            <Tiger size={112} mood={roar ? "roar" : done ? "wink" : "happy"} />
+            {roar && <span className="quiz-tiger-bubble" role="status">{fun.roar}</span>}
+          </button>
         </div>
 
         <div className="quiz-card" ref={panel} tabIndex={-1} aria-live="polite">

@@ -1,7 +1,7 @@
 "use client";
 
 // 공개 페이지 공통 재미 요소
-// 1) 협업 문의 영역에 닿으면 호랑이가 오른쪽 아래에서 고개를 내밉니다 (세션당 한 번)
+// 1) 협업 문의 영역이 보이는 동안 호랑이가 오른쪽 아래에서 고개를 내밉니다
 // 2) 로고(V)를 빠르게 5번 누르면 호랑이가 "어흥!" 하고 나타납니다 (숨은 장난)
 // 3) data-tilt 카드에 마우스를 올리면 살짝 기울어집니다
 import { useEffect, useRef, useState } from "react";
@@ -12,8 +12,6 @@ import { confetti, reducedMotion } from "@/lib/confetti";
 import { track } from "@/lib/track";
 import Tiger from "./Tiger";
 
-const PEEK_KEY = "vt_tiger_peeked";
-
 export default function FunLayer({ lang }: { lang: Lang }) {
   const t = getFun(lang).tiger;
   const [peek, setPeek] = useState<"off" | "in" | "roar">("off");
@@ -21,38 +19,27 @@ export default function FunLayer({ lang }: { lang: Lang }) {
   const peekBtn = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
-  // 1) 고개 내밀기
+  // 1) 고개 내밀기 — 협업 문의 영역이 보이는 동안 나와 있고, 벗어나면 들어갑니다.
+  //    (누르면 "어흥!" 후 들어가고, 영역을 벗어났다 다시 오면 또 나옵니다)
+  const roared = useRef(false);
   useEffect(() => {
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem(PEEK_KEY) === "1";
-    } catch {}
-    if (seen) return;
-    let hideTimer: ReturnType<typeof setTimeout> | undefined;
-    let io: IntersectionObserver | undefined;
-    const attach = () => {
-      const target = document.getElementById("contact");
-      if (!target) return;
-      // (페이지를 옮길 때마다 새 페이지의 협업 문의 영역을 다시 지켜봅니다)
-      io = new IntersectionObserver(
-        ([e]) => {
-          if (!e.isIntersecting) return;
-          io?.disconnect();
-          try {
-            sessionStorage.setItem(PEEK_KEY, "1");
-          } catch {}
-          setPeek("in");
-          hideTimer = setTimeout(() => setPeek((p) => (p === "in" ? "off" : p)), 8000);
-        },
-        { threshold: 0.35 },
-      );
-      io.observe(target);
-    };
-    attach();
-    return () => {
-      io?.disconnect();
-      clearTimeout(hideTimer);
-    };
+    setPeek("off");
+    roared.current = false;
+    const target = document.getElementById("contact");
+    if (!target) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          if (!roared.current) setPeek((p) => (p === "off" ? "in" : p));
+        } else {
+          roared.current = false;
+          setPeek((p) => (p === "roar" ? p : "off"));
+        }
+      },
+      { threshold: 0.15 },
+    );
+    io.observe(target);
+    return () => io.disconnect();
   }, [pathname]);
 
   // 2) 로고 5번 → 어흥
@@ -63,7 +50,7 @@ export default function FunLayer({ lang }: { lang: Lang }) {
       const logo = (e.target as Element | null)?.closest?.(".logo");
       if (!logo) return;
       const now = Date.now();
-      count = now - last < 1200 ? count + 1 : 1;
+      count = now - last < 1500 ? count + 1 : 1;
       last = now;
       if (count >= 5) {
         count = 0;
@@ -108,6 +95,7 @@ export default function FunLayer({ lang }: { lang: Lang }) {
   }, []);
 
   function roarPeek() {
+    roared.current = true;
     setPeek("roar");
     const r = peekBtn.current?.getBoundingClientRect();
     confetti({ x: r ? r.left + r.width / 2 : undefined, y: r ? r.top : undefined, count: 90 });
