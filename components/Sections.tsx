@@ -2,7 +2,10 @@
 import Link from "next/link";
 import type { Lang } from "@/lib/forms";
 import { CONTACT, applyPath, getDict, pagePath } from "@/lib/dictionary";
-import { ArrowRight, ArrowUpRight, Bag, Chat, Mail, Phone } from "./Icons";
+import { ArrowRight, ArrowUpRight, Chat, Mail, Phone } from "./Icons";
+import AdvirtualCompare from "./AdvirtualCompare";
+import CountUp from "./CountUp";
+import { getFun } from "@/lib/fun";
 
 export const Lines = ({ lines }: { lines: string[] }) => (
   <>
@@ -46,33 +49,9 @@ export function SubHero({
   );
 }
 
-/** 애드버추얼 개념 예시 화면 */
+/** 애드버추얼 개념 예시 화면 — 전/후 비교 슬라이더 */
 export function MockFrame({ lang }: { lang: Lang }) {
-  const m = getDict(lang).hero.mock;
-  return (
-    <figure className="mock">
-      <div className="mock-frame" role="img" aria-label={m.alt}>
-        <div className="mock-head" />
-        <div className="mock-body" />
-        <span className="mock-label">{m.video}</span>
-        <div className="mock-ad">
-          <span>{m.adTag}</span>
-          <span>{m.adTitle}</span>
-        </div>
-        <div className="mock-shop">
-          <span className="mock-shop-icon">
-            <Bag />
-          </span>
-          <span className="mock-shop-text">
-            <b>{m.shopTitle}</b>
-            <small>{m.shopSub}</small>
-          </span>
-        </div>
-        <div className="mock-progress" />
-      </div>
-      <figcaption>{m.caption}</figcaption>
-    </figure>
-  );
+  return <AdvirtualCompare lang={lang} />;
 }
 
 /** 주요 성과 띠 */
@@ -86,7 +65,7 @@ export function StatsBand({ lang }: { lang: Lang }) {
             <div className="stat" key={it.label}>
               <dt>{it.label}</dt>
               <dd>
-                {it.value}
+                <CountUp value={it.value} />
                 <small>{it.unit}</small>
               </dd>
             </div>
@@ -146,7 +125,7 @@ export function ServiceCards({ lang }: { lang: Lang }) {
   return (
     <div className="cards">
       {items.map((it) => (
-        <Link className="service-card" href={it.href} key={it.num}>
+        <Link className="service-card" data-tilt href={it.href} key={it.num}>
           <span className="service-card-num">{it.num}</span>
           <b>{it.name}</b>
           <span>{it.tagline}</span>
@@ -224,7 +203,7 @@ export function ContactSection({ lang }: { lang: Lang }) {
         </div>
         <div className="cards" style={{ gap: 16 }}>
           {t.cards.map((c) => (
-            <Link className="apply-card" key={c.type} href={applyPath(lang, c.type)}>
+            <Link className="apply-card" data-tilt key={c.type} href={applyPath(lang, c.type)}>
               <small>{c.who}</small>
               <b>
                 {c.label}
@@ -268,5 +247,25 @@ export function Steps({ steps, className = "" }: { steps: { title: string; desc:
         </li>
       ))}
     </ol>
+  );
+}
+
+/** 흐르는 키워드 띠 */
+export function MarqueeBand({ lang }: { lang: Lang }) {
+  const items = getFun(lang).marquee;
+  const row = (hidden: boolean) => (
+    <ul className="marquee-row" aria-hidden={hidden || undefined}>
+      {items.map((it) => (
+        <li key={it}>{it}</li>
+      ))}
+    </ul>
+  );
+  return (
+    <div className="marquee">
+      <div className="marquee-track">
+        {row(false)}
+        {row(true)}
+      </div>
+    </div>
   );
 }

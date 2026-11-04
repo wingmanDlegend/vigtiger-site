@@ -6,6 +6,9 @@ import { FORMS, LIMITS, type Field, type FormType, type Lang } from "@/lib/forms
 import { getDict, homePath } from "@/lib/dictionary";
 import { Check } from "./Icons";
 import { track } from "@/lib/track";
+import { confetti } from "@/lib/confetti";
+import { getFun } from "@/lib/fun";
+import Tiger from "./Tiger";
 
 type Status = "idle" | "sending" | "done" | "error";
 
@@ -73,6 +76,7 @@ export default function ApplyForm({ lang, type }: { lang: Lang; type: FormType }
       setStatus("done");
       track("generate_lead", { form_type: type, form_lang: lang });
       window.scrollTo({ top: 0, behavior: "smooth" });
+      setTimeout(() => confetti(), 250);
     } catch {
       setError(t.errorServer);
       setStatus("error");
@@ -82,8 +86,12 @@ export default function ApplyForm({ lang, type }: { lang: Lang; type: FormType }
   if (status === "done") {
     return (
       <section className="success" aria-live="polite">
-        <span className="success-mark">
-          <Check />
+        <span className="success-tiger">
+          <Tiger size={92} mood="wink" />
+          <span className="success-badge">
+            <Check />
+            {getFun(lang).tiger.done}
+          </span>
         </span>
         <h2>{t.successTitle}</h2>
         <p>{t.successBody}</p>

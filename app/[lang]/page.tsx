@@ -7,6 +7,7 @@ import {
   AdvirtualChart,
   ContactSection,
   Lines,
+  MarqueeBand,
   MockFrame,
   PressCard,
   StatsBand,
@@ -14,6 +15,7 @@ import {
   TeamSection,
 } from "@/components/Sections";
 import { CONTACT, applyPath, getDict, isLang, pagePath } from "@/lib/dictionary";
+import ServiceQuiz from "@/components/ServiceQuiz";
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -51,6 +53,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <MockFrame lang={lang} />
         </section>
 
+        <MarqueeBand lang={lang} />
         <StatsBand lang={lang} />
 
         <section id="about" className="container section stack-48">
@@ -63,7 +66,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           </div>
           <div className="cards">
             {t.about.cards.map((c) => (
-              <article className="card" key={c.type}>
+              <article className="card reveal" data-tilt key={c.type}>
                 <span className="pill">{c.tag}</span>
                 <h3>
                   <Lines lines={c.title} />
@@ -89,7 +92,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
               <h2 className="h2">{s.title}</h2>
             </div>
 
-            <article className="service">
+            <article className="service reveal">
               <div className="service-copy">
                 <p className="service-num">{s.advirtual.num}</p>
                 <h3>{s.advirtual.name}</h3>
@@ -105,7 +108,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
               <AdvirtualChart lang={lang} />
             </article>
 
-            <article className="service">
+            <article className="service reveal">
               <div className="service-copy">
                 <p className="service-num">{s.shopping.num}</p>
                 <h3>{s.shopping.name}</h3>
@@ -128,7 +131,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
               </div>
             </article>
 
-            <article className="service">
+            <article className="service reveal">
               <div className="service-copy">
                 <p className="service-num">{s.to.num}</p>
                 <h3>{s.to.name}</h3>
@@ -146,6 +149,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </article>
           </div>
         </section>
+
+        <ServiceQuiz lang={lang} />
 
         <TeamSection lang={lang} more />
 

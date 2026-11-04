@@ -4,6 +4,7 @@ import "../globals.css";
 import { LANGS, getDict, isLang } from "@/lib/dictionary";
 import { SITE_URL } from "@/lib/site";
 import Analytics from "@/components/Analytics";
+import FunLayer from "@/components/FunLayer";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -61,6 +62,7 @@ export default async function RootLayout({
       </head>
       <body>
         {children}
+        <FunLayer lang={lang} />
         <Analytics />
       </body>
     </html>
