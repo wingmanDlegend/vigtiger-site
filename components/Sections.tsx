@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Lang } from "@/lib/forms";
 import { CONTACT, applyPath, getDict, pagePath } from "@/lib/dictionary";
 import { ArrowRight, ArrowUpRight, Bag, Chat, Mail, Phone } from "./Icons";
+import { BRAND_TEXT, BRAND_TOTAL, FEATURED_BRANDS, categoryOf } from "@/lib/brands";
 
 export const Lines = ({ lines }: { lines: string[] }) => (
   <>
@@ -268,5 +269,37 @@ export function Steps({ steps, className = "" }: { steps: { title: string; desc:
         </li>
       ))}
     </ol>
+  );
+}
+
+/** 홈 — 함께하는 브랜드 (움직이지 않는 칸) */
+export function BrandsBand({ lang }: { lang: Lang }) {
+  const t = BRAND_TEXT[lang];
+  return (
+    <section className="brands-band" aria-labelledby="brands-title">
+      <div className="container section-tight">
+        <div className="brands-head">
+          <div>
+            <p className="eyebrow">{t.eyebrow}</p>
+            <h2 className="h2" id="brands-title">
+              <Lines lines={t.homeTitle(BRAND_TOTAL)} />
+            </h2>
+          </div>
+          <p className="lead">{t.homeLead}</p>
+        </div>
+        <ul className="brand-grid is-featured">
+          {FEATURED_BRANDS.map((b) => (
+            <li key={b}>
+              <b>{b}</b>
+              <small>{lang === "ko" ? categoryOf(b)?.ko : categoryOf(b)?.en}</small>
+            </li>
+          ))}
+        </ul>
+        <Link className="link-arrow" href={`${pagePath(lang, "services/to")}#brands`}>
+          {t.seeAll} ({BRAND_TOTAL})
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+    </section>
   );
 }

@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { ArrowRight, ArrowUpRight } from "@/components/Icons";
 import {
   AdvirtualChart,
+  BrandsBand,
   ContactSection,
   Lines,
   MockFrame,
@@ -52,6 +53,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </section>
 
         <StatsBand lang={lang} />
+
+        <BrandsBand lang={lang} />
 
         <section id="about" className="container section stack-48">
           <div className="section-head">

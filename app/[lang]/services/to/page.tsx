@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ArrowRight, ArrowUpRight } from "@/components/Icons";
 import { ContactSection, Steps, SubHero } from "@/components/Sections";
+import BrandDirectory from "@/components/BrandDirectory";
+import { BRAND_TEXT, BRAND_TOTAL } from "@/lib/brands";
 import { CONTACT, applyPath, getDict, isLang } from "@/lib/dictionary";
 import { getPages } from "@/lib/pages";
 import { pageMetadata } from "@/lib/meta";
@@ -109,6 +111,33 @@ export default async function ToPage({ params }: Props) {
                   <p className="service-body">{it.body}</p>
                 </article>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 참여 브랜드 전체 목록 */}
+        <section id="brands" className="services brand-dir-section" aria-labelledby="brand-dir-title">
+          <div className="container section stack-48">
+            <div className="section-head">
+              <p className="eyebrow">{BRAND_TEXT[lang].eyebrow}</p>
+              <h2 className="h2" id="brand-dir-title">
+                {BRAND_TEXT[lang].dirTitle}
+              </h2>
+              <p className="lead">{BRAND_TEXT[lang].dirLead(BRAND_TOTAL)}</p>
+            </div>
+            <BrandDirectory lang={lang} />
+            <div className="brand-dir-foot">
+              <small className="note">{BRAND_TEXT[lang].note}</small>
+              <div className="hero-ctas">
+                <Link className="btn btn-dark" href={applyPath(lang, "creator", "to")}>
+                  {BRAND_TEXT[lang].apply}
+                  <ArrowRight size={18} />
+                </Link>
+                <a className="btn btn-outline" href={CONTACT.toProducts} target="_blank" rel="noopener noreferrer">
+                  {BRAND_TEXT[lang].productList}
+                  <ArrowUpRight />
+                </a>
+              </div>
             </div>
           </div>
         </section>
