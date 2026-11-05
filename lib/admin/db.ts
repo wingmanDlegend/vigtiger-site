@@ -23,14 +23,14 @@ export type Application = {
   admin_note: string | null;
 };
 
-function cfg() {
+export function cfg() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SECRET_KEY;
   if (!url || !key) throw new Error("SUPABASE_URL / SUPABASE_SECRET_KEY 환경변수가 없습니다.");
   return { url, headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" } };
 }
 
-const isUuid = (v: string) => /^[0-9a-f-]{36}$/i.test(v);
+export const isUuid = (v: string) => /^[0-9a-f-]{36}$/i.test(v);
 
 export type ListQuery = { type?: string; status?: string; q?: string; page?: number; pageSize?: number };
 

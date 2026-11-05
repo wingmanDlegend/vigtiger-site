@@ -13,6 +13,8 @@ export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: 
     { href: pagePath(lang, "services/advirtual"), label: t.nav.advirtual },
     { href: pagePath(lang, "services/shopping"), label: t.nav.shopping },
     { href: pagePath(lang, "services/to"), label: t.nav.to },
+    // 인사이트는 한국어 전용 메뉴
+    ...(lang === "ko" ? [{ href: "/insights", label: "인사이트" }] : []),
     { href: contact, label: t.nav.contact },
   ];
 

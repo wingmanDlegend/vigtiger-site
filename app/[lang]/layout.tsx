@@ -5,7 +5,8 @@ import { LANGS, getDict, isLang } from "@/lib/dictionary";
 import { SITE_URL } from "@/lib/site";
 import Analytics from "@/components/Analytics";
 
-export const dynamicParams = false;
+// 지원하지 않는 언어 주소는 아래 레이아웃에서 notFound() 처리합니다.
+// (dynamicParams=false 를 두면 하위의 인사이트 글 주소까지 막혀서 두지 않습니다)
 export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
 }

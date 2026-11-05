@@ -20,6 +20,7 @@ export default function Footer({ lang }: { lang: Lang }) {
           <Link href={pagePath(lang, "services/advirtual")}>{t.nav.advirtual}</Link>
           <Link href={pagePath(lang, "services/shopping")}>{t.nav.shopping}</Link>
           <Link href={pagePath(lang, "services/to")}>{t.nav.to}</Link>
+          {lang === "ko" && <Link href="/insights">인사이트</Link>}
           <a href={`${home}#contact`}>{t.nav.contact}</a>
           <Link href={homePath(otherLang)} hrefLang={otherLang} lang={otherLang}>
             {t.nav.switchTo}
