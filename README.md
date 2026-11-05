@@ -17,8 +17,9 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 | `/apply/advertiser` | 광고주 광고 신청 |
 | `/apply/partner` | 상품 파트너 입점 신청 |
 | `/privacy` | 개인정보처리방침 |
-| `/insights` | 인사이트 — 데일리 인플루언서 마케팅 기사 정리 (한국어 전용) |
-| `/insights/YYYY-MM-DD` | 인사이트 글 |
+| `/insights` | 인사이트 첫 화면 — 업계 동향·Hot Contents 최신 글 (한국어 전용) |
+| `/insights/trends`, `/insights/trends/YYYY-MM-DD` | 업계 동향 — 데일리 인플루언서 마케팅 기사 정리 |
+| `/insights/hot`, `/insights/hot/YYYY-MM-DD` | Hot Contents — 전날 화제가 된 소셜 콘텐츠 추천 |
 | `POST /api/apply` | 신청서 접수 → Supabase 저장 |
 
 신청서 주소에 `?interest=to` 처럼 붙이면 관심 서비스가 미리 체크됩니다 (`advirtual`, `shopping`, `to`).
@@ -45,9 +46,10 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 데이터는 Supabase 프로젝트 `vigtiger-site` 의 `applications` 테이블에 있습니다.
 테이블은 RLS로 "등록만" 허용되어 있어 공개 키로는 읽을 수 없고, 관리자 페이지는 서버에서 비밀 키로만 조회합니다.
 
-## 인사이트 (데일리 기사 정리)
+## 인사이트 (업계 동향 · Hot Contents)
 
-- 매일 아침 예약 작업이 국내·해외 인플루언서 마케팅 기사를 찾아 요약한 **초안**을 Supabase `insight_posts` 테이블에 넣습니다 (`status = draft`).
+- 평일 아침 예약 작업 두 개가 초안을 Supabase `insight_posts` 테이블에 넣습니다 (`status = draft`). `kind` 가 `trends`(업계 동향: 기사 정리) 또는 `hot`(Hot Contents: 전날 화제 콘텐츠)이고, 같은 날짜에 종류별로 1건씩입니다.
+- Hot Contents 항목에는 플랫폼·채널·확인된 반응 수치·왜 떴나·활용 포인트·관련 기사 링크가 들어갑니다. 원본 게시물은 링크로만 연결하고 썸네일·영상은 옮기지 않습니다.
 - 관리자 페이지 `/admin/insights` 에서 제목·도입·기사 요약·'대범한사람들의 시선'을 고치고, 기사를 빼거나 순서를 바꾼 뒤 **저장하고 게시**를 누르면 `/insights` 에 올라갑니다. 게시 취소·삭제도 같은 화면에서 합니다.
 - 공개 키로는 게시된 글만 읽을 수 있습니다(RLS). 홈페이지는 5분마다, 게시 버튼을 누르면 즉시 새로 고칩니다.
 - 요약은 원문을 옮기지 않고 2~3문장으로 새로 쓰고, 원문 링크와 언론사를 꼭 남깁니다.

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 // 한국어는 접두사 없이(/, /about, /services/to …), 영어는 /en 아래에서 서비스합니다.
 // 실제 페이지는 app/[lang] 아래에 있고, 한국어 주소는 /ko/… 로 내부 rewrite 됩니다.
-const KO_ROUTES = ["/about", "/privacy", "/services/:slug", "/apply/:type", "/insights", "/insights/:slug"];
+const KO_ROUTES = ["/about", "/privacy", "/services/:slug", "/apply/:type", "/insights", "/insights/:path*"];
 
 // 기존 vigtiger.com(Notion/oopy) 페이지 주소 → 새 페이지
 // 도메인을 이 사이트로 옮긴 뒤에도 예전 링크·검색 결과가 끊기지 않도록 합니다.
@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/ko", destination: "/", permanent: true },
       { source: "/ko/:path*", destination: "/:path*", permanent: true },
+      // 인사이트 개편 전 주소(/insights/날짜) → 업계 동향
+      { source: "/insights/:date(\\d{4}-\\d{2}-\\d{2})", destination: "/insights/trends/:date", permanent: true },
       ...Object.entries(LEGACY).map(([id, destination]) => ({
         source: `/${id}`,
         destination,

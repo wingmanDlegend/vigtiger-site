@@ -14,9 +14,10 @@ export type InsightDraft = {
   items: unknown;
 };
 
-function refreshPublic(slug?: string) {
+function refreshPublic(kind?: string, slug?: string) {
   revalidatePath("/ko/insights");
-  if (slug) revalidatePath(`/ko/insights/${slug}`);
+  if (kind) revalidatePath(`/ko/insights/${kind}`);
+  if (kind && slug) revalidatePath(`/ko/insights/${kind}/${slug}`);
   revalidatePath("/sitemap.xml");
   revalidatePath("/admin/insights");
 }
@@ -48,7 +49,7 @@ export async function saveInsight(id: string, draft: InsightDraft, publish?: boo
       patch.status = "draft";
     }
     const after = await patchInsight(id, patch);
-    refreshPublic(after.slug);
+    refreshPublic(after.kind, after.slug);
     const message =
       publish === true ? "게시했습니다. 홈페이지 인사이트에 바로 보입니다." : publish === false ? "게시를 취소했습니다. 이제 홈페이지에 보이지 않습니다." : "저장했습니다.";
     return { ok: true, message, status: after.status };
@@ -60,12 +61,15 @@ export async function saveInsight(id: string, draft: InsightDraft, publish?: boo
 export async function removeInsight(id: string): Promise<Result> {
   await guard();
   let slug: string | undefined;
+  let kind: string | undefined;
   try {
-    slug = (await getInsight(id))?.slug;
+    const before = await getInsight(id);
+    slug = before?.slug;
+    kind = before?.kind;
     await deleteInsight(id);
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "삭제하지 못했습니다." };
   }
-  refreshPublic(slug);
+  refreshPublic(kind, slug);
   redirect("/admin/insights?deleted=1");
 }

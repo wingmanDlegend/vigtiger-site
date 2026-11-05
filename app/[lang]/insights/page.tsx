@@ -4,16 +4,17 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ContactSection, SubHero } from "@/components/Sections";
-import { formatKoDate, listPublishedInsights } from "@/lib/insights";
+import { InsightTabs, PostList } from "@/components/Insights";
+import { INSIGHT_KINDS, KIND_META, listPublishedInsights } from "@/lib/insights";
 
-// 한국어 전용 메뉴입니다. (/insights)
+// 인사이트 첫 화면 — 업계 동향 / Hot Contents 최신 글 (한국어 전용)
 export const revalidate = 300;
 
 type Props = { params: Promise<{ lang: string }> };
 
 const META = {
-  title: "인사이트 — 오늘의 인플루언서 마케팅",
-  description: "국내외 인플루언서·크리에이터 마케팅 소식을 매일 골라 핵심만 정리합니다. 대범한사람들 인사이트.",
+  title: "인사이트 — 업계 동향 · Hot Contents",
+  description: "인플루언서 마케팅 업계 동향과 어제의 화제 소셜 콘텐츠를 매일 정리합니다. 대범한사람들 인사이트.",
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -27,10 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function InsightsPage({ params }: Props) {
+export default async function InsightsHome({ params }: Props) {
   const { lang } = await params;
   if (lang !== "ko") notFound();
-  const posts = await listPublishedInsights();
+  const lists = await Promise.all(INSIGHT_KINDS.map((k) => listPublishedInsights(k, 5)));
 
   return (
     <>
@@ -38,36 +39,37 @@ export default async function InsightsPage({ params }: Props) {
       <main>
         <SubHero
           eyebrow="INSIGHTS"
-          title={["인플루언서 마케팅,", "오늘의 흐름"]}
-          lead="국내외 인플루언서·크리에이터 마케팅 소식을 매일 골라 핵심만 정리합니다. 원문은 각 기사 링크에서 확인하세요."
+          title={["크리에이터 마케팅,", "매일 한눈에"]}
+          lead="업계 동향에서는 국내외 인플루언서 마케팅 소식을, Hot Contents에서는 어제 화제가 된 소셜 콘텐츠와 활용 포인트를 매일 정리합니다."
         />
-        <section className="section insights">
-          <div className="container">
-            {posts.length === 0 ? (
-              <p className="insights-empty">첫 번째 인사이트를 준비하고 있어요. 곧 찾아올게요.</p>
-            ) : (
-              <ol className="insight-list">
-                {posts.map((p) => {
-                  const kr = p.items.filter((i) => i.region === "국내").length;
-                  return (
-                    <li key={p.id}>
-                      <Link href={`/insights/${p.slug}`} className="insight-row">
-                        <time dateTime={p.post_date}>{formatKoDate(p.post_date)}</time>
-                        <span className="insight-row-main">
-                          <b>{p.title}</b>
-                          {p.intro && <span className="insight-row-intro">{p.intro}</span>}
-                        </span>
-                        <span className="insight-row-meta">
-                          기사 {p.items.length}건 · 국내 {kr} · 해외 {p.items.length - kr}
-                        </span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ol>
-            )}
-          </div>
-        </section>
+        <InsightTabs />
+        {INSIGHT_KINDS.map((k, i) => {
+          const m = KIND_META[k];
+          const posts = lists[i];
+          return (
+            <section key={k} className={`section insights ${i % 2 ? "is-alt" : ""}`} aria-labelledby={`sec-${k}`}>
+              <div className="container">
+                <div className="insights-head">
+                  <div>
+                    <p className="eyebrow">{m.eyebrow}</p>
+                    <h2 className="h2" id={`sec-${k}`}>
+                      {m.label}
+                    </h2>
+                    <p className="insights-head-lead">{m.lead}</p>
+                  </div>
+                  <Link href={m.path} className="btn btn-outline">
+                    전체 보기
+                  </Link>
+                </div>
+                {posts.length === 0 ? (
+                  <p className="insights-empty">첫 번째 {m.label} 글을 준비하고 있어요. 곧 찾아올게요.</p>
+                ) : (
+                  <PostList posts={posts} />
+                )}
+              </div>
+            </section>
+          );
+        })}
         <ContactSection lang="ko" />
       </main>
       <Footer lang="ko" />

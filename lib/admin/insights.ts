@@ -4,9 +4,10 @@ import type { InsightItem, InsightPost } from "@/lib/insights";
 
 // 관리자용 인사이트 조회·수정 (비밀 키, 초안 포함)
 
-export async function listInsights(): Promise<InsightPost[]> {
+export async function listInsights(kind?: string): Promise<InsightPost[]> {
   const { url, headers } = cfg();
-  const res = await fetch(`${url}/rest/v1/insight_posts?select=*&order=post_date.desc,created_at.desc&limit=200`, {
+  const k = kind === "trends" || kind === "hot" ? `&kind=eq.${kind}` : "";
+  const res = await fetch(`${url}/rest/v1/insight_posts?select=*${k}&order=post_date.desc,created_at.desc&limit=200`, {
     headers,
     cache: "no-store",
   });
@@ -66,6 +67,17 @@ export function cleanItems(raw: unknown): InsightItem[] {
       region: o.region === "해외" ? "해외" : "국내",
       summary: str(o.summary, 1500),
     };
+    // Hot Contents 전용 필드 (비어 있으면 저장하지 않음)
+    const opt = { platform: str(o.platform, 40), creator: str(o.creator, 120), metric: str(o.metric, 200), point: str(o.point, 1500), articleUrl: str(o.articleUrl, 1000) };
+    for (const [k, v] of Object.entries(opt)) if (v) (it as Record<string, string>)[k] = v;
+    if (it.articleUrl) {
+      try {
+        const u = new URL(it.articleUrl);
+        if (u.protocol !== "https:" && u.protocol !== "http:") throw 0;
+      } catch {
+        throw new Error(`${i + 1}번째 항목의 관련 기사 링크가 올바르지 않습니다.`);
+      }
+    }
     if (!it.title || !it.summary) throw new Error(`${i + 1}번째 기사의 제목과 요약을 채워 주세요.`);
     try {
       const u = new URL(it.url);

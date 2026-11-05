@@ -8,13 +8,24 @@ export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: 
   const otherLang: Lang = lang === "ko" ? "en" : "ko";
   const contact = onHome ? "#contact" : `${home}#contact`;
 
-  const links = [
+  const links: { href: string; label: string; sub?: { href: string; label: string }[] }[] = [
     { href: pagePath(lang, "about"), label: t.nav.about },
     { href: pagePath(lang, "services/advirtual"), label: t.nav.advirtual },
     { href: pagePath(lang, "services/shopping"), label: t.nav.shopping },
     { href: pagePath(lang, "services/to"), label: t.nav.to },
     // 인사이트는 한국어 전용 메뉴
-    ...(lang === "ko" ? [{ href: "/insights", label: "인사이트" }] : []),
+    ...(lang === "ko"
+      ? [
+          {
+            href: "/insights",
+            label: "인사이트",
+            sub: [
+              { href: "/insights/trends", label: "업계 동향" },
+              { href: "/insights/hot", label: "Hot Contents" },
+            ],
+          },
+        ]
+      : []),
     { href: contact, label: t.nav.contact },
   ];
 
@@ -32,11 +43,27 @@ export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: 
         </Link>
 
         <nav className="nav" aria-label={t.nav.menu}>
-          {links.map((l) => (
-            <Link key={l.href} className="nav-section" href={l.href}>
-              {l.label}
-            </Link>
-          ))}
+          {links.map((l) =>
+            l.sub ? (
+              <div key={l.href} className="nav-section nav-group">
+                <Link href={l.href} className="nav-group-top">
+                  {l.label}
+                  <span aria-hidden="true" className="nav-caret">▾</span>
+                </Link>
+                <div className="nav-sub">
+                  {l.sub.map((s) => (
+                    <Link key={s.href} href={s.href}>
+                      {s.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <Link key={l.href} className="nav-section" href={l.href}>
+                {l.label}
+              </Link>
+            ),
+          )}
           <Link className="nav-lang" href={homePath(otherLang)} hrefLang={otherLang} lang={otherLang}>
             {t.nav.switchTo}
           </Link>
@@ -50,6 +77,15 @@ export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: 
               {links.map((l) => (
                 <li key={l.href}>
                   <Link href={l.href}>{l.label}</Link>
+                  {l.sub && (
+                    <ul className="nav-mobile-sub">
+                      {l.sub.map((s) => (
+                        <li key={s.href}>
+                          <Link href={s.href}>{s.label}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>

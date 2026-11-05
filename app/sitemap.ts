@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
-import { listPublishedInsights } from "@/lib/insights";
+import { KIND_META, listPublishedInsights, postPath } from "@/lib/insights";
 
 export const revalidate = 3600;
 
@@ -18,11 +18,12 @@ const PATHS = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await listPublishedInsights(200);
+  const posts = await listPublishedInsights(undefined, 400);
   const insights: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/insights`, changeFrequency: "daily", priority: 0.7, lastModified: posts[0]?.updated_at },
+    ...Object.values(KIND_META).map((m) => ({ url: `${SITE_URL}${m.path}`, changeFrequency: "daily" as const, priority: 0.7 })),
     ...posts.map((p) => ({
-      url: `${SITE_URL}/insights/${p.slug}`,
+      url: `${SITE_URL}${postPath(p)}`,
       lastModified: p.updated_at,
       changeFrequency: "monthly" as const,
       priority: 0.6,
