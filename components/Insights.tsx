@@ -256,3 +256,55 @@ export async function PostPage({ lang, kind, slug }: { lang: string; kind: Insig
     </>
   );
 }
+
+/** 홈 — Today's Issue: 업계 동향·Hot Contents 가장 최근 게시 글 (한국어 전용) */
+export async function TodayIssue() {
+  const latest = (await Promise.all(INSIGHT_KINDS.map((k) => listPublishedInsights(k, 1)))).map((l) => l[0]).filter(Boolean);
+  if (latest.length === 0) return null;
+
+  return (
+    <section className="today" aria-labelledby="today-title">
+      <div className="container section-tight today-in">
+        <div className="today-head">
+          <div>
+            <p className="eyebrow">TODAY&apos;S ISSUE</p>
+            <h2 className="h2" id="today-title">
+              오늘의 크리에이터 마케팅 이슈
+            </h2>
+          </div>
+          <Link href="/insights" className="link-arrow">
+            인사이트 전체 보기 →
+          </Link>
+        </div>
+        <div className="today-cards">
+          {latest.map((p) => {
+            const m = KIND_META[p.kind];
+            return (
+              <article key={p.id} className={`today-card is-${p.kind}`}>
+                <p className="today-meta">
+                  <span className={`insight-kind is-${p.kind}`}>{m.label}</span>
+                  <time dateTime={p.post_date}>{formatKoDate(p.post_date)}</time>
+                </p>
+                <h3>
+                  <Link href={postPath(p)}>{p.title}</Link>
+                </h3>
+                {p.intro && <p className="today-intro">{p.intro}</p>}
+                <ul className="today-items">
+                  {p.items.slice(0, 3).map((it, i) => (
+                    <li key={`${it.url}-${i}`}>
+                      <span>{p.kind === "hot" ? it.platform || it.source : it.source}</span>
+                      {it.title}
+                    </li>
+                  ))}
+                </ul>
+                <Link href={postPath(p)} className="today-more" aria-label={`${m.label} ${p.title} 전체 읽기`}>
+                  {m.unit} {p.items.length}건 전체 읽기 →
+                </Link>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}

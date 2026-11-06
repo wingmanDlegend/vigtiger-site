@@ -34,6 +34,7 @@ export default async function AdminInsights({ searchParams }: { searchParams: Pr
         <p className="a-sub">
           평일 아침마다 <b>업계 동향</b>(기사 정리)과 <b>Hot Contents</b>(어제의 화제 콘텐츠) 초안이 자동으로 만들어집니다. 내용을 확인·수정한 뒤 <b>게시</b>를 누르면 홈페이지{" "}
           <a href="/insights" target="_blank" rel="noopener noreferrer">인사이트</a> 메뉴에 올라갑니다.
+          {" "}오전 9시 30분까지 게시하지 않은 그날 초안은 <b>자동으로 게시</b>되고, 홈 화면 Today&apos;s Issue도 함께 바뀝니다.
           {drafts > 0 && <> 지금 검토 대기 중인 초안이 <b>{drafts}건</b> 있어요.</>}
         </p>
         <nav className="a-tabs" aria-label="종류">

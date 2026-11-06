@@ -15,6 +15,7 @@ export type InsightDraft = {
 };
 
 function refreshPublic(kind?: string, slug?: string) {
+  revalidatePath("/ko"); // 홈 Today's Issue
   revalidatePath("/ko/insights");
   if (kind) revalidatePath(`/ko/insights/${kind}`);
   if (kind && slug) revalidatePath(`/ko/insights/${kind}/${slug}`);

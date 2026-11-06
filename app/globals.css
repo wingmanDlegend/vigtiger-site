@@ -2298,3 +2298,140 @@ p {
   flex-direction: column;
   gap: 28px;
 }
+
+/* 홈 — Today's Issue */
+.today {
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--line);
+}
+.today .today-in {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 88px;
+  padding-bottom: 88px;
+}
+.today-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 32px;
+}
+.today-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.today-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.today-card.is-hot {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.today-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.today-card.is-hot .today-meta {
+  color: var(--muted-on-dark);
+}
+.today-card.is-hot .insight-kind.is-hot {
+  background: var(--accent);
+  color: var(--ink);
+}
+.today-card h3 {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.today-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.today-card h3 a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.today-intro {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #444444;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.today-card.is-hot .today-intro {
+  color: #d9d9d9;
+}
+.today-items {
+  list-style: none;
+  margin: 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.today-card.is-hot .today-items {
+  border-top-color: rgba(255, 255, 255, 0.18);
+}
+.today-items li {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.today-items li span {
+  font-size: 12px;
+  font-weight: 800;
+  color: #b33a00;
+  margin-right: 8px;
+}
+.today-card.is-hot .today-items li span {
+  color: var(--accent);
+}
+.today-more {
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: 15px;
+  font-weight: 800;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 800px) {
+  .today-cards {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .today .today-in {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  .today-card {
+    padding: 22px 20px;
+  }
+  .today-card h3 {
+    font-size: 19px;
+  }
+}

@@ -15,6 +15,10 @@ import {
   TeamSection,
 } from "@/components/Sections";
 import { CONTACT, applyPath, getDict, isLang, pagePath } from "@/lib/dictionary";
+import { TodayIssue } from "@/components/Insights";
+
+// 한국어 홈의 Today's Issue(인사이트 최신 글) 때문에 5분마다 새로 만듭니다.
+export const revalidate = 300;
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
@@ -53,6 +57,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </section>
 
         <StatsBand lang={lang} />
+
+        {lang === "ko" && <TodayIssue />}
 
         <BrandsBand lang={lang} />
 
