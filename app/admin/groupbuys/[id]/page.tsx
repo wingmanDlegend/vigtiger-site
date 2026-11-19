@@ -9,7 +9,7 @@ import GroupbuyForm from "../GroupbuyForm";
 export const dynamic = "force-dynamic";
 
 export default async function EditGroupbuy({ params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const { id } = await params;
   const g = await getGroupbuy(id);
   if (!g) notFound();
@@ -17,7 +17,7 @@ export default async function EditGroupbuy({ params }: { params: Promise<{ id: s
     <>
       <AdminTop current="groupbuys" />
       <main className="a-wrap">
-        <a className="a-back" href="/admin/groupbuys">← 공동구매 목록</a>
+        <a className="a-back" href="/groupbuys">← 공동구매 목록</a>
         <h1 className="a-h1">
           {g.brand} · {g.creator}
         </h1>

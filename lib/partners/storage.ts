@@ -35,9 +35,9 @@ export async function uploadImage(file: File, folder: "products" | "brands") {
 }
 
 // ---------- 슬랙 알림 (SLACK_WEBHOOK_URL) ----------
-export const PARTNERS_URL = process.env.PARTNERS_URL || "https://partners.vigtiger.com";
+const ADMIN_URL = process.env.ADMIN_URL || "https://admin.vigtiger.com";
 
-export async function notifyPartners(text: string, path = "/admin/review") {
+export async function notifyPartners(text: string, path = "/to/review") {
   const hook = process.env.SLACK_WEBHOOK_URL;
   if (!hook || !/^https:\/\/hooks\.slack\.com\//.test(hook)) return;
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -49,7 +49,7 @@ export async function notifyPartners(text: string, path = "/admin/review") {
         text,
         blocks: [
           { type: "section", text: { type: "mrkdwn", text: `🧾 *티오 파트너스* — ${esc(text)}` } },
-          { type: "actions", elements: [{ type: "button", text: { type: "plain_text", text: "승인 대기 보기" }, url: `${PARTNERS_URL}${path}` }] },
+          { type: "actions", elements: [{ type: "button", text: { type: "plain_text", text: "승인 대기 보기" }, url: `${ADMIN_URL}${path}` }] },
         ],
       }),
       signal: AbortSignal.timeout(5000),

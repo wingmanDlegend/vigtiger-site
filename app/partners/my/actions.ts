@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { actorOf, requireSession } from "@/lib/partners/auth";
+import { actorOf, requireBrand } from "@/lib/partners/auth";
 import { deleteProduct, getBrand, getProduct, insertProduct, logEvent, maxSort, patchBrand, patchProduct } from "@/lib/partners/db";
 import {
   brandToProfile,
@@ -23,7 +23,7 @@ export type ActionResult = { ok: boolean; message: string; errors?: string[] };
 // - 삭제: 승인 전 제품은 바로 삭제, 게시 중 제품은 '삭제 요청'
 
 async function brandSession() {
-  const s = await requireSession({ role: "brand" });
+  const s = await requireBrand();
   return s as typeof s & { brandId: string };
 }
 async function ownProduct(brandId: string, id: string) {

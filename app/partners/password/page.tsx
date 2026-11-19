@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { getBrand } from "@/lib/partners/db";
-import { requireSession } from "@/lib/partners/auth";
+import { requireBrand } from "@/lib/partners/auth";
 import PTop, { PHead } from "../PTop";
-import PasswordForm from "./PasswordForm";
+import PasswordForm from "@/components/partners/PasswordForm";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "비밀번호 변경" };
 
 export default async function PasswordPage() {
-  const s = await requireSession({ allowMustChange: true });
+  const s = await requireBrand({ allowMustChange: true });
   if (s.mustChange) {
     return (
       <main className="a-login p-login">
@@ -20,7 +20,7 @@ export default async function PasswordPage() {
               <p className="a-sub">{s.name}님, 처음 로그인하셨네요. 받으신 임시 비밀번호 대신 쓸 새 비밀번호를 정해 주세요.</p>
             </div>
           </div>
-          <PasswordForm />
+          <PasswordForm site="partners" />
         </div>
       </main>
     );
@@ -32,11 +32,7 @@ export default async function PasswordPage() {
       <main className="a-wrap">
         <PHead crumb="계정" title="비밀번호 변경" desc="바꾸면 다른 기기에서 로그인된 상태도 모두 풀려요." />
         <section className="a-card a-sec p-narrow">
-          {s.kind === "master" ? (
-            <p className="a-sub">대표 관리자 비밀번호는 vigtiger.com 관리자 비밀번호와 같아요. Vercel 환경변수 ADMIN_PASSWORD에서 바꿀 수 있어요.</p>
-          ) : (
-            <PasswordForm />
-          )}
+          <PasswordForm site="partners" />
         </section>
       </main>
     </>

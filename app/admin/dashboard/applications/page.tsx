@@ -15,7 +15,7 @@ const TYPE_COLOR = { creator: C.blue, advertiser: C.orange, partner: C.aqua };
 const arr = (v: unknown) => (Array.isArray(v) ? (v as string[]) : typeof v === "string" && v ? [v] : []);
 
 export default async function ApplicationsDashboard({ searchParams }: { searchParams: Promise<{ range?: string }> }) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const range = parseRange((await searchParams).range);
   const rLabel = RANGES.find((r) => r.key === range)!.label;
   let all: ApplicationLite[] = [];
@@ -70,7 +70,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
     <>
       <AdminTop current="applications" />
       <main className="a-wrap">
-        <SectionHeader section="applications" current="dashboard" actions={<RangeTabs base="/admin/dashboard/applications" current={range} />} />
+        <SectionHeader section="applications" current="dashboard" actions={<RangeTabs base="/dashboard/applications" current={range} />} />
         {error && <p className="a-error" role="alert">{error}</p>}
 
         <section className="db-kpis">
@@ -79,7 +79,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
           <Kpi label="광고주" value={`${fmtNum(byType(rows, "advertiser"))}건`} delta={prev ? delta(byType(rows, "advertiser"), byType(prev, "advertiser")) : undefined} />
           <Kpi label="상품 파트너" value={`${fmtNum(byType(rows, "partner"))}건`} delta={prev ? delta(byType(rows, "partner"), byType(prev, "partner")) : undefined} />
           <Kpi label="진행 확정률" value={rows.length ? `${Math.round((done / rows.length) * 100)}%` : "–"} sub={`확정 ${fmtNum(done)}건 · 처리 ${fmtNum(decided)}건`} />
-          <Kpi label="아직 신규 상태 (전체)" value={`${fmtNum(pendingNew)}건`} href="/admin?status=new" tone={pendingNew ? "warn" : undefined} sub="눌러서 처리하기" />
+          <Kpi label="아직 신규 상태 (전체)" value={`${fmtNum(pendingNew)}건`} href="/applications?status=new" tone={pendingNew ? "warn" : undefined} sub="눌러서 처리하기" />
         </section>
 
         <div className="db-grid">
@@ -103,7 +103,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
           </ChartCard>
 
           <ChartCard title="현재 처리 상태" table={{ head: ["상태", "건수"], rows: (["new", "in_review", "contacted", "done", "rejected"] as const).map((s) => [STATUS_LABEL[s], st([s])]) }}>
-            <HBars rows={(["new", "in_review", "contacted", "done", "rejected"] as const).map((s) => ({ label: STATUS_LABEL[s], value: st([s]), href: `/admin?status=${s}` }))} format={(n) => `${fmtNum(n)}건`} />
+            <HBars rows={(["new", "in_review", "contacted", "done", "rejected"] as const).map((s) => ({ label: STATUS_LABEL[s], value: st([s]), href: `/applications?status=${s}` }))} format={(n) => `${fmtNum(n)}건`} />
           </ChartCard>
 
           <ChartCard title="크리에이터 · 관심 있는 서비스" note="여러 개 고를 수 있어 합계가 신청 수보다 많을 수 있어요.">

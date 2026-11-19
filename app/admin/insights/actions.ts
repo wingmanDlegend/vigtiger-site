@@ -24,7 +24,7 @@ function refreshPublic(kind?: string, slug?: string) {
 }
 
 async function guard() {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
 }
 
 /** 내용 저장 (+ 선택: 게시/게시 취소) */
@@ -72,5 +72,5 @@ export async function removeInsight(id: string): Promise<Result> {
     return { ok: false, message: e instanceof Error ? e.message : "삭제하지 못했습니다." };
   }
   refreshPublic(kind, slug);
-  redirect("/admin/insights?deleted=1");
+  redirect("/insights?deleted=1");
 }

@@ -1,34 +1,12 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { COOKIE, checkPassword, createSessionValue, isAuthed } from "@/lib/admin/auth";
+import { isAuthed } from "@/lib/admin/auth";
 import { deleteApplication, updateApplication, STATUSES, type Status } from "@/lib/admin/db";
 
-export async function login(_: unknown, formData: FormData) {
-  const pw = String(formData.get("password") ?? "");
-  // 무차별 대입을 늦추기 위한 짧은 지연
-  await new Promise((r) => setTimeout(r, 600));
-  if (!checkPassword(pw)) return { error: "비밀번호가 맞지 않습니다." };
-  const { value, maxAge } = createSessionValue();
-  (await cookies()).set(COOKIE, value, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/admin",
-    maxAge,
-  });
-  redirect("/admin/dashboard"); // 로그인하면 통합 대시보드부터
-}
-
-export async function logout() {
-  (await cookies()).delete({ name: COOKIE, path: "/admin" });
-  redirect("/admin/login");
-}
-
 export async function saveApplication(id: string, _: unknown, formData: FormData) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const status = String(formData.get("status") ?? "") as Status;
   const note = String(formData.get("admin_note") ?? "");
   try {
@@ -39,29 +17,29 @@ export async function saveApplication(id: string, _: unknown, formData: FormData
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "저장하지 못했습니다." };
   }
-  revalidatePath("/admin");
-  revalidatePath(`/admin/${id}`);
+  revalidatePath("/admin/applications");
+  revalidatePath(`/admin/applications/${id}`);
   return { ok: true, message: "저장했습니다." };
 }
 
 /** 목록에서 상태만 빠르게 바꾸기 */
 export async function quickStatus(formData: FormData) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "") as Status;
   if ((STATUSES as readonly string[]).includes(status)) await updateApplication(id, { status });
-  revalidatePath("/admin");
+  revalidatePath("/admin/applications");
 }
 
 /** 신청 1건 영구 삭제 → 목록으로 이동 */
 export async function removeApplication(id: string, type: string) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   try {
     await deleteApplication(id);
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "삭제하지 못했습니다." };
   }
-  revalidatePath("/admin");
+  revalidatePath("/admin/applications");
   const t = ["creator", "advertiser", "partner"].includes(type) ? `type=${type}&` : "";
-  redirect(`/admin?${t}deleted=1`);
+  redirect(`/applications?${t}deleted=1`);
 }

@@ -10,7 +10,7 @@ type Raw = Partial<Record<keyof GBInput, unknown>>;
 export type GBResult = { ok: boolean; message: string; errors?: string[]; id?: string };
 
 async function guard() {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
 }
 
 export async function createGroupbuy(raw: Raw): Promise<GBResult> {
@@ -47,7 +47,7 @@ export async function removeGroupbuy(id: string): Promise<GBResult> {
     return { ok: false, message: e instanceof Error ? e.message : "삭제하지 못했습니다." };
   }
   revalidatePath("/admin/groupbuys");
-  redirect("/admin/groupbuys?deleted=1");
+  redirect("/groupbuys?deleted=1");
 }
 
 /** 엑셀 일괄 저장 — 모든 줄이 검증을 통과해야 저장 (일부만 들어가는 일 방지) */

@@ -192,7 +192,7 @@ export default function ImportClient() {
                 start(async () => {
                   const r = await importGroupbuys(parsed.rows);
                   setResult(r);
-                  if (r.ok) router.push(`/admin/groupbuys?saved=${encodeURIComponent(r.message)}`);
+                  if (r.ok) router.push(`/groupbuys?saved=${encodeURIComponent(r.message)}`);
                 })
               }
             >

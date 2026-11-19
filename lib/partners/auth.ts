@@ -10,7 +10,7 @@ import type { PartnerUser } from "./model";
 // - 계정은 관리자가 발급(임시 비밀번호) → 첫 로그인 때 새 비밀번호로 변경
 // - 비밀번호는 scrypt 해시로만 저장, 5번 틀리면 15분 잠금
 // - 세션은 서명된 쿠키(12시간). 비밀번호 변경·초기화·비활성화 시 token_version이 올라가 기존 세션은 무효
-// - '대표 관리자' 로그인: 기존 관리자 비밀번호(ADMIN_PASSWORD)로 들어오는 최상위 관리자 (계정 없이)
+// - '대표 관리자' 로그인(관리 사이트 전용): 관리자 비밀번호(ADMIN_PASSWORD)로 들어오는 최상위 관리자 (계정 없이)
 
 const scrypt = promisify(_scrypt) as (pw: string, salt: Buffer, len: number, opts: object) => Promise<Buffer>;
 export const COOKIE = "vt_partners";
@@ -35,7 +35,6 @@ export function partnersConfigured() {
 function key() {
   return `partners::${process.env.SUPABASE_SECRET_KEY}::${process.env.ADMIN_PASSWORD}`;
 }
-const sign = (payload: string) => createHmac("sha256", key()).update(payload).digest("base64url");
 function safeEqual(a: string, b: string) {
   const ba = Buffer.from(a);
   const bb = Buffer.from(b);
@@ -81,10 +80,17 @@ export function checkMasterPassword(input: string) {
 }
 
 // ---------- 세션 ----------
-export async function setSession(s: { kind: "master" } | { kind: "user"; userId: string; tv: number }) {
+// 두 사이트가 같은 계정 표를 쓰지만 쿠키·서명 범위는 분리합니다.
+//  - partners: partners.vigtiger.com 브랜드 담당자 (vt_partners)
+//  - admin:    admin.vigtiger.com 관리자 — 대표 관리자(비밀번호) 또는 직원 계정 (vt_admin)
+export type Scope = "partners" | "admin";
+const COOKIES: Record<Scope, string> = { partners: COOKIE, admin: "vt_admin" };
+const signFor = (scope: Scope, payload: string) => createHmac("sha256", `${key()}::${scope}`).update(payload).digest("base64url");
+
+export async function setSession(scope: Scope, s: { kind: "master" } | { kind: "user"; userId: string; tv: number }) {
   const exp = Math.floor(Date.now() / 1000) + TTL;
   const payload = s.kind === "master" ? `m.-.0.${exp}` : `u.${s.userId}.${s.tv}.${exp}`;
-  (await cookies()).set(COOKIE, `${payload}.${sign(payload)}`, {
+  (await cookies()).set(COOKIES[scope], `${payload}.${signFor(scope, payload)}`, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -92,21 +98,24 @@ export async function setSession(s: { kind: "master" } | { kind: "user"; userId:
     maxAge: TTL,
   });
 }
-export async function clearSession() {
-  (await cookies()).delete(COOKIE);
+export async function clearSession(scope: Scope) {
+  (await cookies()).delete(COOKIES[scope]);
 }
 
-export async function getSession(): Promise<Session | null> {
+export async function getSession(scope: Scope): Promise<Session | null> {
   if (!partnersConfigured()) return null;
-  const raw = (await cookies()).get(COOKIE)?.value;
+  const raw = (await cookies()).get(COOKIES[scope])?.value;
   if (!raw) return null;
   const i = raw.lastIndexOf(".");
   if (i < 0) return null;
   const payload = raw.slice(0, i);
-  if (!safeEqual(raw.slice(i + 1), sign(payload))) return null;
+  if (!safeEqual(raw.slice(i + 1), signFor(scope, payload))) return null;
   const [kind, id, tv, exp] = payload.split(".");
   if (!(Number(exp) > Date.now() / 1000)) return null;
-  if (kind === "m") return { kind: "master", role: "admin", userId: null, brandId: null, name: "대표 관리자", email: null, mustChange: false };
+  if (kind === "m") {
+    if (scope !== "admin") return null; // 대표 관리자는 관리 사이트에서만
+    return { kind: "master", role: "admin", userId: null, brandId: null, name: "대표 관리자", email: null, mustChange: false };
+  }
   if (kind !== "u") return null;
   let u: (PartnerUser & { password_hash?: string }) | null = null;
   try {
@@ -115,16 +124,25 @@ export async function getSession(): Promise<Session | null> {
     return null;
   }
   if (!u || !u.active || u.token_version !== Number(tv)) return null;
+  // 관리 사이트에는 관리자 계정만, 파트너 사이트에는 브랜드 계정만
+  if ((scope === "admin") !== (u.role === "admin")) return null;
+  if (u.role === "brand" && !u.brand_id) return null;
   return { kind: "user", role: u.role, userId: u.id, brandId: u.brand_id, name: u.name, email: u.email, mustChange: u.must_change_password };
 }
 
-/** 페이지·액션 보호 */
-export async function requireSession(opts: { role?: "admin" | "brand"; allowMustChange?: boolean } = {}) {
-  const s = await getSession();
+/** partners.vigtiger.com 페이지·액션 보호 (브랜드 담당자) */
+export async function requireBrand(opts: { allowMustChange?: boolean } = {}) {
+  const s = await getSession("partners");
   if (!s) redirect("/login");
   if (s.mustChange && !opts.allowMustChange) redirect("/password");
-  if (opts.role === "admin" && s.role !== "admin") redirect("/");
-  if (opts.role === "brand" && (s.role !== "brand" || !s.brandId)) redirect("/");
+  return s as Session & { brandId: string };
+}
+
+/** admin.vigtiger.com 페이지·액션 보호 (관리자) */
+export async function requireAdmin(opts: { allowMustChange?: boolean } = {}) {
+  const s = await getSession("admin");
+  if (!s) redirect("/login");
+  if (s.mustChange && !opts.allowMustChange) redirect("/password");
   return s;
 }
 

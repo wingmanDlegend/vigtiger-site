@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { requireSession } from "@/lib/partners/auth";
+import { requireBrand } from "@/lib/partners/auth";
 import { getBrand, getProduct, listProducts } from "@/lib/partners/db";
 import { productToDraft } from "@/lib/partners/model";
 import PTop, { PHead } from "../../PTop";
-import ProductForm from "../../ProductForm";
-import { CatalogCell, RequestTags, StatusBadge } from "../../ui";
+import ProductForm from "@/components/partners/ProductForm";
+import { CatalogCell, RequestTags, StatusBadge } from "@/components/partners/ui";
 import { updateProductAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "제품 수정" };
 
 export default async function EditProduct({ params }: { params: Promise<{ id: string }> }) {
-  const s = await requireSession({ role: "brand" });
+  const s = await requireBrand();
   const { id } = await params;
   const p = await getProduct(id);
   if (!p || p.brand_id !== s.brandId) notFound();
-  const [brand, products] = await Promise.all([getBrand(s.brandId!), listProducts({ brandId: s.brandId! })]);
+  const [brand, products] = await Promise.all([getBrand(s.brandId), listProducts({ brandId: s.brandId })]);
   const sections = [...new Set(products.map((x) => x.section).filter(Boolean) as string[])];
   const live = productToDraft(p);
   const initial = { ...live, ...(p.pending_changes ?? {}) };

@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { requireSession } from "@/lib/partners/auth";
+import { requireBrand } from "@/lib/partners/auth";
 import { getBrand } from "@/lib/partners/db";
 import { BRAND_FIELDS, CATEGORY_LABEL, brandToProfile, fmtDate } from "@/lib/partners/model";
 import PTop, { PHead } from "../../PTop";
-import BrandProfileForm from "../../BrandProfileForm";
+import BrandProfileForm from "@/components/partners/BrandProfileForm";
 import { cancelProfileRequestAction, updateProfileAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "브랜드 정보" };
 
 export default async function BrandProfilePage() {
-  const s = await requireSession({ role: "brand" });
-  const b = await getBrand(s.brandId!);
+  const s = await requireBrand();
+  const b = await getBrand(s.brandId);
   if (!b) return null;
   const initial = { ...brandToProfile(b), ...(b.pending_changes ?? {}) };
   const asked = b.pending_changes ? BRAND_FIELDS.filter((f) => f.key in (b.pending_changes ?? {})).map((f) => f.label) : [];

@@ -21,16 +21,16 @@ export const SECTIONS = {
     crumb: "비즈니스",
     title: "제휴 신청",
     tabs: [
-      { key: "dashboard", href: "/admin/dashboard/applications", label: "현황" },
-      { key: "list", href: "/admin", label: "목록" },
+      { key: "dashboard", href: "/dashboard/applications", label: "현황" },
+      { key: "list", href: "/applications", label: "목록" },
     ],
   },
   groupbuys: {
     crumb: "비즈니스",
     title: "공동구매",
     tabs: [
-      { key: "dashboard", href: "/admin/dashboard/groupbuys", label: "현황" },
-      { key: "list", href: "/admin/groupbuys", label: "목록" },
+      { key: "dashboard", href: "/dashboard/groupbuys", label: "현황" },
+      { key: "list", href: "/groupbuys", label: "목록" },
     ],
   },
 } as const;

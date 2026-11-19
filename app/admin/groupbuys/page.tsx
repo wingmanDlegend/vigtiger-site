@@ -38,7 +38,7 @@ function topBy(rows: GroupBuy[], key: "brand" | "creator") {
 }
 
 export default async function AdminGroupbuys({ searchParams }: { searchParams: SP }) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const sp = await searchParams;
   let all: GroupBuy[] = [];
   let error = "";
@@ -81,9 +81,9 @@ export default async function AdminGroupbuys({ searchParams }: { searchParams: S
           current="list"
           actions={
             <div className="a-row">
-              <a className="a-btn" href="/admin/groupbuys/new">+ 결과 입력</a>
-              <a className="a-btn is-ghost" href="/admin/groupbuys/import">엑셀 업로드</a>
-              <a className="a-btn is-ghost" href={`/admin/groupbuys/export${qs({})}`}>엑셀(CSV) 내려받기</a>
+              <a className="a-btn" href="/groupbuys/new">+ 결과 입력</a>
+              <a className="a-btn is-ghost" href="/groupbuys/import">엑셀 업로드</a>
+              <a className="a-btn is-ghost" href={`/groupbuys/export${qs({})}`}>엑셀(CSV) 내려받기</a>
             </div>
           }
         />
@@ -114,7 +114,7 @@ export default async function AdminGroupbuys({ searchParams }: { searchParams: S
           ))}
         </nav>
 
-        <form className="a-filter" method="get" action="/admin/groupbuys">
+        <form className="a-filter" method="get" action="/groupbuys">
           {status && <input type="hidden" name="status" value={status} />}
           <select className="a-select" name="year" defaultValue={year ?? ""} aria-label="연도">
             <option value="">전체 기간</option>
@@ -155,7 +155,7 @@ export default async function AdminGroupbuys({ searchParams }: { searchParams: S
                     <tr key={r.id}>
                       <td className="a-nowrap a-sub">{period(r)}</td>
                       <td>
-                        <a className="a-name" href={`/admin/groupbuys/${r.id}`}>{r.brand}</a>
+                        <a className="a-name" href={`/groupbuys/${r.id}`}>{r.brand}</a>
                         <div className="a-sub">{r.product}</div>
                       </td>
                       <td>

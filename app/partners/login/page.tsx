@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession, partnersConfigured } from "@/lib/partners/auth";
-import LoginForms from "./LoginForms";
+import LoginForms from "@/components/partners/LoginForms";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "로그인" };
 
 export default async function LoginPage() {
-  const s = await getSession();
-  if (s) redirect(s.mustChange ? "/password" : s.role === "admin" ? "/admin" : "/my");
+  const s = await getSession("partners");
+  if (s) redirect(s.mustChange ? "/password" : "/my");
   return (
     <main className="a-login p-login">
       <div className="a-card a-login-box p-login-box">
@@ -20,7 +20,7 @@ export default async function LoginPage() {
           </div>
         </div>
         {partnersConfigured() ? (
-          <LoginForms />
+          <LoginForms site="partners" />
         ) : (
           <p className="a-setup">서버 설정이 아직 끝나지 않았어요. 관리자에게 문의해 주세요.</p>
         )}

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { requireSession } from "@/lib/partners/auth";
+import { requireBrand } from "@/lib/partners/auth";
 import { getBrand, listProducts } from "@/lib/partners/db";
 import { CATEGORY_LABEL, PRODUCT_FIELDS, fmtDate, type ProductStatus } from "@/lib/partners/model";
 import PTop, { PHead } from "../PTop";
-import { RequestTags, StatusBadge, Thumb } from "../ui";
+import { RequestTags, StatusBadge, Thumb } from "@/components/partners/ui";
 import RowActions from "./RowActions";
 
 export const dynamic = "force-dynamic";
@@ -20,9 +20,9 @@ const FILTERS: { key: string; label: string; test: (p: { status: ProductStatus; 
 ];
 
 export default async function MyProducts({ searchParams }: { searchParams: SP }) {
-  const s = await requireSession({ role: "brand" });
+  const s = await requireBrand();
   const sp = await searchParams;
-  const [brand, all] = await Promise.all([getBrand(s.brandId!), listProducts({ brandId: s.brandId! })]);
+  const [brand, all] = await Promise.all([getBrand(s.brandId), listProducts({ brandId: s.brandId })]);
   const f = FILTERS.find((x) => x.key === (sp.status ?? "")) ?? FILTERS[0];
   const rows = all.filter(f.test);
   const waiting = all.filter(FILTERS[1].test).length;

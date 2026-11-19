@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "../admin/admin.css";
-import "./partners.css";
+import "@/components/partners/partners.css";
 
 export const metadata: Metadata = {
   title: { default: "TO 파트너스 — 대범한사람들", template: "%s · TO 파트너스" },

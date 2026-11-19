@@ -66,7 +66,7 @@ export default function GroupbuyForm({ item }: { item?: GroupBuy }) {
     start(async () => {
       const r = item ? await saveGroupbuy(item.id, raw) : await createGroupbuy(raw);
       if (r.ok && !item && r.id) {
-        router.push(`/admin/groupbuys?saved=${encodeURIComponent("새 공동구매 결과를 저장했습니다.")}`);
+        router.push(`/groupbuys?saved=${encodeURIComponent("새 공동구매 결과를 저장했습니다.")}`);
         return;
       }
       setMsg(r);
@@ -170,7 +170,7 @@ export default function GroupbuyForm({ item }: { item?: GroupBuy }) {
         <button type="submit" className="a-btn" disabled={pending}>
           {pending ? "저장 중…" : item ? "저장" : "저장하기"}
         </button>
-        <a className="a-btn is-ghost" href="/admin/groupbuys">목록으로</a>
+        <a className="a-btn is-ghost" href="/groupbuys">목록으로</a>
         {msg && (
           <div className={msg.ok ? "a-saved" : "a-error"} role="status">
             {msg.message}

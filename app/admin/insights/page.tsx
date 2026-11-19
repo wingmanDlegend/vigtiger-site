@@ -15,10 +15,10 @@ const BADGE = {
 };
 
 export default async function AdminInsights({ searchParams }: { searchParams: Promise<{ deleted?: string; kind?: string }> }) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const sp = await searchParams;
   // 콘텐츠는 메뉴에서 종류를 고르는 단일 목록 — 종류가 없으면 업계 동향으로
-  if (sp.kind !== "trends" && sp.kind !== "hot") redirect(`/admin/insights?kind=trends${sp.deleted ? "&deleted=1" : ""}`);
+  if (sp.kind !== "trends" && sp.kind !== "hot") redirect(`/insights?kind=trends${sp.deleted ? "&deleted=1" : ""}`);
   const kind = sp.kind;
   let rows: Awaited<ReturnType<typeof listInsights>> = [];
   let error = "";
@@ -75,7 +75,7 @@ export default async function AdminInsights({ searchParams }: { searchParams: Pr
                     <tr key={r.id}>
                       <td className="a-nowrap">{formatKoDate(r.post_date)}</td>
                       <td>
-                        <a className="a-name" href={`/admin/insights/${r.id}`}>{r.title}</a>
+                        <a className="a-name" href={`/insights/${r.id}`}>{r.title}</a>
                       </td>
                       <td className="a-nowrap">{r.items.length}건</td>
                       <td>

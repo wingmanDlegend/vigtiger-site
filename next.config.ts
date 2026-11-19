@@ -17,8 +17,8 @@ const LEGACY: Record<string, string> = {
   "1b392241-06fa-808e-8bbc-d53b4a64b96d": "/en",
 };
 
-// partners.vigtiger.com 주소 연결은 proxy.ts 에서 합니다. (여기서는 검색엔진 차단 헤더만)
-const PARTNERS_HOST = [{ type: "host" as const, value: "partners\\.(vigtiger\\.com|localhost)" }];
+// partners·admin 도메인 연결은 proxy.ts 에서 합니다. (여기서는 검색엔진 차단 헤더만)
+const PRIVATE_HOST = [{ type: "host" as const, value: "(partners|admin)\\.(vigtiger\\.com|localhost)" }];
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    return [{ source: "/:path*", has: PARTNERS_HOST, headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
+    return [{ source: "/:path*", has: PRIVATE_HOST, headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
   },
   async redirects() {
     return [

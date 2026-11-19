@@ -1,7 +1,6 @@
 import "server-only";
 import type { Application } from "@/lib/admin/db";
 import { TYPE_LABEL, detailRows } from "@/lib/admin/format";
-import { SITE_URL } from "@/lib/site";
 
 // 새 신청을 슬랙 채널로 알립니다. (Vercel 환경변수 SLACK_WEBHOOK_URL)
 // 알림이 실패해도 신청 접수에는 영향을 주지 않습니다.
@@ -22,7 +21,7 @@ export async function notifySlack(a: Omit<Application, "updated_at" | "admin_not
     .filter((r) => r.value)
     .map((r) => `*${esc(r.label)}*  ${esc(clip(r.value, 200))}`)
     .join("\n");
-  const adminUrl = `${SITE_URL}/admin/${a.id}`;
+  const adminUrl = `${process.env.ADMIN_URL || "https://admin.vigtiger.com"}/applications/${a.id}`;
 
   const payload = {
     text: title, // 알림 미리보기용

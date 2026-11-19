@@ -9,6 +9,8 @@ import type { InsightPost } from "@/lib/insights";
 import { delta, kstDate, lastMonths, monthKey, monthLabel, monthLabelLong, todayKst } from "@/lib/admin/stats";
 import { C, ChartCard, Columns, Kpi, fmtNum, fmtWon, fmtWonShort } from "@/components/admin/Charts";
 import AdminTop from "../AdminTop";
+import { listBrandChangeRequests, listReviewQueue } from "@/lib/partners/db";
+import type { PartnerBrand, ToProduct } from "@/lib/partners/model";
 import { PageHead } from "../SubNav";
 import { ADMIN_KIND_LABEL } from "@/lib/admin/nav";
 
@@ -23,12 +25,15 @@ async function safe<T>(p: Promise<T>, fallback: T): Promise<[T, string]> {
 }
 
 export default async function Dashboard() {
-  if (!(await isAuthed())) redirect("/admin/login");
-  const [[apps, e1], [gbs, e2], [posts, e3]] = await Promise.all([
+  if (!(await isAuthed())) redirect("/login");
+  const [[apps, e1], [gbs, e2], [posts, e3], [toQueue], [toBrandReq]] = await Promise.all([
     safe<ApplicationLite[]>(listAllApplicationsLite(), []),
     safe<GroupBuy[]>(listGroupbuys(), []),
     safe<InsightPost[]>(listInsights(), []),
+    safe<ToProduct[]>(listReviewQueue(), []),
+    safe<PartnerBrand[]>(listBrandChangeRequests(), []),
   ]);
+  const toWaiting = toQueue.length + toBrandReq.length;
   const errors = [e1, e2, e3].filter(Boolean);
 
   const today = todayKst();
@@ -63,20 +68,26 @@ export default async function Dashboard() {
           <h2>오늘 확인할 일</h2>
           <ul>
             <li className={newApps.length ? "is-warn" : ""}>
-              <a href="/admin?status=new">
+              <a href="/applications?status=new">
                 <b>신규 신청 {fmtNum(newApps.length)}건</b>
                 <span>{newApps.length ? `가장 오래된 건 ${kst(newApps[newApps.length - 1].created_at, false)} 접수` : "모두 처리했어요"}</span>
               </a>
             </li>
             <li className={unsettled.length ? "is-warn" : ""}>
-              <a href="/admin/groupbuys?unsettled=1">
+              <a href="/groupbuys?unsettled=1">
                 <b>정산 대기 공동구매 {fmtNum(unsettled.length)}건</b>
                 <span>{unsettled.length ? `크리에이터 정산 ${fmtWon(unsettled.reduce((s, g) => s + (g.creator_payout ?? 0), 0))}` : "밀린 정산이 없어요"}</span>
               </a>
             </li>
+            <li className={toWaiting ? "is-warn" : ""}>
+              <a href="/to/review">
+                <b>티오 승인 대기 {fmtNum(toWaiting)}건</b>
+                <span>{toWaiting ? `새 제품 ${toQueue.filter((p) => p.status === "pending").length} · 수정·삭제 ${toQueue.filter((p) => p.status !== "pending").length} · 브랜드 ${toBrandReq.length}` : "브랜드 요청을 모두 처리했어요"}</span>
+              </a>
+            </li>
             {todayPosts.map(({ k, p }) => (
               <li key={k} className={p?.status === "draft" ? "is-warn" : ""}>
-                <a href={p ? `/admin/insights/${p.id}` : `/admin/insights?kind=${k}`}>
+                <a href={p ? `/insights/${p.id}` : `/insights?kind=${k}`}>
                   <b>오늘 {ADMIN_KIND_LABEL[k]} · {p ? (p.status === "published" ? "게시됨" : "검토 대기") : "초안 없음"}</b>
                   <span>{p ? p.title : "평일 아침에 자동으로 만들어져요"}</span>
                 </a>
@@ -86,11 +97,11 @@ export default async function Dashboard() {
         </section>
 
         <section className="db-kpis">
-          <Kpi label="이번 달 제휴 신청" value={`${fmtNum(appsIn(thisM).length)}건`} delta={delta(appsIn(thisM).length, appsIn(prevM).length)} sub={`지난달 ${fmtNum(appsIn(prevM).length)}건`} href="/admin/dashboard/applications" />
+          <Kpi label="이번 달 제휴 신청" value={`${fmtNum(appsIn(thisM).length)}건`} delta={delta(appsIn(thisM).length, appsIn(prevM).length)} sub={`지난달 ${fmtNum(appsIn(prevM).length)}건`} href="/dashboard/applications" />
           <Kpi label="이번 달 진행 확정" value={`${fmtNum(appsIn(thisM).filter((a) => a.status === "done").length)}건`} sub="이번 달 접수 중" />
-          <Kpi label="이번 달 공구 매출" value={fmtWon(sumRev(gbIn(thisM)))} delta={delta(sumRev(gbIn(thisM)), sumRev(gbIn(prevM)))} sub={`${fmtNum(gbIn(thisM).length)}건`} href="/admin/dashboard/groupbuys" />
+          <Kpi label="이번 달 공구 매출" value={fmtWon(sumRev(gbIn(thisM)))} delta={delta(sumRev(gbIn(thisM)), sumRev(gbIn(prevM)))} sub={`${fmtNum(gbIn(thisM).length)}건`} href="/dashboard/groupbuys" />
           <Kpi label="이번 달 회사 수익" value={fmtWon(sumProfit(gbIn(thisM)))} delta={delta(sumProfit(gbIn(thisM)), sumProfit(gbIn(prevM)))} />
-          <Kpi label="이번 달 콘텐츠 게시" value={`${fmtNum(pubIn(thisM))}건`} sub={`지난달 ${fmtNum(pubIn(prevM))}건 · 업계 동향+핫 콘텐츠`} href="/admin/insights?kind=trends" />
+          <Kpi label="이번 달 콘텐츠 게시" value={`${fmtNum(pubIn(thisM))}건`} sub={`지난달 ${fmtNum(pubIn(prevM))}건 · 업계 동향+핫 콘텐츠`} href="/insights?kind=trends" />
           <Kpi label="누적" value={`신청 ${fmtNum(apps.length)} · 공구 ${fmtNum(gbLive.length)}`} sub={`공구 누적 매출 ${fmtWonShort(sumRev(gbLive))}원`} />
         </section>
 
@@ -109,7 +120,7 @@ export default async function Dashboard() {
                 const s = APP_STYLE[a.status as keyof typeof APP_STYLE];
                 return (
                   <li key={a.id}>
-                    <a href={`/admin/${a.id}`}>
+                    <a href={`/applications/${a.id}`}>
                       <b>{a.company || a.name}</b>
                       <span className="a-sub">
                         {TYPE_LABEL[a.type as keyof typeof TYPE_LABEL]} · {kst(a.created_at, false)}
@@ -121,14 +132,14 @@ export default async function Dashboard() {
               })}
               {apps.length === 0 && <li className="a-sub">아직 신청이 없어요.</li>}
             </ul>
-            <a className="a-sub" href="/admin">제휴 신청 목록 보기 →</a>
+            <a className="a-sub" href="/applications">제휴 신청 목록 보기 →</a>
           </section>
           <section className="a-card a-sec">
             <h2>최근 공동구매</h2>
             <ul className="db-recent">
               {gbs.slice(0, 6).map((g) => (
                 <li key={g.id}>
-                  <a href={`/admin/groupbuys/${g.id}`}>
+                  <a href={`/groupbuys/${g.id}`}>
                     <b>{g.brand} · {g.creator}</b>
                     <span className="a-sub">{period(g)} · {GB_STATUS[g.status]}</span>
                   </a>
@@ -137,7 +148,7 @@ export default async function Dashboard() {
               ))}
               {gbs.length === 0 && <li className="a-sub">아직 공동구매 기록이 없어요.</li>}
             </ul>
-            <a className="a-sub" href="/admin/groupbuys">공동구매 목록 보기 →</a>
+            <a className="a-sub" href="/groupbuys">공동구매 목록 보기 →</a>
           </section>
         </div>
       </main>

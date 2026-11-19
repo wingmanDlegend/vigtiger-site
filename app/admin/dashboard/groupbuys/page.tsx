@@ -25,7 +25,7 @@ function groupSum(rows: GroupBuy[], key: (g: GroupBuy) => string, val: (g: Group
 }
 
 export default async function GroupbuyDashboard({ searchParams }: { searchParams: Promise<{ range?: string }> }) {
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/login");
   const range = parseRange((await searchParams).range);
   const rLabel = RANGES.find((r) => r.key === range)!.label;
   let all: GroupBuy[] = [];
@@ -58,7 +58,7 @@ export default async function GroupbuyDashboard({ searchParams }: { searchParams
     <>
       <AdminTop current="groupbuys" />
       <main className="a-wrap">
-        <SectionHeader section="groupbuys" current="dashboard" actions={<RangeTabs base="/admin/dashboard/groupbuys" current={range} />} />
+        <SectionHeader section="groupbuys" current="dashboard" actions={<RangeTabs base="/dashboard/groupbuys" current={range} />} />
         <p className="a-sub">시작일 기준으로 모으고, 취소 건은 뺍니다.</p>
         {error && <p className="a-error" role="alert">{error}</p>}
 
@@ -68,7 +68,7 @@ export default async function GroupbuyDashboard({ searchParams }: { searchParams
           <Kpi label="회사 수익" value={fmtWon(profit)} delta={prev ? delta(profit, sum(prev, "company_profit")) : undefined} sub={rev ? `매출 대비 ${Math.round((profit / rev) * 1000) / 10}%` : undefined} />
           <Kpi label="건당 평균 매출" value={withRev.length ? fmtWon(Math.round(sum(withRev, "revenue") / withRev.length)) : "–"} sub={`판매 ${fmtNum(sum(rows, "units"))}개`} />
           <Kpi label="평균 전환율" value={conv === null ? "–" : `${conv}%`} sub={convRows.length ? `판매÷클릭, ${convRows.length}건 기준` : "클릭 수 입력 건 없음"} />
-          <Kpi label="정산 대기 (전체)" value={`${fmtNum(unsettled.length)}건`} sub={unsettledPay ? `크리에이터 정산 ${fmtWon(unsettledPay)}` : undefined} href="/admin/groupbuys?unsettled=1" tone={unsettled.length ? "warn" : undefined} />
+          <Kpi label="정산 대기 (전체)" value={`${fmtNum(unsettled.length)}건`} sub={unsettledPay ? `크리에이터 정산 ${fmtWon(unsettledPay)}` : undefined} href="/groupbuys?unsettled=1" tone={unsettled.length ? "warn" : undefined} />
         </section>
 
         <div className="db-grid">
@@ -80,10 +80,10 @@ export default async function GroupbuyDashboard({ searchParams }: { searchParams
           </ChartCard>
 
           <ChartCard title={`브랜드별 매출 TOP 10 · ${rLabel}`}>
-            <HBars rows={groupSum(rows, (g) => g.brand, (g) => g.revenue ?? 0).map((r) => ({ ...r, href: `/admin/groupbuys?q=${encodeURIComponent(r.label)}` }))} color={C.orange} format={fmtWonShort} />
+            <HBars rows={groupSum(rows, (g) => g.brand, (g) => g.revenue ?? 0).map((r) => ({ ...r, href: `/groupbuys?q=${encodeURIComponent(r.label)}` }))} color={C.orange} format={fmtWonShort} />
           </ChartCard>
           <ChartCard title={`크리에이터별 매출 TOP 10 · ${rLabel}`}>
-            <HBars rows={groupSum(rows, (g) => g.creator, (g) => g.revenue ?? 0).map((r) => ({ ...r, href: `/admin/groupbuys?q=${encodeURIComponent(r.label)}` }))} color={C.orange} format={fmtWonShort} />
+            <HBars rows={groupSum(rows, (g) => g.creator, (g) => g.revenue ?? 0).map((r) => ({ ...r, href: `/groupbuys?q=${encodeURIComponent(r.label)}` }))} color={C.orange} format={fmtWonShort} />
           </ChartCard>
           <ChartCard title={`플랫폼별 매출 · ${rLabel}`}>
             <HBars rows={groupSum(rows, (g) => g.platform ?? "", (g) => g.revenue ?? 0)} color={C.orange} format={fmtWonShort} />
