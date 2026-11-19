@@ -1,6 +1,6 @@
 import { logout } from "./actions";
 
-export default function AdminTop({ current = "applications" }: { current?: "applications" | "insights" | "groupbuys" }) {
+export default function AdminTop({ current = "applications" }: { current?: "dashboard" | "applications" | "insights" | "groupbuys" }) {
   return (
     <header className="a-top">
       <div className="a-top-in">
@@ -9,6 +9,7 @@ export default function AdminTop({ current = "applications" }: { current?: "appl
           관리자 <small>대범한사람들</small>
         </a>
         <nav className="a-top-tabs" aria-label="관리 영역">
+          <a href="/admin/dashboard" aria-current={current === "dashboard" ? "page" : undefined}>대시보드</a>
           <a href="/admin" aria-current={current === "applications" ? "page" : undefined}>신청 접수</a>
           <a href="/admin/insights" aria-current={current === "insights" ? "page" : undefined}>인사이트</a>
           <a href="/admin/groupbuys" aria-current={current === "groupbuys" ? "page" : undefined}>공동구매</a>

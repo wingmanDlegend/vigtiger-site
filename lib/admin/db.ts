@@ -116,3 +116,16 @@ export async function exportApplications(qs: Omit<ListQuery, "page" | "pageSize"
   }
   return all;
 }
+
+export type ApplicationLite = Pick<Application, "id" | "created_at" | "updated_at" | "type" | "lang" | "name" | "company" | "status" | "details">;
+
+/** 대시보드용 — 신청 전체(가벼운 칸만) */
+export async function listAllApplicationsLite(): Promise<ApplicationLite[]> {
+  const { url, headers } = cfg();
+  const res = await fetch(
+    `${url}/rest/v1/applications?select=id,created_at,updated_at,type,lang,name,company,status,details&order=created_at.desc&limit=20000`,
+    { headers, cache: "no-store" },
+  );
+  if (!res.ok) throw new Error(`신청 조회 실패 (${res.status})`);
+  return res.json();
+}
