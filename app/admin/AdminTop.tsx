@@ -1,6 +1,6 @@
 import { logout } from "./actions";
 
-export default function AdminTop({ current = "applications" }: { current?: "applications" | "insights" }) {
+export default function AdminTop({ current = "applications" }: { current?: "applications" | "insights" | "groupbuys" }) {
   return (
     <header className="a-top">
       <div className="a-top-in">
@@ -11,6 +11,7 @@ export default function AdminTop({ current = "applications" }: { current?: "appl
         <nav className="a-top-tabs" aria-label="관리 영역">
           <a href="/admin" aria-current={current === "applications" ? "page" : undefined}>신청 접수</a>
           <a href="/admin/insights" aria-current={current === "insights" ? "page" : undefined}>인사이트</a>
+          <a href="/admin/groupbuys" aria-current={current === "groupbuys" ? "page" : undefined}>공동구매</a>
         </nav>
         <nav className="a-top-links" aria-label="관리자 메뉴">
           <a href="/" target="_blank" rel="noopener noreferrer">홈페이지 보기</a>
