@@ -11,7 +11,7 @@ export default async function ImportGroupbuys() {
     <>
       <AdminTop current="groupbuys" />
       <main className="a-wrap">
-        <a className="a-back" href="/admin/groupbuys">← 공동구매 결과 목록</a>
+        <a className="a-back" href="/admin/groupbuys">← 공동구매 목록</a>
         <h1 className="a-h1">엑셀로 한 번에 올리기</h1>
         <ol className="gb-steps">
           <li>

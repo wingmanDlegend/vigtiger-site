@@ -221,3 +221,48 @@ a.db-kpi:hover { border-color: #b9b4ac; }
 .db-recent li a b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .db-recent li a:hover b { text-decoration: underline; }
 .db-recent-val { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ======================================================
+   관리자 셸 — 위: 브랜드·계정 / 왼쪽: 메뉴(홈 · 비즈니스 · 콘텐츠)
+   ====================================================== */
+.a-body:has(.a-side) {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+}
+.a-body:has(.a-side) .a-top { grid-column: 1 / -1; }
+.a-body:has(.a-side) .a-top-in { max-width: none; }
+.a-body:has(.a-side) .a-wrap { grid-column: 2; width: 100%; max-width: 1280px; margin: 0; padding: 28px 32px 72px; }
+.a-side { grid-column: 1; background: var(--paper); border-right: 1px solid var(--line); padding: 20px 12px; }
+.a-side nav { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 18px; }
+.a-side ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.a-side-label { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: 0.04em; padding: 0 12px 6px; }
+.a-side a { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 8px; font-size: 15px; font-weight: 700; color: #3a3a3a; text-decoration: none; }
+.a-side a:hover { background: #f1eee9; color: var(--ink); }
+.a-side a[aria-current="page"] { background: var(--ink); color: #fff; }
+.a-side-badge { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; background: var(--accent); color: var(--ink); font-size: 12px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+.a-side a[aria-current="page"] .a-side-badge { background: #fff; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .a-body:has(.a-side) { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 1fr; }
+  .a-body:has(.a-side) .a-wrap { grid-column: 1; padding: 20px 16px 64px; }
+  .a-side { grid-column: 1; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 12px; overflow-x: auto; }
+  .a-side nav { position: static; flex-direction: row; align-items: center; gap: 4px; }
+  .a-side-group { display: flex; align-items: center; gap: 2px; }
+  .a-side-group + .a-side-group { border-left: 1px solid var(--line); padding-left: 6px; margin-left: 2px; }
+  .a-side-label { display: none; }
+  .a-side ul { flex-direction: row; }
+  .a-side a { white-space: nowrap; min-height: 38px; font-size: 14px; padding: 0 10px; }
+}
+
+/* 화면 머리: 위치 → 제목(+도구) → 설명 → 탭 */
+.a-head { display: flex; flex-direction: column; gap: 6px; }
+.a-crumb { font-size: 13px; font-weight: 700; color: var(--muted); }
+.a-head-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.a-head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.a-head-desc { max-width: 860px; line-height: 1.6; }
+.a-head .db-subnav { margin-top: 8px; }
+.a-note { font-size: 13px; font-weight: 700; color: #7a3400; background: #fff4e8; border-radius: 8px; padding: 10px 12px; }
+.a-side, .a-side-badge { position: relative; } /* 배지 안 화면낭독용 글자가 메뉴 밖으로 나가 가로 스크롤이 생기지 않게 */

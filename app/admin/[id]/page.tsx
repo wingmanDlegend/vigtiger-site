@@ -27,7 +27,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
 
   return (
     <>
-      <AdminTop />
+      <AdminTop current="applications" />
       <main className="a-wrap">
         <a className="a-back" href={`/admin?type=${a.type}`}>&larr; {TYPE_LABEL[a.type]} 목록으로</a>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>

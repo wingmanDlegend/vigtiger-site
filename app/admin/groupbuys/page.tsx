@@ -13,7 +13,7 @@ import {
   type GroupBuy,
 } from "@/lib/groupbuy";
 import AdminTop from "../AdminTop";
-import { SectionTabs } from "../SubNav";
+import { SectionHeader } from "../SubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -76,15 +76,17 @@ export default async function AdminGroupbuys({ searchParams }: { searchParams: S
     <>
       <AdminTop current="groupbuys" />
       <main className="a-wrap">
-        <SectionTabs section="groupbuys" current="list" />
-        <div className="a-tools">
-          <h1 className="a-h1">공동구매 결과</h1>
-          <div className="a-row">
-            <a className="a-btn" href="/admin/groupbuys/new">+ 결과 입력</a>
-            <a className="a-btn is-ghost" href="/admin/groupbuys/import">엑셀 업로드</a>
-            <a className="a-btn is-ghost" href={`/admin/groupbuys/export${qs({})}`}>엑셀(CSV) 내려받기</a>
-          </div>
-        </div>
+        <SectionHeader
+          section="groupbuys"
+          current="list"
+          actions={
+            <div className="a-row">
+              <a className="a-btn" href="/admin/groupbuys/new">+ 결과 입력</a>
+              <a className="a-btn is-ghost" href="/admin/groupbuys/import">엑셀 업로드</a>
+              <a className="a-btn is-ghost" href={`/admin/groupbuys/export${qs({})}`}>엑셀(CSV) 내려받기</a>
+            </div>
+          }
+        />
         {sp.deleted === "1" && <p className="a-saved" role="status">기록 1건을 삭제했습니다.</p>}
         {sp.saved && <p className="a-saved" role="status">{sp.saved}</p>}
         {error && <p className="a-error" role="alert">{error}</p>}
