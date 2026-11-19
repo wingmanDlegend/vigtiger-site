@@ -23,7 +23,7 @@ export const ADMIN_NAV: { group?: string; items: { key: NavKey; label: string; h
       { key: "to-review", label: "승인 대기", href: "/to/review" },
       { key: "to-products", label: "제품", href: "/to/products" },
       { key: "to-brands", label: "브랜드·계정", href: "/to/brands" },
-      { key: "to-catalog", label: "제품 리스트 출력", href: "/to/catalog" },
+      { key: "to-catalog", label: "제품 리스트", href: "/to/catalog" },
     ],
   },
   {

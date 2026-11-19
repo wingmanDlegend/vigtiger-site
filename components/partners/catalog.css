@@ -7,7 +7,7 @@
 .cat-page, .cat-brand { background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border-radius: 4px; padding: 40px 44px; position: relative; }
 .cat-page::before, .cat-brand::before { content: ""; position: absolute; left: 44px; top: 0; width: 10px; height: 64px; background: #3b5bdb; }
 
-.cat-cover { min-height: 640px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.cat-cover { min-height: 640px; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding-top: 96px !important; }
 .cat-cover-eyebrow { font-weight: 800; color: #3b5bdb; letter-spacing: 0.1em; }
 .cat-cover h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; }
 .cat-cover-meta { font-size: 16px; color: #444; line-height: 1.7; }
@@ -73,3 +73,7 @@
   .cat-grid { gap: 7mm 8mm; }
   .c-link { text-decoration: underline; }
 }
+
+/* 인쇄/PDF 보기 화면 (사이드바 없이, A4에 가까운 폭) */
+.cat-print { max-width: 920px; margin: 0 auto; }
+.cat-print .a-back { display: inline-block; margin-bottom: 6px; }

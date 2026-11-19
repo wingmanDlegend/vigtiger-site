@@ -10,7 +10,7 @@ const NAV: { group?: string; items: { key: PNavKey; label: string; href: string 
       { key: "b-home", label: "내 제품", href: "/my" },
       { key: "b-new", label: "제품 등록", href: "/my/new" },
       { key: "b-profile", label: "브랜드 정보", href: "/my/profile" },
-      { key: "catalog", label: "제품 리스트 출력", href: "/catalog" },
+      { key: "catalog", label: "제품 리스트", href: "/catalog" },
     ],
   },
   { group: "계정", items: [{ key: "password", label: "비밀번호 변경", href: "/password" }] },

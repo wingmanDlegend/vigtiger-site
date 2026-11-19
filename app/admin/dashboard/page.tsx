@@ -211,7 +211,7 @@ export default async function Dashboard() {
             links={[
               { href: "/to", label: "티오 현황" },
               { href: "/to/review", label: "승인 대기" },
-              { href: "/to/catalog", label: "리스트 출력" },
+              { href: "/to/catalog", label: "제품 리스트" },
             ]}
           />
           <div className="db-kpis is-4">

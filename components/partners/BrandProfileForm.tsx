@@ -72,7 +72,7 @@ export default function BrandProfileForm({
               <input id="bb-sort" className="a-input" inputMode="numeric" value={bx.sort} onChange={(e) => setBx({ ...bx, sort: e.target.value.replace(/[^\d]/g, "") })} />
             </div>
             <label className="gb-check gb-field">
-              <input type="checkbox" checked={bx.active} onChange={(e) => setBx({ ...bx, active: e.target.checked })} /> 사용 중 (끄면 리스트 출력에서 빠져요)
+              <input type="checkbox" checked={bx.active} onChange={(e) => setBx({ ...bx, active: e.target.checked })} /> 사용 중 (끄면 제품 리스트·인쇄에서 빠져요)
             </label>
           </div>
         </section>

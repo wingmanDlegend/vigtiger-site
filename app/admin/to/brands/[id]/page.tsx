@@ -31,7 +31,7 @@ export default async function AdminBrand({ params, searchParams }: { params: Pro
           actions={
             <span className="p-actions">
               <a className="a-btn is-ghost" href={`/to/products?brand=${b.id}`}>제품 보기</a>
-              <a className="a-btn is-ghost" href={`/catalog?brand=${b.id}`}>이 브랜드 리스트 출력</a>
+              <a className="a-btn is-ghost" href={`/to/catalog?brand=${b.id}`}>이 브랜드 제품 리스트</a>
             </span>
           }
         />

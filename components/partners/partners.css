@@ -101,3 +101,28 @@
 
 /* 좁은 카드 안의 작은 표는 가로 스크롤 없이 */
 .p-cols .a-table, .p-req .a-table, .p-mini { min-width: 0; }
+
+/* 제품 리스트 (게시물 보기) */
+.pb-board { display: flex; flex-direction: column; gap: 28px; }
+.pb-brand { display: flex; flex-direction: column; gap: 12px; }
+.pb-brand-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.pb-brand-head h2 { font-size: 19px; font-weight: 800; }
+.pb-brand-head small { font-size: 13px; font-weight: 700; color: var(--muted); margin-left: 2px; }
+.pb-notice { font-size: 13px; background: var(--to-blue-bg); border-radius: 8px; padding: 8px 12px; }
+.pb-notice b { color: var(--to-blue); margin-right: 6px; }
+.pb-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.pb-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.pb-img { position: relative; aspect-ratio: 1; background: #f4f2ee; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+.pb-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pb-note { position: absolute; left: 8px; top: 8px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+.pb-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.pb-serial { font-size: 12px; font-weight: 700; color: var(--muted); }
+.pb-name { font-size: 15px; font-weight: 800; line-height: 1.4; }
+.pb-name a { text-decoration: none; }
+.pb-name a:hover { text-decoration: underline; }
+.pb-feature { font-size: 13px; color: #444; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+.pb-foot { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.pb-chip { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: #eeeeee; color: #777; }
+.pb-chip.is-on { background: var(--to-blue-bg); color: var(--to-blue); }
+.pb-link { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--to-blue); }
+@media (max-width: 480px) { .pb-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .pb-body { padding: 10px; } .pb-name { font-size: 14px; } }
