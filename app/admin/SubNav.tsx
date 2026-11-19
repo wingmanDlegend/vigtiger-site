@@ -1,4 +1,19 @@
-// 영역 안 하위 탭 (목록 / 대시보드)
+// 영역 안 하위 탭 — 대시보드가 항상 첫 번째 (영역에 들어오면 대시보드부터 보임)
+export const SECTION_TABS = {
+  applications: [
+    { key: "dashboard", href: "/admin/dashboard/applications", label: "대시보드" },
+    { key: "list", href: "/admin", label: "신청 목록" },
+  ],
+  groupbuys: [
+    { key: "dashboard", href: "/admin/dashboard/groupbuys", label: "대시보드" },
+    { key: "list", href: "/admin/groupbuys", label: "결과 목록" },
+  ],
+} as const;
+
+export function SectionTabs({ section, current }: { section: keyof typeof SECTION_TABS; current: "dashboard" | "list" }) {
+  return <SubNav items={SECTION_TABS[section].map((t) => ({ href: t.href, label: t.label, current: t.key === current }))} />;
+}
+
 export default function SubNav({ items }: { items: { href: string; label: string; current?: boolean }[] }) {
   return (
     <nav className="db-subnav" aria-label="하위 메뉴">

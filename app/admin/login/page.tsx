@@ -5,7 +5,7 @@ import LoginForm from "./LoginForm";
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  if (await isAuthed()) redirect("/admin");
+  if (await isAuthed()) redirect("/admin/dashboard");
   const ready = adminConfigured();
   return (
     <main className="a-login">

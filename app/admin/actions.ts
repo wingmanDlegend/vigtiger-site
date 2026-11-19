@@ -19,7 +19,7 @@ export async function login(_: unknown, formData: FormData) {
     path: "/admin",
     maxAge,
   });
-  redirect("/admin");
+  redirect("/admin/dashboard"); // 로그인하면 통합 대시보드부터
 }
 
 export async function logout() {

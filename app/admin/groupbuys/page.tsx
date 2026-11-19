@@ -13,7 +13,7 @@ import {
   type GroupBuy,
 } from "@/lib/groupbuy";
 import AdminTop from "../AdminTop";
-import SubNav from "../SubNav";
+import { SectionTabs } from "../SubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -76,7 +76,7 @@ export default async function AdminGroupbuys({ searchParams }: { searchParams: S
     <>
       <AdminTop current="groupbuys" />
       <main className="a-wrap">
-        <SubNav items={[{ href: "/admin/groupbuys", label: "결과 목록", current: true }, { href: "/admin/dashboard/groupbuys", label: "대시보드" }]} />
+        <SectionTabs section="groupbuys" current="list" />
         <div className="a-tools">
           <h1 className="a-h1">공동구매 결과</h1>
           <div className="a-row">

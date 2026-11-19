@@ -4,7 +4,7 @@ import { countAll, listApplications, STATUSES, type Status } from "@/lib/admin/d
 import { STATUS_LABEL, STATUS_STYLE, TYPE_LABEL, kst, summary } from "@/lib/admin/format";
 import { quickStatus } from "./actions";
 import AdminTop from "./AdminTop";
-import SubNav from "./SubNav";
+import { SectionTabs } from "./SubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +48,7 @@ export default async function AdminHome({ searchParams }: { searchParams: SP }) 
     <>
       <AdminTop />
       <main className="a-wrap">
-        <SubNav items={[{ href: "/admin", label: "신청 목록", current: true }, { href: "/admin/dashboard/applications", label: "대시보드" }]} />
+        <SectionTabs section="applications" current="list" />
         <h1 className="a-h1">신청 접수 내역</h1>
         {sp.deleted === "1" && (
           <p className="a-saved" role="status">신청 1건을 삭제했습니다.</p>

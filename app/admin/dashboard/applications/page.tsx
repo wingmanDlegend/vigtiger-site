@@ -5,7 +5,7 @@ import { STATUS_LABEL, TYPE_LABEL } from "@/lib/admin/format";
 import { countBy, delta, inRange, kstDate, lastMonths, monthKey, monthLabel, monthLabelLong, optionLabel, optionOrder, parseRange, rangeBounds, RANGES } from "@/lib/admin/stats";
 import { C, ChartCard, Columns, Funnel, HBars, Kpi, Split, fmtNum } from "@/components/admin/Charts";
 import AdminTop from "../../AdminTop";
-import SubNav, { RangeTabs } from "../../SubNav";
+import { RangeTabs, SectionTabs } from "../../SubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +70,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
     <>
       <AdminTop current="applications" />
       <main className="a-wrap">
-        <SubNav items={[{ href: "/admin", label: "신청 목록" }, { href: "/admin/dashboard/applications", label: "대시보드", current: true }]} />
+        <SectionTabs section="applications" current="dashboard" />
         <div className="a-tools">
           <h1 className="a-h1">신청 접수 대시보드</h1>
           <RangeTabs base="/admin/dashboard/applications" current={range} />

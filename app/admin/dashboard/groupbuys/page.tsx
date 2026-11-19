@@ -5,7 +5,7 @@ import { RERUN_LABEL, STATUS_LABEL, type GroupBuy } from "@/lib/groupbuy";
 import { delta, inRange, kstDate, lastMonths, monthLabel, monthLabelLong, parseRange, rangeBounds, RANGES } from "@/lib/admin/stats";
 import { C, ChartCard, Columns, HBars, Kpi, Split, fmtNum, fmtWon, fmtWonShort } from "@/components/admin/Charts";
 import AdminTop from "../../AdminTop";
-import SubNav, { RangeTabs } from "../../SubNav";
+import { RangeTabs, SectionTabs } from "../../SubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +58,7 @@ export default async function GroupbuyDashboard({ searchParams }: { searchParams
     <>
       <AdminTop current="groupbuys" />
       <main className="a-wrap">
-        <SubNav items={[{ href: "/admin/groupbuys", label: "결과 목록" }, { href: "/admin/dashboard/groupbuys", label: "대시보드", current: true }]} />
+        <SectionTabs section="groupbuys" current="dashboard" />
         <div className="a-tools">
           <h1 className="a-h1">공동구매 대시보드</h1>
           <RangeTabs base="/admin/dashboard/groupbuys" current={range} />
