@@ -266,3 +266,15 @@ a.db-kpi:hover { border-color: #b9b4ac; }
 .a-head .db-subnav { margin-top: 8px; }
 .a-note { font-size: 13px; font-weight: 700; color: #7a3400; background: #fff4e8; border-radius: 8px; padding: 10px 12px; }
 .a-side, .a-side-badge { position: relative; } /* 배지 안 화면낭독용 글자가 메뉴 밖으로 나가 가로 스크롤이 생기지 않게 */
+
+/* 홈 대시보드: 메뉴 그룹(비즈니스 · 티오 파트너스 · 콘텐츠)별 묶음 */
+.db-group { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+.db-group-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; }
+.db-group-head h2 { font-size: 18px; font-weight: 800; }
+.db-group-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.db-group-links a { font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 999px; border: 1px solid #cfcac2; background: var(--paper); text-decoration: none; }
+.db-group-links a:hover { border-color: var(--ink); }
+.db-kpis.is-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.db-kpis.is-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+@media (max-width: 1000px) { .db-kpis.is-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .db-kpis.is-2, .db-kpis.is-4 { grid-template-columns: 1fr; } }
