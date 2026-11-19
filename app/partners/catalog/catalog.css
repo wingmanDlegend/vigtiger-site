@@ -1,0 +1,75 @@
+/* 티오 제품 리스트 — 화면 미리보기 + A4 인쇄 */
+.cat-wrap { gap: 20px; }
+.cat-bar { display: flex; flex-wrap: wrap; gap: 12px 20px; justify-content: space-between; align-items: flex-end; }
+.cat-bar .a-sub { max-width: 640px; }
+
+.cat-doc { display: flex; flex-direction: column; gap: 24px; font-family: "Apple SD Gothic Neo", "AppleSDGothicNeo", "Noto Sans KR", "Malgun Gothic", sans-serif; color: #111; }
+.cat-page, .cat-brand { background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); border-radius: 4px; padding: 40px 44px; position: relative; }
+.cat-page::before, .cat-brand::before { content: ""; position: absolute; left: 44px; top: 0; width: 10px; height: 64px; background: #3b5bdb; }
+
+.cat-cover { min-height: 640px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.cat-cover-eyebrow { font-weight: 800; color: #3b5bdb; letter-spacing: 0.1em; }
+.cat-cover h1 { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; }
+.cat-cover-meta { font-size: 16px; color: #444; line-height: 1.7; }
+.cat-cover-foot { margin-top: auto; font-size: 13px; color: #666; }
+
+.cat-index h2 { font-size: 24px; font-weight: 800; margin: 28px 0 20px; }
+.cat-index-grid { columns: 2; column-gap: 40px; }
+.cat-index-cat { break-inside: avoid; margin-bottom: 22px; }
+.cat-index-cat h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #111; }
+.cat-index-cat h3 span, .cat-divider h2 span { color: #3b5bdb; }
+.cat-index-cat ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 13px; }
+.cat-index-cat small { color: #888; font-size: 11px; }
+
+.cat-divider { min-height: 400px; display: flex; align-items: center; }
+.cat-divider h2 { font-size: 34px; font-weight: 800; }
+
+.cat-brand { display: flex; flex-direction: column; gap: 18px; }
+.cat-brand-head { display: grid; grid-template-columns: minmax(0, 1fr) 36%; gap: 24px; align-items: start; padding-top: 36px; }
+.cat-brand-left { display: flex; flex-direction: column; gap: 18px; }
+.cat-brand-name { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; }
+.cat-brand-name small { font-size: 18px; font-weight: 700; margin-left: 4px; }
+.cat-hl { border: 1.5px solid #cdd3f5; border-left: 0; border-radius: 0 28px 28px 0; padding: 6px 22px 6px 0; margin-left: -44px; padding-left: 44px; }
+.cat-hl-item { display: flex; flex-direction: column; gap: 3px; padding: 14px 0; }
+.cat-hl-item + .cat-hl-item { border-top: 1px solid #d9dce3; }
+.cat-hl-item b { color: #3b5bdb; font-size: 17px; font-weight: 700; }
+.cat-hl-item span { color: #666; font-size: 13px; }
+.cat-hero { aspect-ratio: 3 / 4; background: #f5f3f0; overflow: hidden; margin-top: -76px; margin-right: -44px; }
+.cat-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cat-desc { font-size: 13.5px; line-height: 1.8; white-space: pre-line; background: #f7f8fc; margin: 0 -44px; padding: 20px 44px; }
+.cat-notice { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; line-height: 1.7; border: 1px solid #d5d9f2; border-radius: 6px; padding: 12px 14px; }
+.cat-notice-label { flex: none; background: #eef2ff; color: #3b5bdb; font-weight: 800; padding: 2px 8px; border-radius: 4px; }
+.cat-group { display: flex; flex-direction: column; gap: 14px; }
+.cat-section { font-size: 20px; font-weight: 800; margin-top: 8px; break-after: avoid; page-break-after: avoid; }
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 36px; }
+@media (max-width: 760px) {
+  .cat-page, .cat-brand { padding: 28px 18px; }
+  .cat-page::before, .cat-brand::before { left: 18px; }
+  .cat-brand-head { grid-template-columns: 1fr; }
+  .cat-hero { margin: 0; max-width: 260px; }
+  .cat-hl { margin-left: -18px; padding-left: 18px; }
+  .cat-desc { margin: 0 -18px; padding: 16px 18px; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .cat-index-grid { columns: 1; }
+}
+
+/* ---------- 인쇄 ---------- */
+@page { size: A4 portrait; margin: 14mm 12mm 16mm; @bottom-right { content: counter(page); font-size: 9pt; color: #555; } }
+@media print {
+  html, body { background: #fff !important; }
+  .a-body:has(.a-side) { display: block !important; }
+  .a-top, .a-side, .cat-bar { display: none !important; }
+  .a-wrap.cat-wrap { padding: 0 !important; margin: 0 !important; max-width: none !important; display: block; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cat-doc { display: block; font-size: 10pt; }
+  .cat-page, .cat-brand { box-shadow: none; border-radius: 0; padding: 0 6mm; break-before: page; page-break-before: always; }
+  .cat-doc > :first-child, .cat-doc > div:first-child > .cat-brand:first-child { break-before: auto; page-break-before: auto; }
+  .cat-page::before, .cat-brand::before { display: none; }
+  .cat-cover { min-height: 250mm; }
+  .cat-divider { min-height: 240mm; }
+  .cat-hl { margin-left: -6mm; padding-left: 6mm; }
+  .cat-hero { margin-top: 0; margin-right: -6mm; }
+  .cat-desc { margin: 0 -6mm; padding: 4mm 6mm; }
+  .cat-grid { gap: 7mm 8mm; }
+  .c-link { text-decoration: underline; }
+}
