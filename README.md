@@ -44,7 +44,7 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 
 ## 업무 관리 시스템 (admin.vigtiger.com)
 
-로그인: 직원 계정(이메일·비밀번호, [설정 › 관리자 계정]에서 발급) 또는 **대표 관리자 비밀번호**(`ADMIN_PASSWORD`). 검색엔진에는 노출되지 않습니다.
+로그인: 직원 계정(이메일·비밀번호, 대표 관리자가 [설정 › 직원 계정]에서 발급) 또는 **대표 관리자 비밀번호**(`ADMIN_PASSWORD`). 검색엔진에는 노출되지 않습니다.
 
 - 유형별 탭(크리에이터·광고주·상품 파트너)과 건수, 상태 필터, 이름·회사·이메일·연락처·관심 제품 검색
 - 목록에서 바로 처리 상태 변경: 신규 → 검토 중 → 연락함 → 진행 확정 / 보류·종료
@@ -62,7 +62,7 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 | 비즈니스 | 공동구매 | 현황 `/dashboard/groupbuys` · 목록 `/groupbuys` |
 | 티오 파트너스 | 현황 · 승인 대기 · 제품 · 브랜드·계정 · 제품 리스트 출력 | `/to` · `/to/review` · `/to/products` · `/to/brands` · `/to/catalog` |
 | 콘텐츠 | 업계 동향 · 핫 콘텐츠 | `/insights?kind=trends` · `/insights?kind=hot` |
-| 설정 | 관리자 계정 · 작업 기록 | `/settings/accounts` · `/settings/log` |
+| 설정 | 직원 계정 · 작업 기록 | `/settings/accounts` · `/settings/log` |
 
 모든 화면 머리는 '그룹 → 제목(+도구) → 설명 → 탭(현황 · 목록)' 순서입니다. 메뉴 정의는 `lib/admin/nav.ts`.
 
@@ -140,3 +140,13 @@ npm run dev                  # http://localhost:3000
 ## vigtiger.com 연결
 
 Vercel 프로젝트 → Settings → Domains 에서 `vigtiger.com`, `www.vigtiger.com` 을 추가하고 안내되는 DNS 레코드를 도메인 관리 업체에 등록하면 됩니다. 연결 후 `NEXT_PUBLIC_SITE_URL` 도 설정하세요.
+
+### 계정 권한
+
+| 계정 | 로그인하는 곳 | 만드는 사람 | 할 수 있는 일 |
+| --- | --- | --- | --- |
+| 대표 관리자 | admin (관리자 비밀번호) | — (환경변수 `ADMIN_PASSWORD`) | 전부 + 직원 계정 발급·재발급·중지·삭제 |
+| 직원 계정 | admin | 대표 관리자 ([설정 › 직원 계정]) | 업무 관리 전부 + 브랜드 담당자 계정 관리. 직원 계정 관리는 불가, 내 비밀번호 변경만 |
+| 브랜드 담당자 | partners | 대표 관리자·직원 (브랜드 화면) | 자기 브랜드 제품 등록·수정·삭제 요청, 브랜드 정보 수정 요청 |
+
+이메일은 직원·브랜드 계정 전체에서 하나만 쓸 수 있고, 직원 계정은 partners에, 브랜드 계정은 admin에 로그인할 수 없습니다.

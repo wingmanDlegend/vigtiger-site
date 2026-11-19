@@ -251,14 +251,33 @@ export async function adminDeleteBrandAction(id: string): Promise<ActionResult> 
 }
 
 // ---------- 계정 ----------
+// 두 종류 계정의 권한
+//  - 브랜드 담당자 계정(partners.vigtiger.com): 관리자(대표·직원)라면 누구나 발급·재발급·중지·삭제
+//  - 직원 계정(admin.vigtiger.com): 대표 관리자만 발급·재발급·중지·삭제 (직원은 자기 비밀번호 변경만)
+type Target = { role: "admin" | "brand"; brand_id: string | null; email: string; name: string };
+type Session = Awaited<ReturnType<typeof admin>>;
+
+function guardTarget(s: Session, t: Pick<Target, "role">): string | null {
+  if (t.role === "admin" && s.kind !== "master") return "직원 계정은 대표 관리자만 발급·변경할 수 있어요.";
+  return null;
+}
+const ev = (t: Pick<Target, "role">, brandAction: string, staffAction: string) => (t.role === "admin" ? staffAction : brandAction);
+function refreshAccounts() {
+  revalidatePath("/admin/settings/accounts");
+  revalidatePath("/admin/to/brands");
+  revalidatePath("/admin/dashboard");
+}
+
 export async function createAccountAction(raw: { role: "admin" | "brand"; brand_id?: string; email: string; name: string; phone?: string }): Promise<ActionResult> {
   const s = await admin();
-  const email = String(raw.email ?? "").trim().toLowerCase();
-  const name = String(raw.name ?? "").trim().slice(0, 60);
-  const phone = String(raw.phone ?? "").trim().slice(0, 30) || null;
   const role = raw.role === "admin" ? "admin" : "brand";
+  const denied = guardTarget(s, { role });
+  if (denied) return { ok: false, message: denied };
+  const email = String(raw.email ?? "").trim().toLowerCase();
+  const name = String(raw.name ?? "").trim().replace(/\s+/g, " ").slice(0, 60);
+  const phone = String(raw.phone ?? "").trim().slice(0, 30) || null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) return { ok: false, message: "이메일 주소를 확인해 주세요." };
-  if (!name) return { ok: false, message: "담당자 이름을 입력해 주세요." };
+  if (!name) return { ok: false, message: role === "admin" ? "직원 이름을 입력해 주세요." : "담당자 이름을 입력해 주세요." };
   try {
     let brandId: string | null = null;
     if (role === "brand") {
@@ -268,27 +287,33 @@ export async function createAccountAction(raw: { role: "admin" | "brand"; brand_
     }
     const pw = tempPassword();
     const u = await insertUser({ email, name, phone, role, brand_id: brandId, password_hash: await hashPassword(pw), must_change_password: true });
-    await logEvent({ ...actorOf(s), action: "account_created", brand_id: brandId, product_id: null, detail: { email, role } });
-    refresh();
-    revalidatePath("/admin/settings/accounts");
-    return { ok: true, message: `${u.name}(${u.email}) 계정을 만들었어요.`, password: pw };
+    await logEvent({ ...actorOf(s), action: ev({ role }, "account_created", "staff_created"), brand_id: brandId, product_id: null, detail: { email, name, role } });
+    refreshAccounts();
+    return { ok: true, message: `${u.name}(${u.email}) ${role === "admin" ? "직원" : "담당자"} 계정을 만들었어요.`, password: pw };
   } catch (e) {
-    const m = e instanceof Error && e.message.includes("중복") ? "이미 같은 이메일로 만든 계정이 있어요." : undefined;
+    const m = e instanceof Error && e.message.includes("중복") ? "이미 같은 이메일로 만든 계정이 있어요. (직원·브랜드 계정 전체에서 이메일은 하나만 쓸 수 있어요)" : undefined;
     return m ? { ok: false, message: m } : err(e);
   }
+}
+
+async function loadTarget(userId: string) {
+  const u = await getUserById(userId);
+  if (!u) throw new Error("계정을 찾을 수 없어요. 이미 삭제됐을 수 있어요.");
+  return u;
 }
 
 export async function resetPasswordAction(userId: string): Promise<ActionResult> {
   const s = await admin();
   try {
-    const u = await getUserById(userId);
-    if (!u) throw new Error("계정을 찾을 수 없어요.");
+    const u = await loadTarget(userId);
+    const denied = guardTarget(s, u);
+    if (denied) return { ok: false, message: denied };
+    if (u.id === s.userId) return { ok: false, message: "내 비밀번호는 [비밀번호 변경]에서 바꿔 주세요." };
     const pw = tempPassword();
     await patchUser(userId, { password_hash: await hashPassword(pw), must_change_password: true, failed_attempts: 0, locked_until: null, token_version: u.token_version + 1 });
-    await logEvent({ ...actorOf(s), action: "password_reset", brand_id: u.brand_id, product_id: null, detail: { email: u.email } });
-    revalidatePath("/admin/settings/accounts");
-    revalidatePath("/admin/to/brands");
-    return { ok: true, message: `${u.email}의 임시 비밀번호를 새로 만들었어요. 기존 로그인은 모두 풀렸어요.`, password: pw };
+    await logEvent({ ...actorOf(s), action: ev(u, "password_reset", "staff_password_reset"), brand_id: u.brand_id, product_id: null, detail: { email: u.email, name: u.name } });
+    refreshAccounts();
+    return { ok: true, message: `${u.name}(${u.email})의 임시 비밀번호를 새로 만들었어요. 그 계정의 기존 로그인은 모두 풀렸어요.`, password: pw };
   } catch (e) {
     return err(e);
   }
@@ -296,32 +321,38 @@ export async function resetPasswordAction(userId: string): Promise<ActionResult>
 
 export async function setAccountActiveAction(userId: string, active: boolean): Promise<ActionResult> {
   const s = await admin();
-  if (userId === s.userId) return { ok: false, message: "지금 로그인한 계정은 중지할 수 없어요." };
+  if (userId === s.userId) return { ok: false, message: "지금 로그인한 내 계정은 중지할 수 없어요." };
   try {
-    const u = await getUserById(userId);
-    if (!u) throw new Error("계정을 찾을 수 없어요.");
+    const u = await loadTarget(userId);
+    const denied = guardTarget(s, u);
+    if (denied) return { ok: false, message: denied };
     await patchUser(userId, { active, token_version: u.token_version + 1, ...(active ? { failed_attempts: 0, locked_until: null } : {}) });
-    await logEvent({ ...actorOf(s), action: active ? "account_activated" : "account_deactivated", brand_id: u.brand_id, product_id: null, detail: { email: u.email } });
+    await logEvent({
+      ...actorOf(s),
+      action: active ? ev(u, "account_activated", "staff_activated") : ev(u, "account_deactivated", "staff_deactivated"),
+      brand_id: u.brand_id,
+      product_id: null,
+      detail: { email: u.email, name: u.name },
+    });
   } catch (e) {
     return err(e);
   }
-  revalidatePath("/admin/settings/accounts");
-  revalidatePath("/admin/to/brands");
-  return { ok: true, message: active ? "다시 쓸 수 있게 했어요." : "사용을 중지했어요. 바로 로그아웃돼요." };
+  refreshAccounts();
+  return { ok: true, message: active ? "다시 쓸 수 있게 했어요." : "사용을 중지했어요. 그 계정은 바로 로그아웃돼요." };
 }
 
 export async function deleteAccountAction(userId: string): Promise<ActionResult> {
   const s = await admin();
-  if (userId === s.userId) return { ok: false, message: "지금 로그인한 계정은 삭제할 수 없어요." };
+  if (userId === s.userId) return { ok: false, message: "지금 로그인한 내 계정은 삭제할 수 없어요." };
   try {
-    const u = await getUserById(userId);
-    if (!u) throw new Error("이미 삭제됐어요.");
+    const u = await loadTarget(userId);
+    const denied = guardTarget(s, u);
+    if (denied) return { ok: false, message: denied };
     await deleteUser(userId);
-    await logEvent({ ...actorOf(s), action: "account_deleted", brand_id: u.brand_id, product_id: null, detail: { email: u.email } });
+    await logEvent({ ...actorOf(s), action: ev(u, "account_deleted", "staff_deleted"), brand_id: u.brand_id, product_id: null, detail: { email: u.email, name: u.name } });
   } catch (e) {
     return err(e);
   }
-  revalidatePath("/admin/settings/accounts");
-  revalidatePath("/admin/to/brands");
+  refreshAccounts();
   return { ok: true, message: "계정을 삭제했어요." };
 }

@@ -3,7 +3,7 @@ const LABEL: Record<string, string> = {
   login: "로그인",
   login_locked: "비밀번호 5회 오류로 잠김",
   password_changed: "비밀번호 변경",
-  password_reset: "임시 비밀번호 재발급",
+  password_reset: "브랜드 담당자 비밀번호 재발급",
   image_uploaded: "이미지 업로드",
   product_submitted: "새 제품 등록 요청",
   product_resubmitted: "제품 다시 요청",
@@ -25,10 +25,15 @@ const LABEL: Record<string, string> = {
   brand_created: "브랜드 추가",
   brand_edited: "브랜드 수정",
   brand_deleted: "브랜드 삭제",
-  account_created: "계정 발급",
-  account_activated: "계정 사용 재개",
-  account_deactivated: "계정 사용 중지",
-  account_deleted: "계정 삭제",
+  account_created: "브랜드 담당자 계정 발급",
+  account_activated: "브랜드 담당자 계정 사용 재개",
+  account_deactivated: "브랜드 담당자 계정 사용 중지",
+  account_deleted: "브랜드 담당자 계정 삭제",
+  staff_created: "직원 계정 발급",
+  staff_password_reset: "직원 비밀번호 재발급",
+  staff_activated: "직원 계정 사용 재개",
+  staff_deactivated: "직원 계정 사용 중지",
+  staff_deleted: "직원 계정 삭제",
 };
 
 export const eventLabel = (a: string) => LABEL[a] ?? a;

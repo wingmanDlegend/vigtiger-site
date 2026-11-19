@@ -36,7 +36,7 @@ export const ADMIN_NAV: { group?: string; items: { key: NavKey; label: string; h
   {
     group: "설정",
     items: [
-      { key: "accounts", label: "관리자 계정", href: "/settings/accounts" },
+      { key: "accounts", label: "직원 계정", href: "/settings/accounts" },
       { key: "log", label: "작업 기록", href: "/settings/log" },
     ],
   },

@@ -26,7 +26,7 @@ export default async function LoginPage() {
             관리 사이트 설정이 아직 끝나지 않았어요. Vercel 환경변수에 <code>ADMIN_PASSWORD</code>, <code>SUPABASE_URL</code>, <code>SUPABASE_SECRET_KEY</code>가 있는지 확인해 주세요.
           </p>
         )}
-        <p className="p-login-foot a-sub">직원 계정은 대표 관리자가 [설정 › 관리자 계정]에서 만들어요.</p>
+        <p className="p-login-foot a-sub">직원 계정은 대표 관리자가 [설정 › 직원 계정]에서 만들어요. 비밀번호를 잊었다면 대표 관리자에게 재발급을 요청해 주세요.</p>
       </div>
     </main>
   );

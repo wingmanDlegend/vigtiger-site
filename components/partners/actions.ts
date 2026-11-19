@@ -51,8 +51,8 @@ async function passwordLogin(scope: Scope, fd: FormData): Promise<FormState> {
   }
   if (!u.active) return { message: "사용이 중지된 계정이에요. 관리자에게 문의해 주세요." };
   // 계정 종류와 사이트가 맞아야 함 (비밀번호는 맞았으니 안내)
-  if (scope === "admin" && u.role !== "admin") return { message: "브랜드 담당자 계정이에요. partners.vigtiger.com 에서 로그인해 주세요." };
-  if (scope === "partners" && u.role !== "brand") return { message: "관리자 계정이에요. admin.vigtiger.com 에서 로그인해 주세요." };
+  if (scope === "admin" && u.role !== "admin") return { message: "브랜드 담당자 계정이에요. TO 파트너스(partners.vigtiger.com)에서 로그인해 주세요." };
+  if (scope === "partners" && u.role !== "brand") return { message: "대범한사람들 직원 계정이에요. 업무 관리 시스템(admin.vigtiger.com)에서 로그인해 주세요." };
   await patchUser(u.id, { failed_attempts: 0, locked_until: null, last_login_at: new Date().toISOString() });
   await setSession(scope, { kind: "user", userId: u.id, tv: u.token_version });
   await logEvent({ actor_id: u.id, actor_label: u.email, action: "login", brand_id: u.brand_id, product_id: null, detail: { site: scope } });
