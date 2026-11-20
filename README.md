@@ -113,6 +113,14 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 - **DB**: `partner_brands`, `partner_users`(scrypt 해시), `to_products`, `partner_events`(작업 기록) — 모두 RLS 켜짐·정책 없음(서버 전용). 새 이미지는 Supabase Storage `partners` 버킷
 - 새 요청이 들어오면 슬랙(SLACK_WEBHOOK_URL)으로 알림
 
+## 홈페이지 ↔ 티오·파트너스 연결
+
+- 모든 홈페이지 화면 맨 위 '패밀리 사이트' 띠: 티오 제품 리스트 · 브랜드 파트너스 (`components/Family.tsx`)
+- 홈: '크리에이터라면 → 티오 / 브랜드라면 → 파트너스' 두 갈래 카드 (티오 쪽은 실시간 제품 미리보기 4개 — 이번 주 추천 → 핫딜 → 분류별 1개씩)
+- TO 서비스 페이지: 첫 버튼이 to.vigtiger.com 제품 리스트·상담신청, 브랜드용 파트너스 로그인 링크
+- 협업 문의 영역·바닥글·신청서(크리에이터·상품 파트너) 위 안내에도 바로가기
+- 클릭은 GA4 `family_site_click` 이벤트(site · placement · path)로 남아 어디서 넘어가는지 볼 수 있어요. 같은 창에서 이동
+
 ## 티오 크리에이터 사이트 (to.vigtiger.com)
 
 크리에이터가 티오 제품을 보고 바로 신청하는 공개 사이트입니다. 메뉴: TO 서비스 소개 `/` · TO 제품 리스트 `/products` · 상담신청 `/apply` · 회사소개 `/about`.

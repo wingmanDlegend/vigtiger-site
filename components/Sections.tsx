@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Lang } from "@/lib/forms";
 import { CONTACT, applyPath, getDict, pagePath } from "@/lib/dictionary";
 import { ArrowRight, ArrowUpRight, Bag, Chat, Mail, Phone } from "./Icons";
+import SiteLink from "./SiteLink";
 import { BRAND_TEXT, BRAND_TOTAL, FEATURED_BRANDS, categoryOf } from "@/lib/brands";
 import { getToCounts } from "@/lib/tosite/data";
 import { brandKey } from "@/lib/partners/model";
@@ -237,6 +238,22 @@ export function ContactSection({ lang }: { lang: Lang }) {
               </b>
             </Link>
           ))}
+        </div>
+        <div className="contact-family">
+          <SiteLink site="to" path="/products" placement="contact" className="contact-family-link">
+            <small>{lang === "ko" ? "크리에이터 · 무료 제품 대여" : "Creators · free try-outs"}</small>
+            <b>
+              {lang === "ko" ? "티오 TO 제품 보고 바로 신청" : "Browse TO products (Korean)"}
+              <ArrowUpRight />
+            </b>
+          </SiteLink>
+          <SiteLink site="partners" path="/login" placement="contact" className="contact-family-link">
+            <small>{lang === "ko" ? "티오 참여 브랜드 담당자" : "TO brand managers"}</small>
+            <b>
+              {lang === "ko" ? "브랜드 파트너스 로그인" : "Brand Partners login (Korean)"}
+              <ArrowUpRight />
+            </b>
+          </SiteLink>
         </div>
         <div className="contact-links">
           <a href={CONTACT.kakao} target="_blank" rel="noopener noreferrer">

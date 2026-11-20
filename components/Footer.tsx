@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Lang } from "@/lib/forms";
 import { getDict, homePath, pagePath } from "@/lib/dictionary";
+import SiteLink from "./SiteLink";
 
 export default function Footer({ lang }: { lang: Lang }) {
   const t = getDict(lang);
@@ -22,6 +23,8 @@ export default function Footer({ lang }: { lang: Lang }) {
           <Link href={pagePath(lang, "services/to")}>{t.nav.to}</Link>
           {lang === "ko" && <Link href="/insights/trends">업계 동향</Link>}
           {lang === "ko" && <Link href="/insights/hot">Hot Contents</Link>}
+          <SiteLink site="to" path="/products" placement="footer">{lang === "ko" ? "티오 TO 제품 리스트 ↗" : "TO products ↗"}</SiteLink>
+          <SiteLink site="partners" path="/login" placement="footer">{lang === "ko" ? "브랜드 파트너스 ↗" : "Brand Partners ↗"}</SiteLink>
           <a href={`${home}#contact`}>{t.nav.contact}</a>
           <Link href={homePath(otherLang)} hrefLang={otherLang} lang={otherLang}>
             {t.nav.switchTo}

@@ -16,6 +16,8 @@ import {
 } from "@/components/Sections";
 import { CONTACT, applyPath, getDict, isLang, pagePath } from "@/lib/dictionary";
 import { TodayIssue } from "@/components/Insights";
+import { FamilyCrossroads } from "@/components/Family";
+import SiteLink from "@/components/SiteLink";
 
 // 한국어 홈의 Today's Issue(인사이트 최신 글) 때문에 5분마다 새로 만듭니다.
 export const revalidate = 300;
@@ -61,6 +63,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         {lang === "ko" && <TodayIssue />}
 
         <BrandsBand lang={lang} />
+
+        <FamilyCrossroads lang={lang} />
 
         <section id="about" className="container section stack-48">
           <div className="section-head">
@@ -145,10 +149,10 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
                 <p className="service-body">{s.to.body}</p>
                 <div className="links-row">
                   <More href={pagePath(lang, "services/to")} />
-                  <a className="link-arrow muted-link" href={CONTACT.toProducts} target="_blank" rel="noopener noreferrer">
+                  <SiteLink site="to" path="/products" placement="home_service" className="link-arrow muted-link">
                     {s.to.listLink}
                     <ArrowUpRight />
-                  </a>
+                  </SiteLink>
                 </div>
               </div>
               <Steps steps={s.to.steps} className="service-side" />

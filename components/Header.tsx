@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Lang } from "@/lib/forms";
 import { getDict, homePath, pagePath } from "@/lib/dictionary";
+import { FamilyBar } from "./Family";
 
 export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: boolean }) {
   const t = getDict(lang);
@@ -30,6 +31,8 @@ export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: 
   ];
 
   return (
+    <>
+    <FamilyBar lang={lang} />
     <header className="header">
       <div className="container header-inner">
         <Link href={home} className="logo" aria-label={lang === "ko" ? "대범한사람들 홈" : "VIGTIGER home"}>
@@ -93,5 +96,6 @@ export default function Header({ lang, onHome = false }: { lang: Lang; onHome?: 
         </nav>
       </div>
     </header>
+    </>
   );
 }

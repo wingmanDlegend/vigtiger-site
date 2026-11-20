@@ -2435,3 +2435,244 @@ p {
     font-size: 19px;
   }
 }
+
+/* ---------- 패밀리 사이트 (티오 · 파트너스) ---------- */
+.family-bar {
+  background: var(--ink);
+  color: #d6d6d6;
+  font-size: 13px;
+}
+.family-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  min-height: 38px;
+  flex-wrap: wrap;
+}
+.family-bar-label {
+  color: #9a9a9a;
+  font-weight: 700;
+}
+.family-bar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+.family-bar a {
+  color: #f2f2f2;
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 0;
+}
+.family-bar a:hover {
+  color: var(--accent);
+}
+.family-bar a b {
+  background: var(--accent);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 900;
+}
+@media (max-width: 640px) {
+  .family-bar-label {
+    display: none;
+  }
+  .family-bar nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.family-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 20px;
+  margin-top: 40px;
+}
+.family-card {
+  border-radius: var(--radius);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.family-card h3 {
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.3;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.family-card.is-to {
+  background: var(--ink);
+  color: #fff;
+}
+.family-card.is-partners {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+}
+.family-who {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+.family-card.is-partners .family-who {
+  color: var(--ink-2);
+}
+.family-body {
+  color: #d9d9d9;
+  font-size: 16px;
+}
+.family-preview-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #bdbdbd;
+  margin-bottom: 8px;
+}
+.family-preview ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.family-preview a {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.family-preview a:hover {
+  color: var(--accent);
+}
+.family-preview img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 10px;
+  padding: 6px;
+}
+.family-preview small {
+  display: block;
+  color: #9a9a9a;
+  font-size: 11.5px;
+}
+.family-preview span {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.family-card .hero-ctas {
+  margin-top: auto;
+}
+.family-btn-ghost {
+  border: 1px solid #555;
+  color: #fff;
+}
+.family-btn-ghost:hover {
+  border-color: #fff;
+  color: #fff;
+}
+.family-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+.family-inline {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.family-inline a {
+  font-weight: 800;
+}
+.family-shortcut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  background: #fff4ef;
+  border: 1px solid #ffd2bd;
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14.5px;
+}
+.family-shortcut p {
+  flex: 1 1 320px;
+}
+.contact-family {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.contact-family-link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 24px;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.contact-family-link:hover {
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--ink);
+}
+.contact-family-link small {
+  font-size: 13px;
+  font-weight: 700;
+}
+.contact-family-link b {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 800;
+}
+@media (max-width: 860px) {
+  .family-grid,
+  .contact-family {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .family-card {
+    padding: 24px;
+  }
+  .family-preview ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.family-bar .fb-short {
+  display: none;
+}
+@media (max-width: 640px) {
+  .family-bar .fb-long {
+    display: none;
+  }
+  .family-bar .fb-short {
+    display: inline;
+  }
+  .family-bar nav {
+    flex-wrap: nowrap;
+  }
+}

@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { ArrowRight, ArrowUpRight } from "@/components/Icons";
 import { ContactSection, Steps, SubHero } from "@/components/Sections";
 import BrandDirectory from "@/components/BrandDirectory";
+import SiteLink from "@/components/SiteLink";
 import { BRAND_TEXT, BRAND_TOTAL } from "@/lib/brands";
 import { CONTACT, applyPath, getDict, isLang } from "@/lib/dictionary";
 import { getPages } from "@/lib/pages";
@@ -52,14 +53,22 @@ export default async function ToPage({ params }: Props) {
           }
         >
           <div className="hero-ctas">
-            <Link className="btn btn-accent" href={applyPath(lang, "creator", "to")}>
+            <SiteLink site="to" path="/products" placement="to_page_hero" className="btn btn-accent">
+              {lang === "ko" ? "TO 제품 리스트 보기" : "Browse TO products"}
+              <ArrowUpRight />
+            </SiteLink>
+            <SiteLink site="to" path="/apply" placement="to_page_hero" className="btn btn-outline">
               {p.ctaPrimary}
-              <ArrowRight size={18} />
-            </Link>
-            <Link className="btn btn-outline" href={applyPath(lang, "partner")}>
-              {p.ctaSecondary}
-            </Link>
+            </SiteLink>
           </div>
+          <p className="family-inline">
+            {lang === "ko" ? "브랜드이신가요? " : "Are you a brand? "}
+            <Link href={applyPath(lang, "partner")}>{p.ctaSecondary}</Link>
+            {" · "}
+            <SiteLink site="partners" path="/login" placement="to_page_hero">
+              {lang === "ko" ? "참여 브랜드 파트너스 로그인 ↗" : "Partners login ↗"}
+            </SiteLink>
+          </p>
         </SubHero>
 
         {/* 왜 필요한가 */}
@@ -136,14 +145,13 @@ export default async function ToPage({ params }: Props) {
             <div className="brand-dir-foot">
               <small className="note">{BRAND_TEXT[lang].note}</small>
               <div className="hero-ctas">
-                <Link className="btn btn-dark" href={applyPath(lang, "creator", "to")}>
-                  {BRAND_TEXT[lang].apply}
-                  <ArrowRight size={18} />
-                </Link>
-                <a className="btn btn-outline" href={CONTACT.toProducts} target="_blank" rel="noopener noreferrer">
+                <SiteLink site="to" path="/products" placement="to_page_brands" className="btn btn-dark">
                   {BRAND_TEXT[lang].productList}
                   <ArrowUpRight />
-                </a>
+                </SiteLink>
+                <SiteLink site="to" path="/apply" placement="to_page_brands" className="btn btn-outline">
+                  {BRAND_TEXT[lang].apply}
+                </SiteLink>
               </div>
             </div>
           </div>
@@ -163,10 +171,14 @@ export default async function ToPage({ params }: Props) {
                 </p>
                 <small className="note">{p.brands.note}</small>
                 <div className="links-row">
-                  <a className="link-arrow" href={CONTACT.toProducts} target="_blank" rel="noopener noreferrer">
+                  <SiteLink site="to" path="/products" placement="to_page_count" className="link-arrow">
                     {p.brands.productList}
                     <ArrowUpRight />
-                  </a>
+                  </SiteLink>
+                  <SiteLink site="partners" path="/login" placement="to_page_count" className="link-arrow muted-link">
+                    {lang === "ko" ? "참여 브랜드 파트너스" : "Brand Partners"}
+                    <ArrowUpRight />
+                  </SiteLink>
                 </div>
               </div>
               <div className="subscribe">
@@ -182,10 +194,10 @@ export default async function ToPage({ params }: Props) {
                 {p.stepsTitle}
               </h2>
               <Steps steps={steps} />
-              <Link className="btn btn-dark" href={applyPath(lang, "creator", "to")} style={{ marginTop: 20 }}>
+              <SiteLink site="to" path="/apply" placement="to_page_steps" className="btn btn-dark" style={{ marginTop: 20 }}>
                 {p.ctaPrimary}
-                <ArrowRight size={18} />
-              </Link>
+                <ArrowUpRight />
+              </SiteLink>
             </div>
           </div>
         </section>
