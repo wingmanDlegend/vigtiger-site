@@ -130,6 +130,16 @@ export async function patchProduct(id: string, row: Record<string, unknown>) {
   if (!rows[0]) throw new Error("제품을 찾을 수 없어요.");
   return rows[0];
 }
+/** to.vigtiger.com 이번 주 추천·핫딜을 한꺼번에 내리기 */
+export async function clearPromo(kind: "pick" | "hot") {
+  const row = kind === "pick" ? { pick_week: false, pick_sort: 0 } : { hot_deal: false, hot_sort: 0, hot_note: null, hot_until: null };
+  const rows = await rest<{ id: string }[]>(`to_products?${kind === "pick" ? "pick_week" : "hot_deal"}=is.true&select=id`, {
+    method: "PATCH",
+    body: JSON.stringify(row),
+    prefer: "return=representation",
+  });
+  return rows.length;
+}
 export async function deleteProduct(id: string) {
   if (!isUuid(id)) throw new Error("잘못된 ID");
   await rest(`to_products?id=eq.${id}`, { method: "DELETE" });

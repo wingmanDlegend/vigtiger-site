@@ -13,7 +13,7 @@ type SP = Promise<{ type?: string; status?: string; q?: string; page?: string; d
 export default async function AdminHome({ searchParams }: { searchParams: SP }) {
   if (!(await isAuthed())) redirect("/login");
   const sp = await searchParams;
-  const type = ["creator", "advertiser", "partner"].includes(sp.type ?? "") ? sp.type : undefined;
+  const type = ["creator", "advertiser", "partner", "to"].includes(sp.type ?? "") ? sp.type : undefined;
   const status = (STATUSES as readonly string[]).includes(sp.status ?? "") ? (sp.status as Status) : undefined;
   const q = (sp.q ?? "").slice(0, 60);
   const page = Math.max(1, Number(sp.page) || 1);
@@ -57,7 +57,7 @@ export default async function AdminHome({ searchParams }: { searchParams: SP }) 
           <a className="a-tab" href={href({ type: undefined, page: undefined })} aria-current={!type ? "page" : undefined}>
             전체 <b>{counts?.all ?? "-"}</b>
           </a>
-          {(["creator", "advertiser", "partner"] as const).map((t) => (
+          {(["creator", "advertiser", "partner", "to"] as const).map((t) => (
             <a key={t} className="a-tab" href={href({ type: t, page: undefined })} aria-current={type === t ? "page" : undefined}>
               {TYPE_LABEL[t]} <b>{counts?.type[t] ?? "-"}</b>
             </a>
@@ -77,7 +77,7 @@ export default async function AdminHome({ searchParams }: { searchParams: SP }) 
               ))}
             </select>
             <label className="a-sub" htmlFor="f-q">검색</label>
-            <input id="f-q" name="q" className="a-input" defaultValue={q} placeholder="이름·회사·이메일·연락처·관심 제품" />
+            <input id="f-q" name="q" className="a-input" defaultValue={q} placeholder="이름·회사·이메일·연락처·관심 제품·브랜드" />
             <button className="a-btn" type="submit">적용</button>
             {(status || q) && (
               <a className="a-btn is-ghost" href={href({ status: undefined, q: undefined, page: undefined })}>초기화</a>

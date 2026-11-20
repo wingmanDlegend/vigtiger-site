@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { actorOf, hashPassword, requireAdmin, tempPassword } from "@/lib/partners/auth";
 import {
@@ -33,10 +33,14 @@ import {
 
 export type ActionResult = { ok: boolean; message: string; errors?: string[]; password?: string };
 
+import { TO_SITE_TAG } from "@/lib/tosite/data";
+
 const admin = () => requireAdmin();
 const err = (e: unknown, fallback = "처리하지 못했어요.") => ({ ok: false, message: e instanceof Error ? e.message : fallback });
 function refresh() {
-  for (const p of ["/admin/to", "/admin/to/review", "/admin/to/products", "/admin/to/brands", "/admin/to/catalog", "/admin/dashboard", "/partners/my", "/partners/catalog"]) revalidatePath(p);
+  for (const p of ["/admin/to", "/admin/to/review", "/admin/to/products", "/admin/to/brands", "/admin/to/catalog", "/admin/to/promo", "/admin/dashboard", "/partners/my", "/partners/catalog"]) revalidatePath(p);
+  // to.vigtiger.com 제품 리스트·신청서도 바로 새 내용으로
+  revalidateTag(TO_SITE_TAG, { expire: 0 });
 }
 const cleanReason = (r: unknown) => (typeof r === "string" ? r.trim().replace(/\s+/g, " ").slice(0, 300) : "");
 

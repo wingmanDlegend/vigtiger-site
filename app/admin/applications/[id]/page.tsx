@@ -21,7 +21,7 @@ export default async function ApplicationDetail({ params }: { params: Promise<{ 
     { label: "연락처", value: a.phone ?? "-" },
     { label: "회사·채널", value: a.company ?? "-" },
     { label: "접수일시", value: kst(a.created_at) },
-    { label: "신청 페이지", value: a.lang === "en" ? "영문" : "한국어" },
+    { label: "신청 페이지", value: a.type === "to" ? "to.vigtiger.com" : a.lang === "en" ? "영문 홈페이지" : "한국어 홈페이지" },
     { label: "개인정보 동의", value: a.privacy_agreed ? "동의함" : "-" },
   ];
 

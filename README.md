@@ -39,14 +39,15 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 | www.vigtiger.com | 대범한사람들 홈페이지 | `app/[lang]` |
 | partners.vigtiger.com | 브랜드 비즈니스 파트너 (티오 제품 등록·수정 요청) | `app/partners` |
 | admin.vigtiger.com | 대범한사람들 업무 관리 시스템 | `app/admin` |
+| to.vigtiger.com | 크리에이터용 티오(TO) — 서비스 소개 · 제품 리스트 · 상담신청 · 회사소개 | `app/tosite` |
 
-한 프로젝트를 `proxy.ts`가 도메인별로 나눠 보여 줍니다 (주소창은 그대로, 내부 경로만 `/admin/…`, `/partners/…`). 예전 주소 `vigtiger.com/admin/…`, `vigtiger.com/partners/…` 는 각 전용 도메인으로 이동합니다. 로컬에서는 `admin.localhost:3000`, `partners.localhost:3000` 으로 확인합니다.
+한 프로젝트를 `proxy.ts`가 도메인별로 나눠 보여 줍니다 (주소창은 그대로, 내부 경로만 `/admin/…`, `/partners/…`). 예전 주소 `vigtiger.com/admin/…`, `vigtiger.com/partners/…`, `vigtiger.com/tosite/…` 는 각 전용 도메인으로 이동합니다. 로컬에서는 `admin.localhost:3000`, `partners.localhost:3000`, `to.localhost:3000` 으로 확인합니다.
 
 ## 업무 관리 시스템 (admin.vigtiger.com)
 
 로그인: 직원 계정(이메일·비밀번호, 대표 관리자가 [설정 › 직원 계정]에서 발급) 또는 **대표 관리자 비밀번호**(`ADMIN_PASSWORD`). 검색엔진에는 노출되지 않습니다.
 
-- 유형별 탭(크리에이터·광고주·상품 파트너)과 건수, 상태 필터, 이름·회사·이메일·연락처·관심 제품 검색
+- 유형별 탭(크리에이터·광고주·상품 파트너·TO 신청)과 건수, 상태 필터, 이름·회사·이메일·연락처·관심 제품 검색
 - 목록에서 바로 처리 상태 변경: 신규 → 검토 중 → 연락함 → 진행 확정 / 보류·종료
 - 상세 화면: 신청 내용 전체(선택지는 한글 라벨로 표시), 내부 메모 저장, 신청 삭제(2단계 확인 후 영구 삭제 — 테스트·중복·스팸 정리용)
 - 엑셀(CSV) 내려받기: 현재 보고 있는 탭·필터 그대로. 유형 탭에서 받으면 항목별로 칸이 나뉩니다.
@@ -60,7 +61,7 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 | 홈 | 홈 | `/` 전체 업무 현황 |
 | 비즈니스 | 제휴 신청 | 현황 `/dashboard/applications` · 목록 `/applications` |
 | 비즈니스 | 공동구매 | 현황 `/dashboard/groupbuys` · 목록 `/groupbuys` |
-| 티오 파트너스 | 현황 · 승인 대기 · 제품 · 브랜드·계정 · 제품 리스트 출력 | `/to` · `/to/review` · `/to/products` · `/to/brands` · `/to/catalog` |
+| 티오 파트너스 | 현황 · 승인 대기 · 제품 · 브랜드·계정 · 제품 리스트 · 추천·핫딜 | `/to` · `/to/review` · `/to/products` · `/to/brands` · `/to/catalog` · `/to/promo` |
 | 콘텐츠 | 업계 동향 · 핫 콘텐츠 | `/insights?kind=trends` · `/insights?kind=hot` |
 | 설정 | 직원 계정 · 작업 기록 | `/settings/accounts` · `/settings/log` |
 
@@ -106,6 +107,15 @@ Next.js(App Router) 기반 회사 홈페이지입니다. GitHub에 푸시하면 
 - **초기 데이터**: `data/partners-seed.json` (2025-11-05 판 TO 제품 리스트 PDF에서 추출, 브랜드 92 · 제품 374) + 이미지 `public/partners-seed/`. 브랜드 표가 비어 있을 때 관리 사이트 [티오 파트너스] 첫 접속 시 한 번 자동 입력
 - **DB**: `partner_brands`, `partner_users`(scrypt 해시), `to_products`, `partner_events`(작업 기록) — 모두 RLS 켜짐·정책 없음(서버 전용). 새 이미지는 Supabase Storage `partners` 버킷
 - 새 요청이 들어오면 슬랙(SLACK_WEBHOOK_URL)으로 알림
+
+## 티오 크리에이터 사이트 (to.vigtiger.com)
+
+크리에이터가 티오 제품을 보고 바로 신청하는 공개 사이트입니다. 메뉴: TO 서비스 소개 `/` · TO 제품 리스트 `/products` · 상담신청 `/apply` · 회사소개 `/about`.
+
+- **제품 리스트**: 이번 주 추천 → 핫딜 → 전체 제품(분류 탭 + 검색, 분류 → 브랜드 → 제품 순). 게시 중(승인) 제품과 사용 중인 브랜드만 보이고, 내용은 TO 파트너스 데이터를 그대로 씁니다.
+- **이번 주 추천 · 핫딜 노출**: admin [티오 파트너스 › 추천·핫딜] `/to/promo`에서 제품을 찾아 올리기·내리기·순서 바꾸기, 핫딜은 카드 문구와 마감일(다음 날부터 자동으로 빠짐), '모두 내리기'. 비어 있으면 사이트에서 그 묶음이 숨겨집니다. (`to_products.pick_week/pick_sort/hot_deal/hot_sort/hot_note/hot_until`)
+- **상담신청**: 이름·연락처·채널 정보 + **참여 희망 브랜드 2곳(필수, 서로 달라야 함)** + 브랜드별 관심 제품(선택) + 콘텐츠 형태. 제품 카드의 '신청하기'로 들어오면 브랜드 1·제품 1이 미리 골라져 있습니다. 서버에서 게시 중인 브랜드·제품인지 다시 확인한 뒤 `applications`(type `to`)에 저장 → admin [제휴 신청]의 'TO 신청' 탭에서 다른 신청과 함께 처리 · CSV · 슬랙 알림.
+- 데이터는 5분 캐시, 관리자 화면에서 제품·브랜드·추천·핫딜을 바꾸면 즉시 갱신(`revalidateTag("to-site")`).
 
 ## 환경변수 (Vercel 프로젝트 설정)
 

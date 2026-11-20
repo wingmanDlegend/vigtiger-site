@@ -1,0 +1,669 @@
+/* to.vigtiger.com — 홈페이지(globals.css) 위에 얹는 티오 전용 스타일 */
+.to-body {
+  --to-pick: #ff6a1f;
+  --to-hot: #d92d20;
+  --to-ok: #11552a;
+  --to-ok-bg: #d3f2dd;
+}
+
+/* 머리 */
+.to-logo-mark {
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+.to-header .nav a[aria-current="page"]:not(.nav-cta) {
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+.to-header .nav .to-nav-cta[aria-current="page"] {
+  background: var(--accent);
+  color: var(--ink);
+}
+.nav-mobile a[aria-current="page"] {
+  font-weight: 800;
+}
+
+/* 첫 화면 숫자 */
+.to-live {
+  display: flex;
+  gap: 28px;
+  margin: 20px 0 0;
+}
+.to-live div {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.to-live dt {
+  font-size: 13px;
+  color: #bdbdbd;
+  font-weight: 700;
+}
+.to-live dd {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.to-live small {
+  font-size: 15px;
+  margin-left: 2px;
+}
+
+/* 페이지 머리 (제품 리스트·상담신청) */
+.to-page-head {
+  border-bottom: 1px solid #eeeeee;
+  background: var(--paper-2);
+}
+.to-page-head .container {
+  padding-top: 56px;
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.to-page-head h1 {
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+.to-page-head .hero-body {
+  max-width: 720px;
+}
+.to-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.to-jump a {
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+.to-jump a:hover {
+  border-color: var(--ink);
+}
+.to-jump small,
+.to-tabs small,
+.to-cats small {
+  font-weight: 800;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+/* 블록 */
+.to-block {
+  padding-top: 64px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.to-block-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.to-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.to-hot {
+  background: #fff4ef;
+  border-top: 1px solid #ffe0d1;
+  border-bottom: 1px solid #ffe0d1;
+}
+
+/* 제품 카드 */
+.tp-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+.tp-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  min-width: 0;
+}
+.tp-card.is-pick {
+  border-color: #ffc6a8;
+}
+.tp-card.is-hot {
+  border-color: #f5b5ae;
+}
+.tp-img {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: #f6f6f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tp-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 12px;
+}
+.tp-noimg {
+  font-size: 13px;
+  color: var(--muted);
+}
+.tp-flag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tp-flag.is-pick {
+  background: var(--to-pick);
+  color: var(--ink);
+}
+.tp-flag.is-hot {
+  background: var(--to-hot);
+  color: #fff;
+}
+.tp-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px 16px;
+  flex: 1;
+}
+.tp-brand {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.tp-name {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.tp-feature {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.tp-chip {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--paper-2);
+  color: var(--ink-2);
+}
+.tp-chip.is-rental {
+  background: var(--to-ok-bg);
+  color: var(--to-ok);
+}
+.tp-chip.is-sponsor {
+  background: #d6e6ff;
+  color: #163b7a;
+}
+.tp-chip.is-until {
+  background: #fde3df;
+  color: #8f1d14;
+}
+.tp-serial {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-left: auto;
+}
+.tp-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+.tp-apply {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+}
+.tp-apply:hover {
+  background: #333;
+  color: #fff;
+}
+.tp-more {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* 전체 제품: 분류 탭 + 검색 */
+.to-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--line);
+}
+.to-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+.to-tabs a {
+  flex: none;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+.to-tabs a:hover {
+  border-color: var(--ink);
+}
+.to-tabs a[aria-current="page"] {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.to-tabs a[aria-current="page"] small {
+  color: #ddd;
+}
+.to-search {
+  display: flex;
+  gap: 8px;
+  max-width: 480px;
+}
+.to-search .input {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+}
+.to-search .btn {
+  min-height: 46px;
+  padding: 0 20px;
+}
+.to-result {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.to-empty {
+  padding: 48px 0;
+  color: var(--muted);
+}
+.to-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+#all,
+#picks,
+#hot {
+  scroll-margin-top: 80px;
+}
+.to-cat + .to-cat {
+  border-top: 2px solid var(--ink);
+  padding-top: 36px;
+}
+.to-cat-title {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.to-cat-title span {
+  font-size: 14px;
+  color: var(--accent);
+}
+.to-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.to-brand-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 20px;
+}
+.to-brand-head h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+.to-brand-head h4 small {
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: 8px;
+  font-weight: 700;
+}
+.to-brand-hl {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.to-brand-hl li {
+  font-size: 12.5px;
+  background: var(--paper-2);
+  border-radius: 6px;
+  padding: 4px 9px;
+}
+.to-brand-hl b {
+  margin-right: 4px;
+}
+.to-brand-hl span {
+  color: var(--muted);
+}
+.to-brand-notice {
+  font-size: 13px;
+  background: #fff8e6;
+  border: 1px solid #ffe3a3;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.to-brand-notice b {
+  color: #5a3d00;
+  margin-right: 6px;
+}
+
+/* 첫 화면 분류 바로가기 */
+.to-cats {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.to-cats a {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+.to-cats a:hover {
+  border-color: var(--ink);
+}
+
+/* 아래 신청 유도 띠 */
+.to-cta {
+  background: var(--ink);
+  color: #fff;
+}
+.to-cta-inner {
+  padding-top: 64px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+.to-cta .eyebrow {
+  color: var(--accent);
+}
+.to-cta h2 {
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.3;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-top: 8px;
+}
+.to-btn-ghost {
+  border: 1px solid #555;
+  color: #fff;
+}
+.to-btn-ghost:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+/* 상담신청 */
+.to-apply {
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 48px;
+  align-items: start;
+}
+.to-apply-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.to-apply-side {
+  position: sticky;
+  top: 96px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.to-mini-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.to-mini-steps li {
+  counter-increment: s;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  column-gap: 10px;
+}
+.to-mini-steps li::before {
+  content: counter(s);
+  grid-row: span 2;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  font-weight: 900;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.to-mini-steps span {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.to-side-note {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.to-picked {
+  background: #fff4ef;
+  border: 1px solid #ffd2bd;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14.5px;
+}
+.to-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.to-fieldset > legend {
+  font-size: 18px;
+  font-weight: 900;
+  padding: 0 0 4px;
+  margin-bottom: 4px;
+  border-bottom: 2px solid var(--ink);
+  width: 100%;
+}
+.to-help {
+  font-size: 14px;
+  color: var(--muted);
+}
+.to-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.to-pair-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--paper-2);
+}
+.to-opt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.to-pair select:disabled {
+  opacity: 0.6;
+}
+
+/* 회사소개 서비스 3종 */
+.to-svc {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.to-svc a {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.to-svc a:hover {
+  border-color: var(--ink);
+}
+.to-svc a.is-here {
+  background: var(--paper-2);
+}
+.to-svc small {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+.to-svc b {
+  font-size: 22px;
+  font-weight: 900;
+}
+.to-svc span {
+  color: var(--ink-2);
+}
+.to-svc em {
+  font-style: normal;
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (max-width: 960px) {
+  .to-apply {
+    grid-template-columns: 1fr;
+  }
+  .to-apply-side {
+    position: static;
+  }
+  .to-svc {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .to-pair {
+    grid-template-columns: 1fr;
+  }
+  .tp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .tp-body {
+    padding: 12px;
+  }
+  .tp-name {
+    font-size: 14.5px;
+  }
+  .tp-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .tp-more {
+    text-align: center;
+  }
+  .to-block {
+    padding-top: 44px;
+    padding-bottom: 44px;
+  }
+}

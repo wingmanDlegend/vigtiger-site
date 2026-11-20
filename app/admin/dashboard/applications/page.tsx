@@ -9,8 +9,8 @@ import { RangeTabs, SectionHeader } from "../../SubNav";
 
 export const dynamic = "force-dynamic";
 
-const TYPES = ["creator", "advertiser", "partner"] as const;
-const TYPE_COLOR = { creator: C.blue, advertiser: C.orange, partner: C.aqua };
+const TYPES = ["creator", "advertiser", "partner", "to"] as const;
+const TYPE_COLOR = { creator: C.blue, advertiser: C.orange, partner: C.aqua, to: C.violet };
 
 const arr = (v: unknown) => (Array.isArray(v) ? (v as string[]) : typeof v === "string" && v ? [v] : []);
 
@@ -54,6 +54,8 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
   const creators = rows.filter((a) => a.type === "creator");
   const advertisers = rows.filter((a) => a.type === "advertiser");
   const partners = rows.filter((a) => a.type === "partner");
+  const toApps = rows.filter((a) => a.type === "to");
+  const toBrands = countBy(toApps, (a) => [a.details?.brand1, a.details?.brand2].map((v) => String(v ?? "").trim()).filter(Boolean)).map(([label, value]) => ({ label, value }));
   const optRows = (list: ApplicationLite[], type: "creator" | "advertiser" | "partner", key: string, multi = false) => {
     const counts = new Map(countBy(list, (a) => (multi ? arr(a.details?.[key]) : (a.details?.[key] as string) || null)));
     const order = optionOrder(type, key);
@@ -78,6 +80,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
           <Kpi label="크리에이터" value={`${fmtNum(byType(rows, "creator"))}건`} delta={prev ? delta(byType(rows, "creator"), byType(prev, "creator")) : undefined} />
           <Kpi label="광고주" value={`${fmtNum(byType(rows, "advertiser"))}건`} delta={prev ? delta(byType(rows, "advertiser"), byType(prev, "advertiser")) : undefined} />
           <Kpi label="상품 파트너" value={`${fmtNum(byType(rows, "partner"))}건`} delta={prev ? delta(byType(rows, "partner"), byType(prev, "partner")) : undefined} />
+          <Kpi label="TO 신청" value={`${fmtNum(byType(rows, "to"))}건`} delta={prev ? delta(byType(rows, "to"), byType(prev, "to")) : undefined} href="/applications?type=to" />
           <Kpi label="진행 확정률" value={rows.length ? `${Math.round((done / rows.length) * 100)}%` : "–"} sub={`확정 ${fmtNum(done)}건 · 처리 ${fmtNum(decided)}건`} />
           <Kpi label="아직 신규 상태 (전체)" value={`${fmtNum(pendingNew)}건`} href="/applications?status=new" tone={pendingNew ? "warn" : undefined} sub="눌러서 처리하기" />
         </section>
@@ -87,7 +90,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
             wide
             title="월별 신청 추이 (최근 12개월)"
             note="막대에 마우스를 올리면 유형별 건수가 보여요."
-            table={{ head: ["월", "크리에이터", "광고주", "상품 파트너", "합계"], rows: months.map((m, i) => [monthLabelLong(m), ...TYPES.map((t) => trend[i].values[t]), TYPES.reduce((s, t) => s + trend[i].values[t], 0)]) }}
+            table={{ head: ["월", ...TYPES.map((t) => TYPE_LABEL[t]), "합계"], rows: months.map((m, i) => [monthLabelLong(m), ...TYPES.map((t) => trend[i].values[t]), TYPES.reduce((s, t) => s + trend[i].values[t], 0)]) }}
           >
             <Columns wide height={220} data={trend} series={TYPES.map((t) => ({ key: t, label: TYPE_LABEL[t], color: TYPE_COLOR[t] }))} format={fmtNum} />
           </ChartCard>
@@ -117,6 +120,9 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
           </ChartCard>
           <ChartCard title="크리에이터 · 관심 있는 제품" note="쉼표로 나눠 센 값이에요.">
             <HBars rows={products} format={(n) => `${fmtNum(n)}건`} showShare={false} />
+          </ChartCard>
+          <ChartCard title="TO 신청 · 참여 희망 브랜드" note="한 신청에 브랜드 두 곳을 적어 합계가 신청 수의 두 배예요.">
+            {toBrands.length ? <HBars rows={toBrands.slice(0, 12)} color={C.violet} format={(n) => `${fmtNum(n)}건`} showShare={false} /> : <p className="a-sub">이 기간에 TO 신청이 없어요.</p>}
           </ChartCard>
           <ChartCard title="광고주 · 예산 규모">
             <HBars rows={optRows(advertisers, "advertiser", "budget")} color={C.orange} format={(n) => `${fmtNum(n)}건`} />

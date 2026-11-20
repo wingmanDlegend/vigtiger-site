@@ -2,8 +2,12 @@
 // 항목을 추가·수정할 때는 이 파일만 고치면 됩니다.
 
 export type Lang = "ko" | "en";
-export type FormType = "creator" | "advertiser" | "partner";
-export const FORM_TYPES: FormType[] = ["creator", "advertiser", "partner"];
+export type FormType = "creator" | "advertiser" | "partner" | "to";
+/** 홈페이지(www) 신청서 3종 */
+export type SiteFormType = Exclude<FormType, "to">;
+export const FORM_TYPES: SiteFormType[] = ["creator", "advertiser", "partner"];
+/** 관리 화면에서 함께 관리하는 전체 신청 유형 (to = to.vigtiger.com 크리에이터 TO 상담 신청) */
+export const APP_TYPES: FormType[] = ["creator", "advertiser", "partner", "to"];
 
 type L = Record<Lang, string>;
 export type Option = { value: string; label: L };
@@ -190,6 +194,32 @@ export const FORMS: Record<
       },
     ],
   },
+  to: { nameLabel: { ko: "", en: "" }, fields: [] }, // 아래에서 채움 (크리에이터 채널 항목을 재사용)
+};
+
+// to.vigtiger.com — 크리에이터 TO 상담 신청 (참여 희망 브랜드 2곳 필수)
+// 브랜드·제품 값은 서버(/api/to-apply)에서 실제 게시 중인 브랜드·제품인지 확인한 뒤 이름으로 저장합니다.
+FORMS.to = {
+  nameLabel: { ko: "이름(활동명)", en: "Name (or creator name)" },
+  fields: [
+    ...FORMS.creator.fields.filter((f) => ["channelName", "channelUrl", "subscribers", "category"].includes(f.key)),
+    { key: "brand1", kind: "text", required: true, label: { ko: "참여 희망 브랜드 1", en: "Brand 1" } },
+    { key: "product1", kind: "text", label: { ko: "관심 제품 1", en: "Product 1" } },
+    { key: "brand2", kind: "text", required: true, label: { ko: "참여 희망 브랜드 2", en: "Brand 2" } },
+    { key: "product2", kind: "text", label: { ko: "관심 제품 2", en: "Product 2" } },
+    {
+      key: "contentType",
+      kind: "checkboxes",
+      label: { ko: "생각하는 콘텐츠 형태", en: "Content format" },
+      options: [
+        { value: "longform", label: { ko: "리뷰 영상", en: "Review video" } },
+        { value: "shorts", label: { ko: "쇼츠·릴스", en: "Shorts / Reels" } },
+        { value: "live", label: { ko: "라이브", en: "Live" } },
+        { value: "post", label: { ko: "블로그·인스타 게시물", en: "Blog / Instagram post" } },
+        { value: "groupbuy", label: { ko: "공동구매 연계", en: "Group-buy" } },
+      ],
+    },
+  ],
 };
 
 export const LIMITS = { short: 200, message: 4000 };

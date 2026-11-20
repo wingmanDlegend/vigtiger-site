@@ -158,7 +158,7 @@ h1, h2, h3, p { margin: 0; }
 .db-subnav a { font-size: 14px; font-weight: 700; color: var(--muted); text-decoration: none; padding: 8px 14px; border-bottom: 2.5px solid transparent; margin-bottom: -1px; }
 .db-subnav a:hover { color: var(--ink); }
 .db-subnav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
-.db-kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.db-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
 @media (max-width: 1150px) { .db-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .db-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .db-kpi { padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; text-decoration: none; min-width: 0; }

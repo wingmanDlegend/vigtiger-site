@@ -39,10 +39,10 @@ export async function listApplications(qs: ListQuery) {
   const pageSize = qs.pageSize ?? 50;
   const page = Math.max(1, qs.page ?? 1);
   const p = new URLSearchParams({ select: "*", order: "created_at.desc" });
-  if (qs.type && ["creator", "advertiser", "partner"].includes(qs.type)) p.set("type", `eq.${qs.type}`);
+  if (qs.type && ["creator", "advertiser", "partner", "to"].includes(qs.type)) p.set("type", `eq.${qs.type}`);
   if (qs.status && (STATUSES as readonly string[]).includes(qs.status)) p.set("status", `eq.${qs.status}`);
   const q = (qs.q ?? "").replace(/[,()*%\\]/g, " ").trim().slice(0, 60);
-  if (q) p.set("or", `(name.ilike.*${q}*,company.ilike.*${q}*,email.ilike.*${q}*,phone.ilike.*${q}*,details->>interestProducts.ilike.*${q}*)`);
+  if (q) p.set("or", `(name.ilike.*${q}*,company.ilike.*${q}*,email.ilike.*${q}*,phone.ilike.*${q}*,details->>interestProducts.ilike.*${q}*,details->>brand1.ilike.*${q}*,details->>brand2.ilike.*${q}*)`);
   const from = (page - 1) * pageSize;
   const res = await fetch(`${url}/rest/v1/applications?${p}`, {
     headers: { ...headers, Prefer: "count=exact", Range: `${from}-${from + pageSize - 1}`, "Range-Unit": "items" },
@@ -63,7 +63,7 @@ export async function countAll() {
   const by = (k: "type" | "status", v: string) => rows.filter((r) => r[k] === v).length;
   return {
     all: rows.length,
-    type: { creator: by("type", "creator"), advertiser: by("type", "advertiser"), partner: by("type", "partner") },
+    type: { creator: by("type", "creator"), advertiser: by("type", "advertiser"), partner: by("type", "partner"), to: by("type", "to") },
     status: Object.fromEntries(STATUSES.map((s) => [s, by("status", s)])) as Record<Status, number>,
   };
 }

@@ -4,9 +4,11 @@ import { NextResponse, type NextRequest } from "next/server";
 // - www.vigtiger.com        홈페이지 (app/[lang])
 // - partners.vigtiger.com   브랜드 비즈니스 파트너 (app/partners)
 // - admin.vigtiger.com      대범한사람들 업무 관리 (app/admin)
+// - to.vigtiger.com         크리에이터용 티오(TO) 소개·제품 리스트·상담신청 (app/tosite)
 // 주소창은 그대로 두고 내부 경로만 바꿉니다. 로컬 확인용으로 *.localhost 도 같은 규칙.
 const PARTNERS = /^partners\.(vigtiger\.com|localhost)$/;
 const ADMIN = /^admin\.(vigtiger\.com|localhost)$/;
+const TO = /^to\.(vigtiger\.com|localhost)$/;
 const MAIN = /^(www\.)?vigtiger\.(com|co\.kr)$/;
 
 function rewrite(req: NextRequest, base: string, home: string) {
@@ -23,6 +25,7 @@ export function proxy(req: NextRequest) {
 
   if (ADMIN.test(host)) return rewrite(req, "/admin", "/admin/dashboard");
   if (PARTNERS.test(host)) return rewrite(req, "/partners", "/partners");
+  if (TO.test(host)) return rewrite(req, "/tosite", "/tosite");
 
   // 메인 도메인에서 예전 관리자 주소·파트너 주소로 들어오면 전용 도메인으로
   if (MAIN.test(host)) {
@@ -34,6 +37,9 @@ export function proxy(req: NextRequest) {
     }
     if (pathname === "/partners" || pathname.startsWith("/partners/")) {
       return NextResponse.redirect(`https://partners.vigtiger.com${pathname.replace(/^\/partners/, "") || "/"}${search}`);
+    }
+    if (pathname === "/tosite" || pathname.startsWith("/tosite/")) {
+      return NextResponse.redirect(`https://to.vigtiger.com${pathname.replace(/^\/tosite/, "") || "/"}${search}`);
     }
   }
   return NextResponse.next();

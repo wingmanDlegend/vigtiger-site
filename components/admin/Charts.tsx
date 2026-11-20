@@ -2,7 +2,7 @@
 // 색: 검증된 3색 (파랑·주황·청록). 글자는 색 대신 검정/회색, 각 막대에 마우스를 올리면 값이 보이고, '표로 보기'로 숫자 확인.
 import type { ReactNode } from "react";
 
-export const C = { blue: "#2a78d6", orange: "#eb6834", aqua: "#1baf7a", gray: "#b9b4ac" };
+export const C = { blue: "#2a78d6", orange: "#eb6834", aqua: "#1baf7a", violet: "#8a5cd6", gray: "#b9b4ac" };
 
 function niceMax(v: number) {
   if (v <= 0) return 1;

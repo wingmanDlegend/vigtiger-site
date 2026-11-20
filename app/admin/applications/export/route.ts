@@ -1,7 +1,7 @@
 import { isAuthed } from "@/lib/admin/auth";
 import { exportApplications, STATUSES } from "@/lib/admin/db";
 import { STATUS_LABEL, TYPE_LABEL, detailRows, kst } from "@/lib/admin/format";
-import { FORMS, FORM_TYPES } from "@/lib/forms";
+import { FORMS, APP_TYPES } from "@/lib/forms";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   const rows = await exportApplications({ type, status, q });
 
   // 유형을 하나만 내려받으면 그 유형의 항목을 칸으로 펼치고, 전체면 '신청 내용' 한 칸에 모읍니다.
-  const single = type && (FORM_TYPES as string[]).includes(type) ? FORMS[type as keyof typeof FORMS] : null;
+  const single = type && (APP_TYPES as string[]).includes(type) ? FORMS[type as keyof typeof FORMS] : null;
   const detailHeads = single ? single.fields.map((f) => f.label.ko) : ["신청 내용"];
   const head = ["접수일시(KST)", "유형", "상태", "이름", "회사·채널", "이메일", "연락처", ...detailHeads, "메시지", "내부 메모", "신청 페이지"];
 
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
         ...detailCells,
         a.message,
         a.admin_note,
-        a.lang === "en" ? "영문" : "한국어",
+        a.type === "to" ? "to.vigtiger.com" : a.lang === "en" ? "영문" : "한국어",
       ]
         .map(cell)
         .join(","),

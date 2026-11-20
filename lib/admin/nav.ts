@@ -4,7 +4,7 @@ import { cfg } from "./db";
 // 관리자 메뉴 정보구조(IA)와 처리할 일 배지
 export type NavKey =
   | "home" | "applications" | "groupbuys" | "trends" | "hot"
-  | "to-home" | "to-review" | "to-products" | "to-brands" | "to-catalog"
+  | "to-home" | "to-review" | "to-products" | "to-brands" | "to-catalog" | "to-promo"
   | "accounts" | "log" | "password";
 
 export const ADMIN_NAV: { group?: string; items: { key: NavKey; label: string; href: string }[] }[] = [
@@ -24,6 +24,7 @@ export const ADMIN_NAV: { group?: string; items: { key: NavKey; label: string; h
       { key: "to-products", label: "제품", href: "/to/products" },
       { key: "to-brands", label: "브랜드·계정", href: "/to/brands" },
       { key: "to-catalog", label: "제품 리스트", href: "/to/catalog" },
+      { key: "to-promo", label: "추천·핫딜", href: "/to/promo" },
     ],
   },
   {

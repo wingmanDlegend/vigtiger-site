@@ -83,6 +83,8 @@ export default async function Dashboard() {
   const activeBrands = brands.filter((b) => b.active);
   const activeIds = new Set(activeBrands.map((b) => b.id));
   const live = products.filter((p) => p.status === "approved" && activeIds.has(p.brand_id));
+  const livePicks = live.filter((p) => p.pick_week).length;
+  const liveHots = live.filter((p) => p.hot_deal && (!p.hot_until || p.hot_until >= today)).length;
   const brandAccounts = new Set(users.filter((u) => u.role === "brand" && u.active).map((u) => u.brand_id));
   const withAccount = activeBrands.filter((b) => brandAccounts.has(b.id)).length;
   const evIn = (m: string, set: Set<string>) => events.filter((e) => set.has(e.action) && monthKey(e.created_at) === m).length;
@@ -212,9 +214,10 @@ export default async function Dashboard() {
               { href: "/to", label: "티오 현황" },
               { href: "/to/review", label: "승인 대기" },
               { href: "/to/catalog", label: "제품 리스트" },
+              { href: "/to/promo", label: "추천·핫딜" },
             ]}
           />
-          <div className="db-kpis is-4">
+          <div className="db-kpis">
             <Kpi label="게시 중 제품" value={`${fmtNum(live.length)}개`} sub={`협찬 ${fmtNum(live.filter((p) => p.sponsor).length)} · 대여 ${fmtNum(live.filter((p) => p.rental).length)}`} href="/to/products?status=approved" />
             <Kpi label="협업 브랜드" value={`${fmtNum(activeBrands.length)}곳`} sub={`담당자 계정 발급 ${fmtNum(withAccount)}곳`} href="/to/brands" />
             <Kpi
@@ -225,6 +228,14 @@ export default async function Dashboard() {
               tone={activeBrands.length - withAccount ? "warn" : undefined}
             />
             <Kpi label="이번 달 브랜드 요청" value={`${fmtNum(evIn(thisM, REQUESTS))}건`} delta={delta(evIn(thisM, REQUESTS), evIn(prevM, REQUESTS))} sub={`승인·반려 처리 ${fmtNum(evIn(thisM, DECISIONS))}건`} href="/settings/log" />
+            <Kpi label="이번 달 TO 신청" value={`${fmtNum(appsIn(thisM).filter((a) => a.type === "to").length)}건`} sub="to.vigtiger.com 상담신청" href="/applications?type=to" />
+            <Kpi
+              label="to 사이트 노출"
+              value={`추천 ${fmtNum(livePicks)} · 핫딜 ${fmtNum(liveHots)}`}
+              sub={livePicks ? "추천·핫딜 관리하기" : "이번 주 추천이 비어 있어요"}
+              href="/to/promo"
+              tone={livePicks ? undefined : "warn"}
+            />
           </div>
           <div className="db-grid">
             <ChartCard title="분류별 게시 중 제품" table={{ head: ["분류", "제품"], rows: byCategory.map((r) => [r.label, r.value]) }}>

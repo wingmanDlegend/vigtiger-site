@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ApplyForm from "@/components/ApplyForm";
-import { FORM_TYPES, type FormType } from "@/lib/forms";
+import { FORM_TYPES, type SiteFormType as FormType } from "@/lib/forms";
 import { LANGS, applyPath, getDict, isLang } from "@/lib/dictionary";
 
 export const dynamicParams = false;

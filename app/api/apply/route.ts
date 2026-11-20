@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse, after } from "next/server";
 import { notifySlack } from "@/lib/notify";
-import { FORMS, FORM_TYPES, LIMITS, type FormType } from "@/lib/forms";
+import { FORMS, FORM_TYPES, LIMITS, type SiteFormType } from "@/lib/forms";
 
 // 신청서 접수: 서버에서 항목을 검증한 뒤 Supabase applications 테이블에 저장합니다.
 // 테이블은 RLS로 "등록(insert)만" 허용되어 있어, 공개 키로는 접수 내역을 읽을 수 없습니다.
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   // 숨김 필드가 채워져 있으면 봇으로 보고 조용히 성공 처리
   if (str(body.website, 200)) return NextResponse.json({ ok: true });
 
-  const type = body.type as FormType;
+  const type = body.type as SiteFormType;
   if (!FORM_TYPES.includes(type)) return NextResponse.json({ error: "invalid" }, { status: 400 });
   const lang = body.lang === "en" ? "en" : "ko";
 

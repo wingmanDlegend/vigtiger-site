@@ -126,3 +126,27 @@
 .pb-chip.is-on { background: var(--to-blue-bg); color: var(--to-blue); }
 .pb-link { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--to-blue); }
 @media (max-width: 480px) { .pb-grid { grid-template-columns: 1fr 1fr; gap: 10px; } .pb-body { padding: 10px; } .pb-name { font-size: 14px; } }
+
+/* admin — to.vigtiger.com 추천·핫딜 관리 */
+.pr-h2 { font-size: 16px; font-weight: 800; }
+.pr-h2 b { color: var(--accent, #ff6a1f); margin-left: 4px; }
+.pr-add { display: flex; flex-direction: column; gap: 12px; padding: 18px; }
+.pr-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.pr-cols > .a-card { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.pr-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pr-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pr-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #efebe5; }
+.pr-row.is-col { flex-direction: column; align-items: stretch; gap: 8px; }
+.pr-row-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pr-prod { min-width: 0; }
+.pr-acts { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end; flex: none; }
+.pr-move { display: inline-flex; gap: 4px; }
+.pr-on { font-size: 12px; font-weight: 800; color: #9a3412; background: #fff1e6; border-radius: 6px; padding: 4px 8px; }
+.pr-on.is-hot { color: #8f1d14; background: #fde3df; }
+.pr-hot-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; padding-left: 56px; }
+.pr-hot-form label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); font-weight: 700; }
+.pr-hot-form .a-input { width: 180px; min-height: 34px; padding: 4px 8px; }
+.pr-clear summary { cursor: pointer; font-size: 13px; font-weight: 700; color: #a12a00; }
+.pr-clear form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+@media (max-width: 1100px) { .pr-cols { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .pr-row, .pr-row-top { flex-direction: column; align-items: stretch; } .pr-hot-form { padding-left: 0; } }

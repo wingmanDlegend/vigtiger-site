@@ -1,4 +1,4 @@
-import type { FormType, Lang } from "./forms";
+import type { FormType, Lang, SiteFormType } from "./forms";
 
 export const LANGS: Lang[] = ["ko", "en"];
 export const isLang = (v: string): v is Lang => v === "ko" || v === "en";
@@ -202,7 +202,7 @@ const ko = {
         intro: "브랜드와 상품을 알려주시면 유튜버 쇼핑몰 입점과 티오(무료 체험) 참여 방법을 안내드립니다.",
         short: "입점 신청",
       },
-    } satisfies Record<FormType, { tag: string; title: string; intro: string; short: string }>,
+    } satisfies Record<SiteFormType, { tag: string; title: string; intro: string; short: string }>,
   },
 };
 

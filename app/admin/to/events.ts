@@ -34,6 +34,12 @@ const LABEL: Record<string, string> = {
   staff_activated: "직원 계정 사용 재개",
   staff_deactivated: "직원 계정 사용 중지",
   staff_deleted: "직원 계정 삭제",
+  promo_pick_on: "이번 주 추천에 올림",
+  promo_pick_off: "이번 주 추천에서 내림",
+  promo_hot_on: "핫딜에 올림",
+  promo_hot_off: "핫딜에서 내림",
+  promo_hot_edited: "핫딜 문구·기간 수정",
+  promo_cleared: "추천·핫딜 한꺼번에 비움",
 };
 
 export const eventLabel = (a: string) => LABEL[a] ?? a;

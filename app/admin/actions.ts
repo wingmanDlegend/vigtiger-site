@@ -40,6 +40,6 @@ export async function removeApplication(id: string, type: string) {
     return { ok: false, message: e instanceof Error ? e.message : "삭제하지 못했습니다." };
   }
   revalidatePath("/admin/applications");
-  const t = ["creator", "advertiser", "partner"].includes(type) ? `type=${type}&` : "";
+  const t = ["creator", "advertiser", "partner", "to"].includes(type) ? `type=${type}&` : "";
   redirect(`/applications?${t}deleted=1`);
 }

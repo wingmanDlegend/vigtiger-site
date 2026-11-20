@@ -8,7 +8,7 @@ import { TYPE_LABEL, detailRows } from "@/lib/admin/format";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}…` : s);
 
-const EMOJI: Record<Application["type"], string> = { creator: "🎬", advertiser: "📢", partner: "📦" };
+const EMOJI: Record<Application["type"], string> = { creator: "🎬", advertiser: "📢", partner: "📦", to: "🧪" };
 
 export async function notifySlack(a: Omit<Application, "updated_at" | "admin_note" | "status">) {
   const url = process.env.SLACK_WEBHOOK_URL;
@@ -33,7 +33,7 @@ export async function notifySlack(a: Omit<Application, "updated_at" | "admin_not
           { type: "mrkdwn", text: `*연락처*\n${esc(a.phone ?? "-")}` },
           { type: "mrkdwn", text: `*이메일*\n${esc(a.email)}` },
           { type: "mrkdwn", text: `*회사·채널*\n${esc(a.company ?? "-")}` },
-          { type: "mrkdwn", text: `*신청 페이지*\n${a.lang === "en" ? "영문" : "한국어"}` },
+          { type: "mrkdwn", text: `*신청 페이지*\n${a.type === "to" ? "to.vigtiger.com" : a.lang === "en" ? "영문 홈페이지" : "한국어 홈페이지"}` },
         ],
       },
       ...(details ? [{ type: "section", text: { type: "mrkdwn", text: clip(details, 2900) } }] : []),

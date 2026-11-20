@@ -52,6 +52,14 @@ export type ToProduct = {
   delete_requested: boolean;
   reject_reason: string | null;
   sort: number;
+  /** to.vigtiger.com 노출 — 이번 주 추천 / 핫딜 (admin에서 관리) */
+  pick_week: boolean;
+  pick_sort: number;
+  hot_deal: boolean;
+  hot_sort: number;
+  hot_note: string | null;
+  /** 핫딜 노출 마지막 날 (이 날까지 보이고 다음 날부터 자동으로 숨김) */
+  hot_until: string | null;
   created_by: string | null;
   approved_at: string | null;
   created_at: string;
