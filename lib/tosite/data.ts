@@ -1,5 +1,6 @@
 import "server-only";
 import { cfg } from "@/lib/admin/db";
+import { BRAND_CATEGORIES } from "@/lib/brands";
 import { CATEGORIES, type CategoryKey, type Highlight } from "@/lib/partners/model";
 
 // to.vigtiger.com — 크리에이터에게 보여 줄 공개 데이터
@@ -78,4 +79,31 @@ export async function getToCatalog() {
     .sort((a, b) => a.hot_sort - b.hot_sort);
 
   return { brands, products, brandById, picks, hots };
+}
+
+export type ToCounts = {
+  /** 지금 to.vigtiger.com 에 보이는 브랜드 수 (노출 중 + 보이는 제품이 1개 이상) */
+  brands: number;
+  /** 지금 보이는 제품 수 (게시 중 + 제품 TO 노출 + 브랜드 노출) */
+  products: number;
+  /** 분류별 노출 브랜드 이름 (홈페이지 브랜드 목록용) */
+  groups: { key: CategoryKey; ko: string; en: string; brands: string[] }[];
+};
+
+/** 홈페이지·티오 사이트 곳곳의 브랜드·제품 숫자 — 실제 노출 기준. 못 읽으면 null */
+export async function getToCounts(): Promise<ToCounts | null> {
+  try {
+    const { brands, products } = await getToCatalog();
+    const live = new Set(products.map((p) => p.brand_id));
+    const shown = brands.filter((b) => live.has(b.id));
+    const groups = CATEGORIES.map((c) => ({
+      key: c.key,
+      ko: c.label,
+      en: BRAND_CATEGORIES.find((x) => x.key === c.key)?.en ?? c.label,
+      brands: shown.filter((b) => b.category === c.key).map((b) => b.name_ko),
+    })).filter((g) => g.brands.length > 0);
+    return { brands: shown.length, products: products.length, groups };
+  } catch {
+    return null;
+  }
 }

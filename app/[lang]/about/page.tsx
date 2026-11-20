@@ -7,6 +7,9 @@ import { isLang } from "@/lib/dictionary";
 import { getPages } from "@/lib/pages";
 import { pageMetadata } from "@/lib/meta";
 
+// 티오 참여 브랜드 수는 실제 노출 기준으로 5분마다(관리자 변경 시 즉시) 다시 계산
+export const revalidate = 300;
+
 type Props = { params: Promise<{ lang: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

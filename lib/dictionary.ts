@@ -17,7 +17,7 @@ export const CONTACT = {
   phone: "02-544-6290",
   phoneTel: "+8225446290",
   press: "https://n.news.naver.com/mnews/article/011/0004210768?sid=101",
-  toProducts: "https://bit.ly/TO_product_list",
+  toProducts: "https://to.vigtiger.com/products",
 };
 
 const ko = {
@@ -48,10 +48,10 @@ const ko = {
     items: [
       { value: "84", unit: "개", label: "비즈니스를 지원하는 유튜브 채널" },
       { value: "992", unit: "만", label: "협업 채널 누적 구독자" },
-      { value: "92", unit: "", label: "티오(TO) 참여 브랜드" },
+      { value: "92", unit: "", label: "티오(TO) 참여 브랜드", live: "toBrands" },
       { value: "1", unit: "주", label: "애드버추얼 결정 후 집행까지" },
     ],
-    note: "채널·구독자 수 2025년 기준, 티오 참여 브랜드 2026년 11월 기준",
+    note: "채널·구독자 수 2025년 기준, 티오 참여 브랜드는 지금 티오에 노출 중인 브랜드 기준",
   },
   about: {
     eyebrow: "WHO WE WORK WITH",
@@ -236,10 +236,10 @@ const en: Dict = {
     items: [
       { value: "84", unit: "", label: "YouTube channels we support" },
       { value: "9.92", unit: "M", label: "Combined subscribers" },
-      { value: "92", unit: "", label: "Brands in the TO program" },
+      { value: "92", unit: "", label: "Brands in the TO program", live: "toBrands" },
       { value: "1", unit: " wk", label: "From go-ahead to live with Advirtual" },
     ],
-    note: "Channels and subscribers as of 2025; TO brands as of November 2026.",
+    note: "Channels and subscribers as of 2025; TO brands counted live from what the TO program shows now.",
   },
   about: {
     eyebrow: "WHO WE WORK WITH",

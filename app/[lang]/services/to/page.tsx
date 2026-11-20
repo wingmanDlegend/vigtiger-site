@@ -9,7 +9,11 @@ import BrandDirectory from "@/components/BrandDirectory";
 import { BRAND_TEXT, BRAND_TOTAL } from "@/lib/brands";
 import { CONTACT, applyPath, getDict, isLang } from "@/lib/dictionary";
 import { getPages } from "@/lib/pages";
+import { getToCounts } from "@/lib/tosite/data";
 import { pageMetadata } from "@/lib/meta";
+
+// 티오 참여 브랜드 수는 실제 노출 기준으로 5분마다(관리자 변경 시 즉시) 다시 계산
+export const revalidate = 300;
 
 type Props = { params: Promise<{ lang: string }> };
 
@@ -26,6 +30,9 @@ export default async function ToPage({ params }: Props) {
   if (!isLang(lang)) notFound();
   const p = getPages(lang).to;
   const steps = getDict(lang).services.to.steps;
+  // 참여 브랜드 숫자·목록은 지금 티오(to.vigtiger.com)에 실제 노출 중인 브랜드 기준
+  const live = await getToCounts();
+  const brandCount = live?.brands ?? BRAND_TOTAL;
 
   return (
     <>
@@ -123,9 +130,9 @@ export default async function ToPage({ params }: Props) {
               <h2 className="h2" id="brand-dir-title">
                 {BRAND_TEXT[lang].dirTitle}
               </h2>
-              <p className="lead">{BRAND_TEXT[lang].dirLead(BRAND_TOTAL)}</p>
+              <p className="lead">{BRAND_TEXT[lang].dirLead(brandCount)}</p>
             </div>
-            <BrandDirectory lang={lang} />
+            <BrandDirectory lang={lang} groups={live?.groups} />
             <div className="brand-dir-foot">
               <small className="note">{BRAND_TEXT[lang].note}</small>
               <div className="hero-ctas">
@@ -149,7 +156,7 @@ export default async function ToPage({ params }: Props) {
               <div className="brand-count">
                 <p>
                   <b>
-                    {p.brands.value}
+                    {brandCount}
                     <small>{p.brands.unit}</small>
                   </b>
                   <span>{p.brands.title}</span>

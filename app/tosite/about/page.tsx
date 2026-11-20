@@ -6,6 +6,9 @@ import { CONTACT, getDict } from "@/lib/dictionary";
 import { getPages } from "@/lib/pages";
 import { WWW_URL } from "@/lib/tosite/site";
 
+// 티오 참여 브랜드 수는 실제 노출 기준으로 5분마다(관리자 변경 시 즉시) 다시 계산
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "회사소개",
   description: "티오(TO)를 운영하는 (주)대범한사람들을 소개합니다. 크리에이터와 브랜드가 소셜미디어 안에서 쉽게 커머스를 하도록 돕습니다.",

@@ -33,10 +33,8 @@ export function applyFilter(brandsAll: PartnerBrand[], productsAll: ToProduct[],
     .filter((p) => !f.avail || p[f.avail])
     .filter((p) => !q || [p.name, p.serial ?? "", p.feature ?? "", p.section ?? "", bset.get(p.brand_id)!.b.name_ko].some((x) => x.toLowerCase().includes(q)))
     .sort((a, b) => bset.get(a.brand_id)!.i - bset.get(b.brand_id)!.i || a.sort - b.sort);
-  // 검색·협찬/대여 조건이 있으면 해당 제품이 있는 브랜드만
-  if (f.q || f.avail) {
-    const has = new Set(products.map((p) => p.brand_id));
-    brands = brands.filter((b) => has.has(b.id));
-  }
+  // 실제로 보이는 제품이 있는 브랜드만 (숫자·인쇄본도 실제 노출 기준)
+  const has = new Set(products.map((p) => p.brand_id));
+  brands = brands.filter((b) => has.has(b.id));
   return { brands, products };
 }

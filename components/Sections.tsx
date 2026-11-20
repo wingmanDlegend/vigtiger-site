@@ -4,6 +4,8 @@ import type { Lang } from "@/lib/forms";
 import { CONTACT, applyPath, getDict, pagePath } from "@/lib/dictionary";
 import { ArrowRight, ArrowUpRight, Bag, Chat, Mail, Phone } from "./Icons";
 import { BRAND_TEXT, BRAND_TOTAL, FEATURED_BRANDS, categoryOf } from "@/lib/brands";
+import { getToCounts } from "@/lib/tosite/data";
+import { brandKey } from "@/lib/partners/model";
 
 export const Lines = ({ lines }: { lines: string[] }) => (
   <>
@@ -77,8 +79,10 @@ export function MockFrame({ lang }: { lang: Lang }) {
 }
 
 /** 주요 성과 띠 */
-export function StatsBand({ lang }: { lang: Lang }) {
+export async function StatsBand({ lang }: { lang: Lang }) {
   const t = getDict(lang).stats;
+  // 티오 참여 브랜드 수는 지금 실제로 노출 중인 브랜드 기준 (못 읽으면 기본값)
+  const live = await getToCounts();
   return (
     <section className="stats" aria-label={t.label}>
       <div className="container stats-inner">
@@ -87,7 +91,7 @@ export function StatsBand({ lang }: { lang: Lang }) {
             <div className="stat" key={it.label}>
               <dt>{it.label}</dt>
               <dd>
-                {it.value}
+                {"live" in it && it.live === "toBrands" && live ? live.brands : it.value}
                 <small>{it.unit}</small>
               </dd>
             </div>
@@ -273,8 +277,13 @@ export function Steps({ steps, className = "" }: { steps: { title: string; desc:
 }
 
 /** 홈 — 함께하는 브랜드 (움직이지 않는 칸) */
-export function BrandsBand({ lang }: { lang: Lang }) {
+export async function BrandsBand({ lang }: { lang: Lang }) {
   const t = BRAND_TEXT[lang];
+  const live = await getToCounts();
+  const total = live?.brands ?? BRAND_TOTAL;
+  // 주요 브랜드 중 지금 노출 중인 브랜드만
+  const liveNames = live ? new Set(live.groups.flatMap((g) => g.brands).map(brandKey)) : null;
+  const featured = liveNames ? FEATURED_BRANDS.filter((b) => liveNames.has(brandKey(b))) : FEATURED_BRANDS;
   return (
     <section className="brands-band" aria-labelledby="brands-title">
       <div className="container section-tight">
@@ -282,13 +291,13 @@ export function BrandsBand({ lang }: { lang: Lang }) {
           <div>
             <p className="eyebrow">{t.eyebrow}</p>
             <h2 className="h2" id="brands-title">
-              <Lines lines={t.homeTitle(BRAND_TOTAL)} />
+              <Lines lines={t.homeTitle(total)} />
             </h2>
           </div>
           <p className="lead">{t.homeLead}</p>
         </div>
         <ul className="brand-grid is-featured">
-          {FEATURED_BRANDS.map((b) => (
+          {featured.map((b) => (
             <li key={b}>
               <b>{b}</b>
               <small>{lang === "ko" ? categoryOf(b)?.ko : categoryOf(b)?.en}</small>
@@ -296,7 +305,7 @@ export function BrandsBand({ lang }: { lang: Lang }) {
           ))}
         </ul>
         <Link className="link-arrow" href={`${pagePath(lang, "services/to")}#brands`}>
-          {t.seeAll} ({BRAND_TOTAL})
+          {t.seeAll} ({total})
           <ArrowRight size={16} />
         </Link>
       </div>
