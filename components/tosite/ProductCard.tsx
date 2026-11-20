@@ -1,4 +1,5 @@
 import type { PubBrand, PubProduct } from "@/lib/tosite/data";
+import WishButton from "./WishButton";
 
 const md = (d: string) => {
   const [, m, day] = d.split("-");
@@ -17,6 +18,7 @@ export default function ProductCard({ p, brand, variant }: { p: PubProduct; bran
         {variant === "pick" && <span className="tp-flag is-pick">이번 주 추천</span>}
         {variant === "hot" && <span className="tp-flag is-hot">{p.hot_note || "핫딜"}</span>}
         {!variant && p.note && <span className="tp-flag">{p.note}</span>}
+        <WishButton id={p.id} name={p.name} />
       </div>
       <div className="tp-body">
         {brand && <span className="tp-brand">{brand.name_ko}</span>}

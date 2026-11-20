@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ToCta, ToFooter, ToHeader } from "@/components/tosite/Chrome";
+import WishBar from "@/components/tosite/WishBar";
 import ProductCard from "@/components/tosite/ProductCard";
 import { CATEGORIES, CATEGORY_LABEL, type CategoryKey } from "@/lib/partners/model";
 import { getToCatalog, type PubProduct } from "@/lib/tosite/data";
@@ -196,6 +197,7 @@ export default async function ToProducts({ searchParams }: { searchParams: SP })
 
         <ToCta />
       </main>
+      <WishBar />
       <ToFooter />
     </>
   );

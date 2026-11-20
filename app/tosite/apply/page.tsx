@@ -7,11 +7,11 @@ import { getToCatalog } from "@/lib/tosite/data";
 
 export const metadata: Metadata = {
   title: "상담신청",
-  description: "티오(TO)로 써보고 싶은 브랜드 두 곳을 골라 상담을 신청하세요. 대여 일정과 협찬 조건을 안내해 드립니다.",
+  description: "티오(TO)로 써보고 싶은 제품을 찜해 두거나 바로 골라 상담을 신청하세요. 대여 일정과 협찬 조건을 안내해 드립니다.",
   alternates: { canonical: "/apply" },
 };
 
-type SP = Promise<{ brand?: string; product?: string }>;
+type SP = Promise<{ brand?: string; product?: string; from?: string }>;
 
 export default async function ToApply({ searchParams }: { searchParams: SP }) {
   const sp = await searchParams;
@@ -29,10 +29,13 @@ export default async function ToApply({ searchParams }: { searchParams: SP }) {
     id: p.id,
     brandId: p.brand_id,
     label: `${p.name}${!p.rental && p.sponsor ? " · 협찬만 가능" : ""}`,
+    name: p.name,
+    image: p.image_url,
+    serial: p.serial,
   }));
-  // 제품 카드의 '신청하기'로 들어오면 브랜드 1·제품 1을 미리 골라 둡니다.
-  const initBrand = brands.some((b) => b.id === sp.brand) ? sp.brand : undefined;
-  const initProduct = initBrand && products.some((p) => p.id === sp.product && p.brandId === initBrand) ? sp.product : undefined;
+  // 제품 카드의 '신청하기'로 들어오면 그 제품을 찜 목록에 넣고 첫 번째로 골라 둡니다.
+  const initProduct = products.some((p) => p.id === sp.product) ? sp.product : undefined;
+  const initBrand = initProduct ? products.find((p) => p.id === initProduct)!.brandId : brands.some((b) => b.id === sp.brand) ? sp.brand : undefined;
   const picked = initProduct ? data!.products.find((p) => p.id === initProduct) : undefined;
 
   return (
@@ -42,9 +45,9 @@ export default async function ToApply({ searchParams }: { searchParams: SP }) {
         <section className="to-page-head">
           <div className="container">
             <p className="hero-eyebrow">TO 상담신청</p>
-            <h1>써보고 싶은 브랜드 두 곳을 골라 주세요</h1>
+            <h1>써보고 싶은 제품을 골라 주세요</h1>
             <p className="hero-body">
-              채널 정보와 참여 희망 브랜드를 남겨 주시면, 담당자가 대여 가능 여부와 일정을 확인해 연락드려요. 대여는 무료이고 별도 조건은 없어요.
+              채널 정보와 써보고 싶은 브랜드·제품(1곳 이상, 최대 2곳)을 남겨 주시면, 담당자가 대여 가능 여부와 일정을 확인해 연락드려요. 제품 리스트에서 ♡로 찜해 둔 제품 중에서 고를 수도 있어요.
             </p>
           </div>
         </section>
@@ -52,11 +55,11 @@ export default async function ToApply({ searchParams }: { searchParams: SP }) {
           <div className="to-apply-main">
             {picked && (
               <p className="to-picked" role="status">
-                <b>{data!.brandById.get(picked.brand_id)?.name_ko}</b> · {picked.name} 을(를) 브랜드 1에 담아 두었어요.
+                <b>{data!.brandById.get(picked.brand_id)?.name_ko}</b> · {picked.name} 을(를) 찜하고 첫 번째로 골라 두었어요.
               </p>
             )}
             {data ? (
-              <ToApplyForm brands={brands} products={products} initial={{ brand1: initBrand, product1: initProduct }} />
+              <ToApplyForm brands={brands} products={products} initial={{ brand1: initBrand, product1: initProduct, fromWish: sp.from === "wish" }} />
             ) : (
               <p className="form-error" role="alert">
                 신청서를 잠시 불러오지 못했어요. 잠시 뒤 다시 열어 주시거나 {CONTACT.email} 로 연락해 주세요.

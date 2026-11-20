@@ -1,21 +1,23 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { FORMS, LIMITS, type Field } from "@/lib/forms";
 import { getDict } from "@/lib/dictionary";
 import { submitToApply } from "@/app/tosite/apply/actions";
 import { track } from "@/lib/track";
 import { Check } from "@/components/Icons";
+import { addWish, readWish, removeWish, useWish } from "./wish";
 
 export type FormBrand = { id: string; name: string; category: string; categoryLabel: string };
-export type FormProduct = { id: string; brandId: string; label: string };
+export type FormProduct = { id: string; brandId: string; label: string; name: string; image: string | null; serial: string | null };
 
 type Status = "idle" | "sending" | "done" | "error";
 const t = getDict("ko").apply;
 const def = FORMS.to;
 const CHANNEL_KEYS = ["channelName", "channelUrl", "subscribers", "category"];
 
-// to.vigtiger.com 상담신청서 — 참여 희망 브랜드 2곳(필수, 서로 달라야 함) + 브랜드별 관심 제품(선택)
+// to.vigtiger.com 상담신청서 — 써보고 싶은 브랜드·제품 1곳 필수, 최대 2곳
+// 고르는 방법 두 가지: ① 제품 리스트에서 찜한 제품 중에서 고르기 ② 드롭다운으로 직접 고르기
 export default function ToApplyForm({
   brands,
   products,
@@ -23,7 +25,7 @@ export default function ToApplyForm({
 }: {
   brands: FormBrand[];
   products: FormProduct[];
-  initial: { brand1?: string; product1?: string };
+  initial: { brand1?: string; product1?: string; fromWish?: boolean };
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -31,6 +33,19 @@ export default function ToApplyForm({
   const [p1, setP1] = useState(initial.product1 ?? "");
   const [b2, setB2] = useState("");
   const [p2, setP2] = useState("");
+  const { ids: wishIds, ready } = useWish();
+  const [mode, setMode] = useState<"wish" | "direct">(initial.product1 || initial.fromWish ? "wish" : "direct");
+  const [picked, setPicked] = useState<string[]>(initial.product1 ? [initial.product1] : []);
+  const pById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
+  const bById = useMemo(() => new Map(brands.map((b) => [b.id, b])), [brands]);
+  // 카드의 '신청하기'로 들어온 제품은 찜 목록에도 넣어 둠. 찜 목록이 있으면 '찜한 제품' 방식으로 시작
+  useEffect(() => {
+    if (initial.product1) addWish(initial.product1);
+    else if (readWish().some((id) => pById.has(id))) setMode("wish");
+  }, [initial.product1, pById]);
+  const wished = wishIds.map((id) => pById.get(id)).filter((p): p is FormProduct => !!p);
+  const togglePick = (id: string) =>
+    setPicked((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : cur.length >= 2 ? cur : [...cur, id]));
 
   const byBrand = useMemo(() => {
     const m = new Map<string, FormProduct[]>();
@@ -47,18 +62,29 @@ export default function ToApplyForm({
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
-    if (!b1 || !b2) {
-      setError("참여 희망 브랜드 두 곳을 골라 주세요.");
+    // 고른 방법에 따라 칸 1·2를 채움
+    let slots: { brand: string; product: string }[];
+    if (mode === "wish") {
+      slots = picked.map((id) => pById.get(id)).filter((p): p is FormProduct => !!p).map((p) => ({ brand: p.brandId, product: p.id }));
+    } else {
+      slots = [{ brand: b1, product: p1 }, { brand: b2, product: p2 }].filter((x) => x.brand);
+    }
+    if (slots.length === 0) {
+      setError(mode === "wish" ? "찜한 제품 중에서 1개 이상 골라 주세요. (최대 2개)" : "써보고 싶은 브랜드를 1곳 이상 골라 주세요.");
       setStatus("error");
       return;
     }
-    if (b1 === b2) {
-      setError("브랜드 1과 브랜드 2는 서로 다른 브랜드로 골라 주세요.");
+    if (slots.length === 2 && slots[0].brand === slots[1].brand && (!slots[0].product || !slots[1].product || slots[0].product === slots[1].product)) {
+      setError("같은 브랜드를 두 번 고르려면 서로 다른 제품을 골라 주세요.");
       setStatus("error");
-      form.querySelector<HTMLSelectElement>("#f-brand2")?.focus();
       return;
     }
-    const details: Record<string, string | string[]> = { brand1: b1, product1: p1, brand2: b2, product2: p2 };
+    const details: Record<string, string | string[]> = {
+      brand1: slots[0].brand,
+      product1: slots[0].product,
+      brand2: slots[1]?.brand ?? "",
+      product2: slots[1]?.product ?? "",
+    };
     for (const f of def.fields) {
       if (f.key in details) continue;
       details[f.key] = f.kind === "checkboxes" ? (fd.getAll(f.key) as string[]) : String(fd.get(f.key) ?? "");
@@ -81,6 +107,8 @@ export default function ToApplyForm({
         return;
       }
       setStatus("done");
+      // 신청한 제품은 찜 목록에서 정리
+      for (const sl of [details.product1, details.product2]) if (typeof sl === "string" && sl) removeWish(sl);
       track("generate_lead", { form_type: "to", form_lang: "ko" });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -105,31 +133,30 @@ export default function ToApplyForm({
   }
 
   const req = <span className="req">{t.required}</span>;
-  const brandSelect = (n: 1 | 2, value: string, set: (v: string) => void, setP: (v: string) => void, other: string) => (
+  const brandSelect = (n: 1 | 2, value: string, set: (v: string) => void, setP: (v: string) => void) => (
     <div className="field">
       <label className="field-label" htmlFor={`f-brand${n}`}>
         참여 희망 브랜드 {n}
-        {req}
+        {n === 1 ? req : <span className="to-opt">선택</span>}
       </label>
       <select
         id={`f-brand${n}`}
         className="select"
-        required
+        required={n === 1 && mode === "direct"}
         value={value}
         onChange={(e) => {
           set(e.target.value);
           setP("");
         }}
       >
-        <option value="" disabled>
-          브랜드를 골라 주세요
+        <option value="" disabled={n === 1}>
+          {n === 1 ? "브랜드를 골라 주세요" : "더 고르지 않을래요"}
         </option>
         {groups.map(([label, list]) => (
           <optgroup key={label} label={label}>
             {list.map((b) => (
-              <option key={b.id} value={b.id} disabled={b.id === other}>
+              <option key={b.id} value={b.id}>
                 {b.name}
-                {b.id === other ? " (다른 칸에서 고름)" : ""}
               </option>
             ))}
           </optgroup>
@@ -190,18 +217,76 @@ export default function ToApplyForm({
       </fieldset>
 
       <fieldset className="to-fieldset">
-        <legend>써보고 싶은 브랜드 두 곳</legend>
-        <p className="to-help">티오에 참여 중인 브랜드 중 두 곳을 골라 주세요. 제품까지 정했다면 함께 골라 주시고, 아직이면 상담 때 추천해 드려요.</p>
-        <div className="to-pair">
-          <div className="to-pair-col">
-            {brandSelect(1, b1, setB1, setP1, b2)}
-            {productSelect(1, b1, p1, setP1)}
-          </div>
-          <div className="to-pair-col">
-            {brandSelect(2, b2, setB2, setP2, b1)}
-            {productSelect(2, b2, p2, setP2)}
-          </div>
+        <legend>써보고 싶은 브랜드·제품 (1곳 필수, 최대 2곳)</legend>
+        <div className="to-mode" role="group" aria-label="고르는 방법">
+          <button type="button" aria-pressed={mode === "wish"} onClick={() => setMode("wish")}>
+            ♥ 찜한 제품에서 고르기{ready && wished.length ? ` (${wished.length})` : ""}
+          </button>
+          <button type="button" aria-pressed={mode === "direct"} onClick={() => setMode("direct")}>
+            직접 고르기
+          </button>
         </div>
+
+        {mode === "wish" ? (
+          !ready ? null : wished.length === 0 ? (
+            <div className="to-empty-wish">
+              아직 찜한 제품이 없어요. <a href="/products">TO 제품 리스트</a>에서 마음에 드는 제품의 ♡를 눌러 찜해 두면 여기서 바로 고를 수 있어요. 지금 바로 고르려면 &lsquo;직접 고르기&rsquo;를 눌러 주세요.
+            </div>
+          ) : (
+            <>
+              <p className="to-help">찜한 제품 중에서 <b>1~2개</b>를 골라 주세요. {picked.length === 2 ? "2개를 모두 골랐어요." : `${picked.length}개 골랐어요.`}</p>
+              <ul className="to-wishlist">
+                {wished.map((p) => {
+                  const idx = picked.indexOf(p.id);
+                  const full = picked.length >= 2 && idx < 0;
+                  return (
+                    <li key={p.id}>
+                      <label className="to-wishitem">
+                        <input type="checkbox" checked={idx >= 0} disabled={full} onChange={() => togglePick(p.id)} />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {p.image ? <img src={p.image} alt="" loading="lazy" /> : <span className="to-wish-noimg" />}
+                        <span>
+                          <small>{bById.get(p.brandId)?.name ?? ""}</small>
+                          <b>{p.name}</b>
+                          {idx >= 0 && <span className="to-slot">{idx === 0 ? "첫 번째로 신청" : "두 번째로 신청"}</span>}
+                        </span>
+                      </label>
+                      <button
+                        type="button"
+                        className="to-wish-x"
+                        aria-label={`${p.name} 찜 해제`}
+                        title="찜 해제"
+                        onClick={() => {
+                          removeWish(p.id);
+                          setPicked((cur) => cur.filter((x) => x !== p.id));
+                        }}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="to-help">
+                더 찜하고 싶다면 <a href="/products">TO 제품 리스트</a>에서 ♡를 눌러 주세요.
+              </p>
+            </>
+          )
+        ) : (
+          <>
+            <p className="to-help">티오에 참여 중인 브랜드를 <b>1곳 이상</b> 골라 주세요 (최대 2곳). 제품까지 정했다면 함께 골라 주시고, 아직이면 상담 때 추천해 드려요.</p>
+            <div className="to-pair">
+              <div className="to-pair-col">
+                {brandSelect(1, b1, setB1, setP1)}
+                {productSelect(1, b1, p1, setP1)}
+              </div>
+              <div className="to-pair-col">
+                {brandSelect(2, b2, setB2, setP2)}
+                {productSelect(2, b2, p2, setP2)}
+              </div>
+            </div>
+          </>
+        )}
         {def.fields
           .filter((f) => f.kind === "checkboxes")
           .map((f) => (

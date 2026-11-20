@@ -55,7 +55,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
   const advertisers = rows.filter((a) => a.type === "advertiser");
   const partners = rows.filter((a) => a.type === "partner");
   const toApps = rows.filter((a) => a.type === "to");
-  const toBrands = countBy(toApps, (a) => [a.details?.brand1, a.details?.brand2].map((v) => String(v ?? "").trim()).filter(Boolean)).map(([label, value]) => ({ label, value }));
+  const toBrands = countBy(toApps, (a) => [...new Set([a.details?.brand1, a.details?.brand2].map((v) => String(v ?? "").trim()).filter(Boolean))]).map(([label, value]) => ({ label, value }));
   const optRows = (list: ApplicationLite[], type: "creator" | "advertiser" | "partner", key: string, multi = false) => {
     const counts = new Map(countBy(list, (a) => (multi ? arr(a.details?.[key]) : (a.details?.[key] as string) || null)));
     const order = optionOrder(type, key);
@@ -121,7 +121,7 @@ export default async function ApplicationsDashboard({ searchParams }: { searchPa
           <ChartCard title="크리에이터 · 관심 있는 제품" note="쉼표로 나눠 센 값이에요.">
             <HBars rows={products} format={(n) => `${fmtNum(n)}건`} showShare={false} />
           </ChartCard>
-          <ChartCard title="TO 신청 · 참여 희망 브랜드" note="한 신청에 브랜드 두 곳을 적어 합계가 신청 수의 두 배예요.">
+          <ChartCard title="TO 신청 · 참여 희망 브랜드" note="한 신청에 브랜드를 2곳까지 고를 수 있어 합계가 신청 수보다 많을 수 있어요.">
             {toBrands.length ? <HBars rows={toBrands.slice(0, 12)} color={C.violet} format={(n) => `${fmtNum(n)}건`} showShare={false} /> : <p className="a-sub">이 기간에 TO 신청이 없어요.</p>}
           </ChartCard>
           <ChartCard title="광고주 · 예산 규모">

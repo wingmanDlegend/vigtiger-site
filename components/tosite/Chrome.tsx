@@ -93,7 +93,7 @@ export function ToCta() {
           <h2>
             써보고 싶은 제품이 있나요?
             <br />
-            브랜드 두 곳만 골라 신청하세요.
+            ♡로 찜해 두고 한 번에 신청하세요.
           </h2>
         </div>
         <div className="hero-ctas">

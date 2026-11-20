@@ -55,6 +55,9 @@ export function summary(a: Application) {
   const pick = (...labels: string[]) => labels.map((l) => rows[l]).filter(Boolean).join(" · ");
   if (a.type === "creator") return pick("구독자 수", "채널 카테고리", "관심 있는 서비스", "관심 있는 제품");
   if (a.type === "advertiser") return pick("홍보할 제품·서비스", "예상 예산", "희망 집행 시기");
-  if (a.type === "to") return pick("참여 희망 브랜드 1", "참여 희망 브랜드 2", "구독자 수", "채널 카테고리");
+  if (a.type === "to") {
+    const slot = (b: string, p: string) => (rows[b] ? `${rows[b]}${rows[p] ? `(${rows[p].replace(/^[A-Z0-9]+-\d+ · /, "")})` : ""}` : "");
+    return [slot("참여 희망 브랜드 1", "관심 제품 1"), slot("참여 희망 브랜드 2", "관심 제품 2"), rows["구독자 수"], rows["채널 카테고리"]].filter(Boolean).join(" · ");
+  }
   return pick("대표 상품", "제품 카테고리", "티오(크리에이터 무료 대여) 참여 의향");
 }

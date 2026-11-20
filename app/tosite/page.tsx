@@ -1,4 +1,5 @@
 import { ToCta, ToFooter, ToHeader } from "@/components/tosite/Chrome";
+import WishBar from "@/components/tosite/WishBar";
 import ProductCard from "@/components/tosite/ProductCard";
 import { ArrowRight } from "@/components/Icons";
 import { Steps, SubHero } from "@/components/Sections";
@@ -182,6 +183,7 @@ export default async function ToIntro() {
 
         <ToCta />
       </main>
+      <WishBar />
       <ToFooter />
     </>
   );

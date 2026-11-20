@@ -205,7 +205,7 @@ FORMS.to = {
     ...FORMS.creator.fields.filter((f) => ["channelName", "channelUrl", "subscribers", "category"].includes(f.key)),
     { key: "brand1", kind: "text", required: true, label: { ko: "참여 희망 브랜드 1", en: "Brand 1" } },
     { key: "product1", kind: "text", label: { ko: "관심 제품 1", en: "Product 1" } },
-    { key: "brand2", kind: "text", required: true, label: { ko: "참여 희망 브랜드 2", en: "Brand 2" } },
+    { key: "brand2", kind: "text", label: { ko: "참여 희망 브랜드 2", en: "Brand 2" } },
     { key: "product2", kind: "text", label: { ko: "관심 제품 2", en: "Product 2" } },
     {
       key: "contentType",

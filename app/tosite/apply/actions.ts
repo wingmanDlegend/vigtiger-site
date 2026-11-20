@@ -54,7 +54,7 @@ export async function submitToApply(input: ToApplyInput): Promise<ToApplyResult>
     return { ok: false, error: "server" };
   }
 
-  // 브랜드 두 곳(서로 달라야 함) + 브랜드별 관심 제품(선택)
+  // 브랜드·제품 1~2곳 (2곳째는 선택)
   const pick = (n: 1 | 2) => {
     const brandId = str(raw[`brand${n}`], 40);
     const productId = str(raw[`product${n}`], 40);
@@ -64,18 +64,23 @@ export async function submitToApply(input: ToApplyInput): Promise<ToApplyResult>
     const product = UUID_RE.test(productId) ? catalog.products.find((p) => p.id === productId && p.brand_id === brand.id) : undefined;
     return product ? { brand, product } : null;
   };
+  // 1곳은 필수, 2곳째는 선택. 같은 브랜드를 두 번 고르면 서로 다른 제품이어야 함
   const c1 = pick(1);
-  const c2 = pick(2);
-  if (!c1 || !c2) return { ok: false, error: "invalid", message: "참여 희망 브랜드 두 곳을 골라 주세요." };
-  if (c1.brand.id === c2.brand.id) return { ok: false, error: "invalid", message: "브랜드 1과 브랜드 2는 서로 다른 브랜드로 골라 주세요." };
+  const hasSecond = !!str(raw.brand2, 40);
+  const c2 = hasSecond ? pick(2) : null;
+  if (!c1) return { ok: false, error: "invalid", message: "써보고 싶은 브랜드를 1곳 이상 골라 주세요." };
+  if (hasSecond && !c2) return { ok: false, error: "invalid", message: "두 번째로 고른 브랜드·제품을 다시 확인해 주세요." };
+  if (c2 && c1.brand.id === c2.brand.id && (!c1.product || !c2.product || c1.product.id === c2.product.id)) {
+    return { ok: false, error: "invalid", message: "같은 브랜드를 두 번 고르려면 서로 다른 제품을 골라 주세요." };
+  }
 
   const label = (p: { serial: string | null; name: string } | null) => (p ? `${p.serial ? `${p.serial} · ` : ""}${p.name}` : "");
   const details: Record<string, string | string[]> = {};
   for (const f of FORMS.to.fields) {
     if (f.key === "brand1") details.brand1 = c1.brand.name_ko;
-    else if (f.key === "brand2") details.brand2 = c2.brand.name_ko;
+    else if (f.key === "brand2") details.brand2 = c2 ? c2.brand.name_ko : "";
     else if (f.key === "product1") details.product1 = label(c1.product);
-    else if (f.key === "product2") details.product2 = label(c2.product);
+    else if (f.key === "product2") details.product2 = c2 ? label(c2.product) : "";
     else if (f.kind === "checkboxes") {
       const allowed = f.options?.map((o) => o.value) ?? [];
       const vals = Array.isArray(raw[f.key]) ? (raw[f.key] as unknown[]) : [];
@@ -93,9 +98,9 @@ export async function submitToApply(input: ToApplyInput): Promise<ToApplyResult>
   }
   // 나중에 제품과 연결할 수 있도록 ID도 함께 남깁니다 (관리자 화면에는 이름이 보임)
   details.brand1_id = c1.brand.id;
-  details.brand2_id = c2.brand.id;
+  if (c2) details.brand2_id = c2.brand.id;
   if (c1.product) details.product1_id = c1.product.id;
-  if (c2.product) details.product2_id = c2.product.id;
+  if (c2?.product) details.product2_id = c2.product.id;
 
   const record = {
     id: randomUUID(),
