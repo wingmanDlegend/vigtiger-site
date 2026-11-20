@@ -30,7 +30,7 @@ export default async function AdminNewProduct({ searchParams }: { searchParams: 
             submitLabel="추가"
             cancelHref="/to/products"
             admin={{
-              extra: { brand_id: brand.id, serial: "", status: "approved", sort: "" },
+              extra: { brand_id: brand.id, serial: "", status: "approved", sort: "", to_visible: true },
               brands: brands.map((b) => ({ id: b.id, label: `${b.name_ko} (${b.code})` })),
             }}
           />

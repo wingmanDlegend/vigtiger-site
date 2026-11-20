@@ -132,6 +132,7 @@ export async function adminSaveProductAction(id: string | null, raw: Record<stri
   const status = STATUSES.includes(raw.status as ProductStatus) ? (raw.status as ProductStatus) : "approved";
   let serial = String(raw.serial ?? "").trim().toUpperCase();
   const sort = Number(raw.sort) || 0;
+  const to_visible = raw.to_visible !== false && raw.to_visible !== "false";
   if (serial && !/^[A-Z0-9]{1,8}-\d{1,4}$/.test(serial)) errors.push("일련번호는 'OA-12'처럼 브랜드코드-숫자 형식이에요.");
   if (errors.length) return { ok: false, message: "입력 내용을 확인해 주세요.", errors };
   let newId = id;
@@ -144,6 +145,7 @@ export async function adminSaveProductAction(id: string | null, raw: Record<stri
       brand_id: brand.id,
       serial: serial || null,
       status,
+      to_visible,
       sort: sort || (await maxSort(brand.id)) + 10,
       ...(status === "approved" ? { approved_at: new Date().toISOString() } : {}),
     };

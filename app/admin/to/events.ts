@@ -34,6 +34,8 @@ const LABEL: Record<string, string> = {
   staff_activated: "직원 계정 사용 재개",
   staff_deactivated: "직원 계정 사용 중지",
   staff_deleted: "직원 계정 삭제",
+  to_visible_on: "TO 서비스 노출 켬",
+  to_visible_off: "TO 서비스 노출 끔",
   promo_pick_on: "이번 주 추천에 올림",
   promo_pick_off: "이번 주 추천에서 내림",
   promo_hot_on: "핫딜에 올림",

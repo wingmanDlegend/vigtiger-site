@@ -7,6 +7,7 @@ import PTop, { PHead } from "../../PTop";
 import ProductForm from "@/components/partners/ProductForm";
 import { CatalogCell, RequestTags, StatusBadge } from "@/components/partners/ui";
 import { updateProductAction } from "../actions";
+import VisToggle from "../VisToggle";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "제품 수정" };
@@ -24,10 +25,10 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <PTop s={s} current="b-home" brandName={brand?.name_ko} />
+      <PTop s={s} current="products" brandName={brand?.name_ko} />
       <main className="a-wrap">
         <PHead
-          crumb="내 제품"
+          crumb="제품 관리"
           title={p.name}
           desc={
             isLive
@@ -42,6 +43,13 @@ export default async function EditProduct({ params }: { params: Promise<{ id: st
         />
         {p.reject_reason && <p className="a-error" role="note">반려 사유: {p.reject_reason}</p>}
         {p.delete_requested && <p className="a-note" role="note">이 제품은 삭제를 요청한 상태예요. 목록에서 '요청 취소'를 누르면 되돌릴 수 있어요.</p>}
+        <section className="a-card a-sec p-vis-sec">
+          <h2>TO 서비스 노출</h2>
+          <VisToggle id={p.id} name={p.name} on={p.to_visible !== false} withText />
+          <p className="a-sub">
+            {isLive ? "켜 두면 크리에이터용 TO 제품 리스트(to.vigtiger.com·인쇄)에 보여요." : "승인된 뒤부터 적용돼요."} 켜고 끄는 건 승인 없이 바로 반영돼요.
+          </p>
+        </section>
         {isLive && (
           <section className="a-card a-sec">
             <h2>지금 리스트에 보이는 모습</h2>

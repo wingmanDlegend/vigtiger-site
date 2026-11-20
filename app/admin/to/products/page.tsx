@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/partners/auth";
 import { ensureSeeded, listBrands, listProducts } from "@/lib/partners/db";
-import { CATEGORIES, STATUS_LABEL, type ProductStatus } from "@/lib/partners/model";
+import { CATEGORIES, STATUS_LABEL, fieldText, type ProductStatus } from "@/lib/partners/model";
 import AdminTop from "@/app/admin/AdminTop";
 import { PageHead as PHead } from "@/app/admin/SubNav";
 import { RequestTags, StatusBadge, Thumb } from "@/components/partners/ui";
@@ -97,6 +97,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: SP
                   <th scope="col">제품</th>
                   <th scope="col">브랜드</th>
                   <th scope="col">일련번호</th>
+                  <th scope="col">공구가 · 수수료</th>
                   <th scope="col">협찬·대여</th>
                   <th scope="col">상태</th>
                 </tr>
@@ -112,6 +113,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: SP
                           <div>
                             <a className="a-name" href={`/to/products/${p.id}`}>{p.name}</a>
                             {p.note && <div className="a-sub">{p.note}</div>}
+                            {p.to_visible === false && <span className="p-tag is-off">TO 비노출</span>}
                           </div>
                         </div>
                       </td>
@@ -120,13 +122,16 @@ export default async function AdminProducts({ searchParams }: { searchParams: SP
                         {b && !b.active && <div className="a-sub">브랜드 비노출</div>}
                       </td>
                       <td className="a-nowrap">{p.serial ?? "–"}</td>
+                      <td className="a-nowrap">
+                        {p.groupbuy_price !== null || p.commission_rate !== null ? `${fieldText("groupbuy_price", p.groupbuy_price)} · ${fieldText("commission_rate", p.commission_rate)}` : <span className="a-sub">–</span>}
+                      </td>
                       <td className="a-nowrap">협찬 {p.sponsor ? "가능" : "-"} · 대여 {p.rental ? "가능" : "-"}</td>
                       <td className="a-nowrap"><StatusBadge status={p.status} /> <RequestTags p={p} /></td>
                     </tr>
                   );
                 })}
                 {rows.length === 0 && (
-                  <tr><td colSpan={5} className="a-empty">조건에 맞는 제품이 없어요.</td></tr>
+                  <tr><td colSpan={6} className="a-empty">조건에 맞는 제품이 없어요.</td></tr>
                 )}
               </tbody>
             </table>

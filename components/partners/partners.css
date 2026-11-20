@@ -150,3 +150,26 @@
 .pr-clear form { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
 @media (max-width: 1100px) { .pr-cols { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .pr-row, .pr-row-top { flex-direction: column; align-items: stretch; } .pr-hot-form { padding-left: 0; } }
+
+/* 제품 가격·판매 조건 */
+.p-price-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 16px; }
+.p-unit { display: flex; align-items: center; gap: 6px; }
+.p-unit .a-input { width: 100%; text-align: right; }
+.p-unit > span { font-size: 13px; color: var(--muted); font-weight: 700; }
+@media (max-width: 900px) { .p-price-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* TO 노출 스위치 */
+.p-vis { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 700; }
+.p-vis input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.p-vis-track { width: 36px; height: 20px; border-radius: 999px; background: #cfcac2; position: relative; flex: none; transition: background 0.15s; }
+.p-vis-track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
+.p-vis input:checked + .p-vis-track { background: #11552a; }
+.p-vis input:checked + .p-vis-track::after { transform: translateX(16px); }
+.p-vis input:focus-visible + .p-vis-track { outline: 3px solid var(--ink, #111); outline-offset: 2px; }
+.p-vis input:disabled + .p-vis-track { opacity: 0.5; }
+.p-tag.is-off { background: #eeeeee; color: #4a4a4a; }
+.p-terms { margin: 12px 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 13px; max-width: 470px; }
+.p-terms > div { display: contents; }
+.p-terms dt { color: var(--muted); font-weight: 700; }
+.p-terms dd { margin: 0; white-space: pre-wrap; }
+.p-vis-wrap { display: inline-flex; flex-direction: column; gap: 4px; }
+.p-vis-sec .p-vis { font-size: 14px; }

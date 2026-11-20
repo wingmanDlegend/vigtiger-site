@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { TO_SITE_TAG } from "@/lib/tosite/data";
 import { redirect } from "next/navigation";
 import { actorOf, requireBrand } from "@/lib/partners/auth";
 import { deleteProduct, getBrand, getProduct, insertProduct, logEvent, maxSort, patchBrand, patchProduct } from "@/lib/partners/db";
@@ -46,7 +47,8 @@ export async function createProductAction(raw: Record<string, unknown>): Promise
     // 브랜드 '리스트 노출'이 꺼져 있어도 등록 요청은 받습니다 (노출 여부는 관리자가 따로 정함)
     const brand = await getBrand(s.brandId);
     if (!brand) return { ok: false, message: "브랜드 정보를 찾을 수 없어요. 관리자에게 문의해 주세요." };
-    const p = await insertProduct({ ...draftToRow(value), brand_id: s.brandId, status: "pending", created_by: s.userId, sort: (await maxSort(s.brandId)) + 10 });
+    const to_visible = raw.to_visible !== false && raw.to_visible !== "false";
+    const p = await insertProduct({ ...draftToRow(value), to_visible, brand_id: s.brandId, status: "pending", created_by: s.userId, sort: (await maxSort(s.brandId)) + 10 });
     id = p.id;
     await logEvent({ ...actorOf(s), action: "product_submitted", brand_id: s.brandId, product_id: p.id, detail: { name: value.name } });
     await notifyPartners(`${brand.name_ko} — 새 제품 등록 요청: ${value.name}`);
@@ -110,6 +112,24 @@ export async function deleteProductAction(id: string): Promise<ActionResult> {
   }
   done();
   return { ok: true, message: "삭제를 요청했어요. 관리자가 승인하면 리스트에서 빠져요." };
+}
+
+/** TO 서비스 노출 켜기/끄기 — 브랜드가 바로 정함 (승인 없음) */
+export async function setToVisibleAction(id: string, on: boolean): Promise<ActionResult> {
+  const s = await brandSession();
+  try {
+    const p = await ownProduct(s.brandId, id);
+    if (p.to_visible === on) return { ok: true, message: on ? "이미 노출 중이에요." : "이미 숨겨져 있어요." };
+    await patchProduct(id, { to_visible: !!on });
+    await logEvent({ ...actorOf(s), action: on ? "to_visible_on" : "to_visible_off", brand_id: s.brandId, product_id: id, detail: { name: p.name } });
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "처리하지 못했어요." };
+  }
+  done();
+  revalidateTag(TO_SITE_TAG, { expire: 0 });
+  revalidatePath("/partners/catalog");
+  revalidatePath("/admin/to/catalog");
+  return { ok: true, message: on ? "TO 서비스에 노출해요." : "TO 서비스에서 숨겼어요." };
 }
 
 export async function cancelRequestAction(id: string): Promise<ActionResult> {

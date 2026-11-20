@@ -2,13 +2,12 @@ import type { Session } from "@/lib/partners/auth";
 import { brandLogoutAction } from "@/components/partners/actions";
 
 // partners.vigtiger.com — 브랜드 담당자 전용 머리·메뉴 (관리 기능은 admin.vigtiger.com)
-export type PNavKey = "b-home" | "b-new" | "b-profile" | "catalog" | "password";
+export type PNavKey = "products" | "b-profile" | "catalog" | "password";
 
 const NAV: { group?: string; items: { key: PNavKey; label: string; href: string }[] }[] = [
   {
     items: [
-      { key: "b-home", label: "내 제품", href: "/my" },
-      { key: "b-new", label: "제품 등록", href: "/my/new" },
+      { key: "products", label: "제품 관리", href: "/my" },
       { key: "b-profile", label: "브랜드 정보", href: "/my/profile" },
       { key: "catalog", label: "제품 리스트", href: "/catalog" },
     ],

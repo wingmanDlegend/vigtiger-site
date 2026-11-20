@@ -14,10 +14,10 @@ export default async function NewProduct() {
   const sections = [...new Set(products.map((p) => p.section).filter(Boolean) as string[])];
   return (
     <>
-      <PTop s={s} current="b-new" brandName={brand?.name_ko} />
+      <PTop s={s} current="products" brandName={brand?.name_ko} />
       <main className="a-wrap">
-        <PHead crumb="내 제품" title="제품 등록" desc="저장하면 '승인 대기'가 돼요. 담당자가 승인하면 티오 일련번호가 붙고 제품 리스트에 올라가요." />
-        <ProductForm submit={createProductAction} sections={sections} submitLabel="등록 요청" cancelHref="/my" />
+        <PHead crumb="제품 관리" title="제품 등록" desc="저장하면 '승인 대기'가 돼요. 담당자가 승인하면 티오 일련번호가 붙고, TO 노출을 켜 두면 크리에이터용 제품 리스트에 올라가요." />
+        <ProductForm submit={createProductAction} sections={sections} submitLabel="등록 요청" cancelHref="/my" visibility />
       </main>
     </>
   );

@@ -1,4 +1,4 @@
-import { STATUS_LABEL, type ProductDraft, type ProductStatus, type ToProduct } from "@/lib/partners/model";
+import { PRICE_KEYS, PRODUCT_FIELDS, STATUS_LABEL, discountPct, fieldText, type ProductDraft, type ProductStatus, type ToProduct } from "@/lib/partners/model";
 
 const STATUS_STYLE: Record<ProductStatus, { bg: string; fg: string }> = {
   pending: { bg: "#fff1e6", fg: "#9a3412" },
@@ -61,5 +61,24 @@ export function CatalogCell({ p, serial }: { p: Pick<ProductDraft, "name" | "fea
         </div>
       </div>
     </article>
+  );
+}
+
+/** 가격·판매 조건 요약 (관리자 승인 화면용) — 비어 있으면 안내 문구 */
+export function PriceTerms({ d }: { d: ProductDraft }) {
+  const rows = PRODUCT_FIELDS.filter((f) => PRICE_KEYS.includes(f.key) && d[f.key] !== null && d[f.key] !== "");
+  if (rows.length === 0) return <p className="a-sub">가격·판매 조건: 입력 안 함</p>;
+  return (
+    <dl className="p-terms">
+      {rows.map((f) => (
+        <div key={f.key}>
+          <dt>{f.label}</dt>
+          <dd>
+            {fieldText(f.key, d[f.key])}
+            {f.key === "groupbuy_price" && discountPct(d.list_price, d.groupbuy_price) !== null && <small> (정가 대비 {discountPct(d.list_price, d.groupbuy_price)}%↓)</small>}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }

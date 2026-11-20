@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { requireBrand } from "@/lib/partners/auth";
 import { getBrand, listProducts } from "@/lib/partners/db";
-import { CATEGORY_LABEL, PRODUCT_FIELDS, fmtDate, type ProductStatus } from "@/lib/partners/model";
+import { CATEGORY_LABEL, PRODUCT_FIELDS, fieldText, fmtDate, type ProductStatus } from "@/lib/partners/model";
 import PTop, { PHead } from "../PTop";
 import { RequestTags, StatusBadge, Thumb } from "@/components/partners/ui";
 import RowActions from "./RowActions";
+import VisToggle from "./VisToggle";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "내 제품" };
+export const metadata: Metadata = { title: "제품 관리" };
 
 type SP = Promise<{ sent?: string; status?: string; pw?: string }>;
 
@@ -30,12 +31,12 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
 
   return (
     <>
-      <PTop s={s} current="b-home" brandName={brand?.name_ko} />
+      <PTop s={s} current="products" brandName={brand?.name_ko} />
       <main className="a-wrap">
         <PHead
           crumb={brand ? `${brand.name_ko} · ${CATEGORY_LABEL[brand.category]}` : undefined}
-          title="내 제품"
-          desc="등록·수정·삭제는 대범한사람들 담당자가 확인하고 승인하면 티오 제품 리스트에 반영돼요."
+          title="제품 관리"
+          desc="제품 등록·정보 수정·삭제는 대범한사람들 담당자가 확인하고 승인하면 반영돼요. 'TO 노출'은 승인 없이 바로 켜고 끌 수 있어요."
           actions={<a className="a-btn" href="/my/new">+ 제품 등록</a>}
         />
         {brand && !brand.active && (
@@ -67,7 +68,9 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
                 <tr>
                   <th scope="col">제품</th>
                   <th scope="col">일련번호</th>
+                  <th scope="col">가격 · 수수료</th>
                   <th scope="col">협찬·대여</th>
+                  <th scope="col">TO 노출</th>
                   <th scope="col">상태</th>
                   <th scope="col">최근 변경</th>
                   <th scope="col"><span className="sr-only">작업</span></th>
@@ -95,7 +98,22 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
                       </div>
                     </td>
                     <td className="a-nowrap">{p.serial ?? <span className="a-sub">승인 시 부여</span>}</td>
+                    <td className="a-nowrap">
+                      {p.groupbuy_price !== null || p.online_price !== null ? (
+                        <>
+                          <div>공구가 {fieldText("groupbuy_price", p.groupbuy_price)}</div>
+                          <div className="a-sub">
+                            판매가 {fieldText("online_price", p.online_price)} · 수수료 {fieldText("commission_rate", p.commission_rate)}
+                          </div>
+                        </>
+                      ) : (
+                        <a className="a-sub" href={`/my/${p.id}`}>가격 입력하기</a>
+                      )}
+                    </td>
                     <td className="a-nowrap">협찬 {p.sponsor ? "가능" : "-"} · 대여 {p.rental ? "가능" : "-"}</td>
+                    <td className="a-nowrap">
+                      <VisToggle id={p.id} name={p.name} on={p.to_visible !== false} />
+                    </td>
                     <td className="a-nowrap">
                       <StatusBadge status={p.status} /> <RequestTags p={p} />
                     </td>
@@ -107,8 +125,8 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
                 ))}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="a-empty">
-                      {all.length === 0 ? "아직 등록한 제품이 없어요. '제품 등록'으로 첫 제품을 올려 주세요." : "이 상태의 제품이 없어요."}
+                    <td colSpan={8} className="a-empty">
+                      {all.length === 0 ? "아직 등록한 제품이 없어요. '+ 제품 등록'으로 첫 제품을 올려 주세요." : "이 상태의 제품이 없어요."}
                     </td>
                   </tr>
                 )}

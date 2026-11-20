@@ -58,7 +58,7 @@ export function todayKst() {
 export async function getToCatalog() {
   const [brandsRaw, productsRaw] = await Promise.all([
     get<PubBrand[]>(`partner_brands?select=${BRAND_COLS}&active=is.true&order=sort.asc,name_ko.asc&limit=1000`),
-    get<PubProduct[]>(`to_products?select=${PRODUCT_COLS}&status=eq.approved&order=sort.asc,created_at.asc&limit=5000`),
+    get<PubProduct[]>(`to_products?select=${PRODUCT_COLS}&status=eq.approved&to_visible=is.true&order=sort.asc,created_at.asc&limit=5000`),
   ]);
   const catOrder = new Map(CATEGORIES.map((c, i) => [c.key, i]));
   const brands = brandsRaw

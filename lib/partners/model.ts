@@ -52,6 +52,15 @@ export type ToProduct = {
   delete_requested: boolean;
   reject_reason: string | null;
   sort: number;
+  /** 브랜드가 정하는 TO 서비스 노출 (끄면 to.vigtiger.com·제품 리스트·인쇄에서 빠짐, 승인 없이 바로 반영) */
+  to_visible: boolean;
+  list_price: number | null;
+  online_price: number | null;
+  groupbuy_price: number | null;
+  commission_rate: number | null;
+  own_mall_groupbuy: OwnMall | null;
+  gift: string | null;
+  extra_note: string | null;
   /** to.vigtiger.com 노출 — 이번 주 추천 / 핫딜 (admin에서 관리) */
   pick_week: boolean;
   pick_sort: number;
@@ -82,7 +91,10 @@ export type PartnerUser = {
   created_at: string;
 };
 
-/** 브랜드가 고칠 수 있는 제품 항목 */
+export type OwnMall = "yes" | "no" | "discuss";
+export const OWN_MALL_LABEL: Record<OwnMall, string> = { yes: "진행해요", no: "진행 안 해요", discuss: "협의 가능" };
+
+/** 브랜드가 고칠 수 있는 제품 항목 (가격·판매 조건 포함 — 승인 후 반영) */
 export type ProductDraft = {
   name: string;
   feature: string;
@@ -92,6 +104,13 @@ export type ProductDraft = {
   product_url: string;
   image_url: string;
   note: string;
+  list_price: number | null;
+  online_price: number | null;
+  groupbuy_price: number | null;
+  commission_rate: number | null;
+  own_mall_groupbuy: OwnMall | "";
+  gift: string;
+  extra_note: string;
 };
 export const PRODUCT_FIELDS: { key: keyof ProductDraft; label: string }[] = [
   { key: "name", label: "제품명" },
@@ -102,7 +121,31 @@ export const PRODUCT_FIELDS: { key: keyof ProductDraft; label: string }[] = [
   { key: "product_url", label: "상품 링크" },
   { key: "image_url", label: "제품 이미지" },
   { key: "note", label: "비고" },
+  { key: "list_price", label: "정가" },
+  { key: "online_price", label: "온라인 판매가" },
+  { key: "groupbuy_price", label: "공구가" },
+  { key: "commission_rate", label: "판매 수수료" },
+  { key: "own_mall_groupbuy", label: "자사몰 공구 진행" },
+  { key: "gift", label: "사은품" },
+  { key: "extra_note", label: "기타 사항" },
 ];
+
+export const PRICE_KEYS: string[] = ["list_price", "online_price", "groupbuy_price", "commission_rate", "own_mall_groupbuy", "gift", "extra_note"];
+const won = (n: number) => `${n.toLocaleString("ko-KR")}원`;
+/** 승인 화면·목록에서 값 보여 주기 */
+export function fieldText(k: keyof ProductDraft | string, v: unknown): string {
+  if (v === null || v === undefined || v === "") return "–";
+  if (k === "list_price" || k === "online_price" || k === "groupbuy_price") return typeof v === "number" ? won(v) : String(v);
+  if (k === "commission_rate") return `${v}%`;
+  if (k === "own_mall_groupbuy") return OWN_MALL_LABEL[v as OwnMall] ?? String(v);
+  if (typeof v === "boolean") return v ? "가능" : "불가";
+  return String(v);
+}
+/** 정가 대비 할인율 (공구가·판매가) */
+export function discountPct(base: number | null, price: number | null) {
+  if (!base || price === null || price === undefined || price > base) return null;
+  return Math.round(((base - price) / base) * 100);
+}
 
 /** 브랜드가 고칠 수 있는 브랜드 소개 항목 */
 export type BrandProfile = {
@@ -143,8 +186,24 @@ export function safeImageUrl(v: string) {
   return v.startsWith(base) && !v.includes("..") ? v : null;
 }
 
+/** "12,000원" → 12000, 빈칸 → null, 이상한 값 → NaN */
+function money(v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "number") return Number.isFinite(v) ? Math.round(v) : NaN;
+  const s = String(v).replace(/[,\s원]/g, "");
+  if (!s) return null;
+  return /^\d{1,10}$/.test(s) ? Number(s) : NaN;
+}
+function percent(v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  const s = String(v).replace(/[\s%]/g, "");
+  if (!s) return null;
+  return /^\d{1,3}(\.\d{1,2})?$/.test(s) ? Number(s) : NaN;
+}
+
 export function cleanProduct(raw: Record<string, unknown>): { value: ProductDraft; errors: string[] } {
   const errors: string[] = [];
+  const om = String(raw.own_mall_groupbuy ?? "");
   const value: ProductDraft = {
     name: oneLine(raw.name).slice(0, 200),
     feature: str(raw.feature).slice(0, 1000),
@@ -154,7 +213,21 @@ export function cleanProduct(raw: Record<string, unknown>): { value: ProductDraf
     product_url: oneLine(raw.product_url),
     image_url: oneLine(raw.image_url),
     note: oneLine(raw.note).slice(0, 100),
+    list_price: money(raw.list_price),
+    online_price: money(raw.online_price),
+    groupbuy_price: money(raw.groupbuy_price),
+    commission_rate: percent(raw.commission_rate),
+    own_mall_groupbuy: om === "yes" || om === "no" || om === "discuss" ? om : "",
+    gift: oneLine(raw.gift).slice(0, 300),
+    extra_note: str(raw.extra_note).slice(0, 1500),
   };
+  for (const [k, label] of [["list_price", "정가"], ["online_price", "온라인 판매가"], ["groupbuy_price", "공구가"]] as const) {
+    const n = value[k];
+    if (n !== null && (Number.isNaN(n) || n > 1000000000)) errors.push(`${label}는 숫자(원)로 적어 주세요.`);
+  }
+  if (value.commission_rate !== null && (Number.isNaN(value.commission_rate) || value.commission_rate > 100)) errors.push("판매 수수료는 0~100 사이 숫자(%)로 적어 주세요.");
+  if (value.gift.length > 200) errors.push("사은품은 200자까지 쓸 수 있어요.");
+  if (value.extra_note.length > 1000) errors.push("기타 사항은 1,000자까지 쓸 수 있어요.");
   if (!value.name) errors.push("제품명을 입력해 주세요.");
   if (value.name.length > 120) errors.push("제품명은 120자까지 쓸 수 있어요.");
   if (value.feature.length > 500) errors.push("특징은 500자까지 쓸 수 있어요.");
@@ -200,6 +273,13 @@ export function productToDraft(p: ToProduct): ProductDraft {
     product_url: p.product_url ?? "",
     image_url: p.image_url ?? "",
     note: p.note ?? "",
+    list_price: p.list_price ?? null,
+    online_price: p.online_price ?? null,
+    groupbuy_price: p.groupbuy_price ?? null,
+    commission_rate: p.commission_rate === null || p.commission_rate === undefined ? null : Number(p.commission_rate),
+    own_mall_groupbuy: p.own_mall_groupbuy ?? "",
+    gift: p.gift ?? "",
+    extra_note: p.extra_note ?? "",
   };
 }
 export function brandToProfile(b: PartnerBrand): BrandProfile {

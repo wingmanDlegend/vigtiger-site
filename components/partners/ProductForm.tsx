@@ -1,13 +1,21 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { STATUS_LABEL, type ProductDraft, type ProductStatus } from "@/lib/partners/model";
+import { OWN_MALL_LABEL, STATUS_LABEL, discountPct, type OwnMall, type ProductDraft, type ProductStatus } from "@/lib/partners/model";
 import ImageField from "./ImageField";
 
 type Result = { ok: boolean; message: string; errors?: string[] } | void;
-type Extra = { brand_id: string; serial: string; status: ProductStatus; sort: string };
+type Extra = { brand_id: string; serial: string; status: ProductStatus; sort: string; to_visible: boolean };
 
-const EMPTY: ProductDraft = { name: "", feature: "", section: "", sponsor: true, rental: true, product_url: "", image_url: "", note: "" };
+const EMPTY: ProductDraft = {
+  name: "", feature: "", section: "", sponsor: true, rental: true, product_url: "", image_url: "", note: "",
+  list_price: null, online_price: null, groupbuy_price: null, commission_rate: null, own_mall_groupbuy: "", gift: "", extra_note: "",
+};
+const fmtWon = (n: number | null) => (n === null || n === undefined ? "" : n.toLocaleString("ko-KR"));
+const toWon = (s: string) => {
+  const d = s.replace(/[^\d]/g, "").slice(0, 10);
+  return d ? Number(d) : null;
+};
 
 export default function ProductForm({
   initial,
@@ -16,6 +24,7 @@ export default function ProductForm({
   submitLabel,
   cancelHref,
   admin,
+  visibility,
 }: {
   initial?: ProductDraft;
   submit: (raw: Record<string, unknown>) => Promise<Result>;
@@ -24,11 +33,15 @@ export default function ProductForm({
   cancelHref: string;
   /** 관리자 화면에서만: 브랜드·일련번호·상태·정렬 */
   admin?: { extra: Extra; brands: { id: string; label: string }[]; serialHint?: string };
+  /** 새 제품 등록(브랜드)에서만: TO 서비스 노출 처음 값 */
+  visibility?: boolean;
 }) {
   const [v, setV] = useState<ProductDraft>(initial ?? EMPTY);
   const [x, setX] = useState<Extra | undefined>(admin?.extra);
   const [msg, setMsg] = useState<{ ok: boolean; message: string; errors?: string[] } | null>(null);
   const [pending, start] = useTransition();
+  const [toVisible, setToVisible] = useState(visibility ?? true);
+  const [rate, setRate] = useState(initial?.commission_rate === null || initial?.commission_rate === undefined ? "" : String(initial.commission_rate));
   const set = <K extends keyof ProductDraft>(k: K, val: ProductDraft[K]) => setV((p) => ({ ...p, [k]: val }));
 
   function onSubmit(e: React.FormEvent) {
@@ -39,7 +52,7 @@ export default function ProductForm({
     }
     setMsg(null);
     start(async () => {
-      const r = await submit({ ...v, ...(x ?? {}) });
+      const r = await submit({ ...v, commission_rate: rate, ...(x ?? {}), ...(visibility !== undefined ? { to_visible: toVisible } : {}) });
       if (r) setMsg(r);
     });
   }
@@ -74,6 +87,9 @@ export default function ProductForm({
               <label className="a-label" htmlFor="pf-sort">순서</label>
               <input id="pf-sort" className="a-input" inputMode="numeric" value={x.sort} onChange={(e) => setX({ ...x, sort: e.target.value.replace(/[^\d]/g, "") })} />
             </div>
+            <label className="gb-check gb-field">
+              <input type="checkbox" checked={x.to_visible} onChange={(e) => setX({ ...x, to_visible: e.target.checked })} /> TO 서비스에 노출 (브랜드가 끌 수도 있어요)
+            </label>
           </div>
         </section>
       )}
@@ -119,6 +135,60 @@ export default function ProductForm({
           <ImageField id="pf-image" label="제품 이미지" value={v.image_url} onChange={(u) => set("image_url", u)} />
         </div>
       </section>
+
+      <section className="a-card a-sec">
+        <h2>가격 · 판매 조건</h2>
+        <p className="a-sub">대범한사람들 담당자만 보는 정보예요. 크리에이터용 제품 리스트(to.vigtiger.com·인쇄)에는 보이지 않아요. 모르는 칸은 비워 두셔도 돼요.</p>
+        <div className="p-price-grid">
+          <div className="gb-field">
+            <label className="a-label" htmlFor="pf-list">정가</label>
+            <span className="p-unit"><input id="pf-list" className="a-input" inputMode="numeric" value={fmtWon(v.list_price)} onChange={(e) => set("list_price", toWon(e.target.value))} placeholder="예: 39,000" /><span>원</span></span>
+          </div>
+          <div className="gb-field">
+            <label className="a-label" htmlFor="pf-online">온라인 판매가</label>
+            <span className="p-unit"><input id="pf-online" className="a-input" inputMode="numeric" value={fmtWon(v.online_price)} onChange={(e) => set("online_price", toWon(e.target.value))} placeholder="예: 32,900" /><span>원</span></span>
+            {discountPct(v.list_price, v.online_price) !== null && <span className="a-sub">정가 대비 {discountPct(v.list_price, v.online_price)}% 할인</span>}
+          </div>
+          <div className="gb-field">
+            <label className="a-label" htmlFor="pf-gb">공구가</label>
+            <span className="p-unit"><input id="pf-gb" className="a-input" inputMode="numeric" value={fmtWon(v.groupbuy_price)} onChange={(e) => set("groupbuy_price", toWon(e.target.value))} placeholder="예: 27,900" /><span>원</span></span>
+            {discountPct(v.list_price, v.groupbuy_price) !== null && <span className="a-sub">정가 대비 {discountPct(v.list_price, v.groupbuy_price)}% 할인</span>}
+          </div>
+          <div className="gb-field">
+            <label className="a-label" htmlFor="pf-rate">판매 수수료</label>
+            <span className="p-unit"><input id="pf-rate" className="a-input" inputMode="decimal" value={rate} maxLength={6} onChange={(e) => setRate(e.target.value.replace(/[^\d.]/g, ""))} placeholder="예: 20" /><span>%</span></span>
+          </div>
+        </div>
+        <fieldset className="p-avail">
+          <legend className="a-label">자사몰에서 공구 진행</legend>
+          {(Object.keys(OWN_MALL_LABEL) as OwnMall[]).map((k) => (
+            <label className="gb-check" key={k}>
+              <input type="radio" name="pf-ownmall" value={k} checked={v.own_mall_groupbuy === k} onChange={() => set("own_mall_groupbuy", k)} /> {OWN_MALL_LABEL[k]}
+            </label>
+          ))}
+          {v.own_mall_groupbuy && (
+            <button type="button" className="p-link" onClick={() => set("own_mall_groupbuy", "")}>선택 지우기</button>
+          )}
+        </fieldset>
+        <div className="gb-field">
+          <label className="a-label" htmlFor="pf-gift">사은품 (제공할 때)</label>
+          <input id="pf-gift" className="a-input p-wide" value={v.gift} maxLength={200} onChange={(e) => set("gift", e.target.value)} placeholder="예: 공구 구매 시 전용 파우치 증정" />
+        </div>
+        <div className="gb-field">
+          <label className="a-label" htmlFor="pf-extra">기타 사항</label>
+          <textarea id="pf-extra" className="a-textarea p-short" value={v.extra_note} maxLength={1000} onChange={(e) => set("extra_note", e.target.value)} placeholder="배송·재고·공구 가능 시기, 조건 등 담당자가 알아야 할 내용" />
+        </div>
+      </section>
+
+      {visibility !== undefined && (
+        <section className="a-card a-sec">
+          <h2>TO 서비스 노출</h2>
+          <label className="gb-check">
+            <input type="checkbox" checked={toVisible} onChange={(e) => setToVisible(e.target.checked)} /> 승인되면 크리에이터용 TO 제품 리스트(to.vigtiger.com)에 보여 주기
+          </label>
+          <p className="a-sub">나중에 &lsquo;제품 관리&rsquo; 목록에서 언제든 켜고 끌 수 있어요. 켜고 끄는 건 승인 없이 바로 반영돼요.</p>
+        </section>
+      )}
 
       <div className="gb-actions">
         <button type="submit" className="a-btn" disabled={pending}>{pending ? "저장 중…" : submitLabel}</button>

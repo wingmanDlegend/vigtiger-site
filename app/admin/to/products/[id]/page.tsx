@@ -47,7 +47,7 @@ export default async function AdminProduct({ params, searchParams }: { params: P
           submitLabel="저장"
           cancelHref="/to/products"
           admin={{
-            extra: { brand_id: p.brand_id, serial: p.serial ?? "", status: p.status, sort: String(p.sort) },
+            extra: { brand_id: p.brand_id, serial: p.serial ?? "", status: p.status, sort: String(p.sort), to_visible: p.to_visible !== false },
             brands: brands.map((b) => ({ id: b.id, label: `${b.name_ko} (${b.code})` })),
           }}
         />

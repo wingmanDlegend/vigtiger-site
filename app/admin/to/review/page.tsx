@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/partners/auth";
 import { listBrandChangeRequests, listBrands, listReviewQueue } from "@/lib/partners/db";
-import { BRAND_FIELDS, PRODUCT_FIELDS, brandToProfile, fmtDate, productToDraft, type BrandProfile, type ProductDraft } from "@/lib/partners/model";
+import { PriceTerms } from "@/components/partners/ui";
+import { BRAND_FIELDS, PRODUCT_FIELDS, PRICE_KEYS, fieldText, brandToProfile, fmtDate, productToDraft, type BrandProfile, type ProductDraft } from "@/lib/partners/model";
 import AdminTop from "@/app/admin/AdminTop";
 import { PageHead as PHead } from "@/app/admin/SubNav";
 import { CatalogCell } from "@/components/partners/ui";
@@ -32,6 +33,7 @@ function Value({ k, v }: { k: string; v: unknown }) {
       </ul>
     );
   }
+  if (PRICE_KEYS.includes(k)) return <span>{fieldText(k, v)}</span>;
   return <span className="p-pre">{show(v)}</span>;
 }
 
@@ -95,6 +97,8 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
                 <div className="c-preview">
                   <CatalogCell p={before} serial={p.serial} />
                   {p.section && <p className="a-sub">분류: {p.section}</p>}
+                  <PriceTerms d={before} />
+                  {p.to_visible === false && <p className="a-sub">브랜드가 TO 노출을 꺼 두었어요 (승인해도 크리에이터 리스트에는 안 보여요).</p>}
                 </div>
               )}
               <ReviewActions id={p.id} target="product" approveLabel={k === "delete" ? "삭제 승인" : "승인"} />

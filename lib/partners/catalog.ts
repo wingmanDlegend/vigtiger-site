@@ -29,7 +29,7 @@ export function applyFilter(brandsAll: PartnerBrand[], productsAll: ToProduct[],
   const bset = new Map(brands.map((b, i) => [b.id, { b, i }]));
   const q = f.q?.toLowerCase();
   const products = productsAll
-    .filter((p) => p.status === "approved" && bset.has(p.brand_id))
+    .filter((p) => p.status === "approved" && p.to_visible !== false && bset.has(p.brand_id))
     .filter((p) => !f.avail || p[f.avail])
     .filter((p) => !q || [p.name, p.serial ?? "", p.feature ?? "", p.section ?? "", bset.get(p.brand_id)!.b.name_ko].some((x) => x.toLowerCase().includes(q)))
     .sort((a, b) => bset.get(a.brand_id)!.i - bset.get(b.brand_id)!.i || a.sort - b.sort);
