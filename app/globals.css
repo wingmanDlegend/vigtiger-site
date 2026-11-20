@@ -2676,3 +2676,46 @@ p {
     flex-wrap: nowrap;
   }
 }
+.family-who {
+  letter-spacing: 0.12em;
+}
+.family-plead {
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.family-perks {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.family-perks li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: baseline;
+  padding: 12px 0;
+  border-top: 1px solid #e4e1db;
+}
+.family-perks li:last-child {
+  border-bottom: 1px solid #e4e1db;
+}
+.family-perk-no {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.family-perks b {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.family-perks small {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 2px;
+}

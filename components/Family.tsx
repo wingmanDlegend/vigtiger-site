@@ -13,23 +13,28 @@ const T = {
     toMobile: "티오 · 무료 제품 대여",
     partnersMobile: "브랜드 파트너스",
     partnersShort: "브랜드 파트너스",
-    eyebrow: "BRING IT TO LIFE",
-    title: ["크리에이터와 브랜드,", "각자의 자리에서 바로 시작하세요"],
-    lead: "제품을 써보고 싶은 크리에이터는 티오에서, 티오에 참여 중인 브랜드는 파트너스에서 바로 이어 가면 돼요.",
-    creator: "크리에이터라면",
-    toTitle: "써보고 싶은 제품, 티오에서 바로 고르세요",
-    toBody: (b: number, p: number) => `시장조사로 고른 브랜드 ${b}곳의 제품 ${p}개를 무료로 대여해 볼 수 있어요. ♡로 찜해 두고 한 번에 신청하세요.`,
-    toBodyFallback: "시장조사로 고른 브랜드의 제품을 무료로 대여해 볼 수 있어요. ♡로 찜해 두고 한 번에 신청하세요.",
-    picks: "이번 주 추천",
+    eyebrow: "TRY · LOVE · SELL",
+    title: ["써보는 사람과 만드는 사람,", "티오에서 만나요"],
+    lead: "크리에이터는 부담 없이 먼저 써보고, 브랜드는 진짜 후기를 얻어요. 들어오는 문은 둘, 향하는 곳은 하나예요.",
+    creator: "FOR CREATORS",
+    toTitle: "써보고 반하면, 그때 추천하세요",
+    toBody: (b: number, p: number) => `브랜드 ${b}곳, 제품 ${p}개가 당신의 첫 리뷰를 기다리고 있어요. 끌리는 건 ♡ 찜, 신청은 한 번에.`,
+    toBodyFallback: "요즘 뜨는 브랜드의 제품들이 당신의 첫 리뷰를 기다리고 있어요. 끌리는 건 ♡ 찜, 신청은 한 번에.",
+    picks: "이번 주 MD 픽",
     hots: "지금 핫딜",
-    preview: "티오 제품 미리보기",
-    toCta: "TO 제품 리스트 보기",
-    toApply: "상담신청",
-    brand: "브랜드라면",
-    pTitle: "티오 참여 브랜드는 파트너스에서 직접 관리해요",
-    pPoints: ["제품 등록 · 정보 수정 · 삭제 요청", "제품별 TO 노출 켜고 끄기", "이번 주 추천 · 핫딜 신청"],
-    pCta: "파트너스 로그인",
-    pNew: "아직 참여 전이라면 입점 신청",
+    preview: "지금 티오에서는",
+    toCta: "티오 구경하러 가기",
+    toApply: "바로 대여 신청",
+    brand: "FOR BRANDS",
+    pTitle: "크리에이터가 먼저 찾는 브랜드, 여기서 시작돼요",
+    pLead: "좋은 제품은 결국 써본 사람이 팔아요. 파트너스에서 우리 브랜드의 무대를 직접 꾸며 보세요.",
+    pPoints: [
+      { k: "내 제품, 내 손으로", v: "등록부터 수정까지 한 화면에서" },
+      { k: "타이밍은 브랜드가", v: "보여 줄지 말지, 클릭 한 번으로" },
+      { k: "이번 주의 주인공", v: "추천·핫딜로 크리에이터 리스트 맨 앞줄에" },
+    ],
+    pCta: "파트너스 입장하기",
+    pNew: "아직 티오 브랜드가 아니라면? 입점 문의",
     note: "",
   },
   en: {
@@ -38,23 +43,28 @@ const T = {
     toMobile: "Free try-outs",
     partnersMobile: "Brand Partners",
     partnersShort: "Brand Partners (Korean)",
-    eyebrow: "BRING IT TO LIFE",
-    title: ["Creators and brands,", "start right where you are"],
-    lead: "Creators can pick products to try on TO, and brands already in TO manage their products on Partners. Both sites are in Korean.",
-    creator: "For creators",
-    toTitle: "Pick the products you want to try on TO",
-    toBody: (b: number, p: number) => `Borrow ${p} products from ${b} hand-picked brands for free. Save favorites with ♡ and request them at once.`,
-    toBodyFallback: "Borrow products from hand-picked brands for free. Save favorites with ♡ and request them at once.",
-    picks: "This week's picks",
-    hots: "Hot deals",
-    preview: "TO products",
-    toCta: "Browse TO products",
+    eyebrow: "TRY · LOVE · SELL",
+    title: ["Where the people who try", "meet the people who make"],
+    lead: "Creators try first, with nothing to lose. Brands earn honest reviews. Two doors, one destination. (Both sites are in Korean.)",
+    creator: "FOR CREATORS",
+    toTitle: "Fall for it first. Then recommend it.",
+    toBody: (b: number, p: number) => `${p} products from ${b} brands are waiting for your first review. Heart what you love, request it all at once.`,
+    toBodyFallback: "Products from today's rising brands are waiting for your first review. Heart what you love, request it all at once.",
+    picks: "This week's MD picks",
+    hots: "Hot deals now",
+    preview: "Now on TO",
+    toCta: "Explore TO",
     toApply: "Request a try-out",
-    brand: "For brands",
-    pTitle: "TO brands manage everything on Partners",
-    pPoints: ["Add, edit or remove products", "Turn TO visibility on or off per product", "Apply for weekly picks and hot deals"],
-    pCta: "Partners login",
-    pNew: "Not in TO yet? Apply to join",
+    brand: "FOR BRANDS",
+    pTitle: "Become the brand creators look for first",
+    pLead: "Great products are sold by people who've tried them. Set your brand's stage on Partners.",
+    pPoints: [
+      { k: "Your products, your hands", v: "Add and edit everything on one screen" },
+      { k: "You own the timing", v: "Show or hide with a single click" },
+      { k: "Star of the week", v: "Weekly picks and hot deals put you front row" },
+    ],
+    pCta: "Enter Partners",
+    pNew: "Not a TO brand yet? Let's talk",
     note: "",
   },
 };
@@ -127,7 +137,7 @@ export async function FamilyCrossroads({ lang, placement = "home" }: { lang: Lan
         <article className="family-card is-to">
           <p className="family-who">{t.creator}</p>
           <h3>{t.toTitle}</h3>
-          <p className="family-body">{pv ? t.toBody(pv.brands, pv.products) : t.toBodyFallback}</p>
+          <p className="family-body">{pv && pv.products > 0 ? t.toBody(pv.brands, pv.products) : t.toBodyFallback}</p>
           {pv && pv.list.length > 0 && (
             <div className="family-preview">
               <p className="family-preview-label">{pv.source === "picks" ? t.picks : pv.source === "hots" ? t.hots : t.preview}</p>
@@ -161,9 +171,16 @@ export async function FamilyCrossroads({ lang, placement = "home" }: { lang: Lan
         <article className="family-card is-partners">
           <p className="family-who">{t.brand}</p>
           <h3>{t.pTitle}</h3>
-          <ul className="bullets">
-            {t.pPoints.map((x) => (
-              <li key={x}>{x}</li>
+          <p className="family-plead">{t.pLead}</p>
+          <ul className="family-perks">
+            {t.pPoints.map((x, i) => (
+              <li key={x.k}>
+                <span className="family-perk-no" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                <span>
+                  <b>{x.k}</b>
+                  <small>{x.v}</small>
+                </span>
+              </li>
             ))}
           </ul>
           <div className="family-actions">

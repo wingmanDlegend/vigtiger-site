@@ -94,6 +94,8 @@ export type ToCounts = {
 export async function getToCounts(): Promise<ToCounts | null> {
   try {
     const { brands, products } = await getToCatalog();
+    // 노출 제품이 하나도 없으면(일시적인 문제일 수 있음) '0'을 보여 주지 않고 기본값으로
+    if (products.length === 0) return null;
     const live = new Set(products.map((p) => p.brand_id));
     const shown = brands.filter((b) => live.has(b.id));
     const groups = CATEGORIES.map((c) => ({
