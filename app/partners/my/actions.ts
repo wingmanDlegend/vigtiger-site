@@ -33,7 +33,8 @@ async function ownProduct(brandId: string, id: string) {
 }
 function done() {
   revalidatePath("/partners/my");
-  revalidatePath("/partners/admin/review");
+  revalidatePath("/admin/to/review");
+  revalidatePath("/admin/dashboard");
 }
 
 export async function createProductAction(raw: Record<string, unknown>): Promise<ActionResult> {
@@ -42,8 +43,9 @@ export async function createProductAction(raw: Record<string, unknown>): Promise
   if (errors.length) return { ok: false, message: "입력 내용을 확인해 주세요.", errors };
   let id = "";
   try {
+    // 브랜드 '리스트 노출'이 꺼져 있어도 등록 요청은 받습니다 (노출 여부는 관리자가 따로 정함)
     const brand = await getBrand(s.brandId);
-    if (!brand?.active) return { ok: false, message: "브랜드가 사용 중지 상태예요. 관리자에게 문의해 주세요." };
+    if (!brand) return { ok: false, message: "브랜드 정보를 찾을 수 없어요. 관리자에게 문의해 주세요." };
     const p = await insertProduct({ ...draftToRow(value), brand_id: s.brandId, status: "pending", created_by: s.userId, sort: (await maxSort(s.brandId)) + 10 });
     id = p.id;
     await logEvent({ ...actorOf(s), action: "product_submitted", brand_id: s.brandId, product_id: p.id, detail: { name: value.name } });
@@ -144,7 +146,8 @@ export async function updateProfileAction(raw: Record<string, unknown>): Promise
     return { ok: false, message: e instanceof Error ? e.message : "저장하지 못했어요." };
   }
   revalidatePath("/partners/my/profile");
-  revalidatePath("/partners/admin/review");
+  revalidatePath("/admin/to/review");
+  revalidatePath("/admin/dashboard");
   return { ok: true, message: "수정을 요청했어요. 관리자가 승인하면 반영돼요." };
 }
 

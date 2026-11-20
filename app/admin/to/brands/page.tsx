@@ -88,7 +88,7 @@ export default async function AdminBrands({ searchParams }: { searchParams: SP }
                       <td>
                         <a className="a-name" href={`/to/brands/${b.id}`}>{b.name_ko}</a>
                         {b.name_en && <span className="a-sub"> {b.name_en}</span>}
-                        {!b.active && <div className="a-sub">사용 중지</div>}
+                        {!b.active && <div className="a-sub">리스트 비노출</div>}
                         {b.pending_changes && <div><span className="p-tag is-brand">정보 수정 요청</span></div>}
                       </td>
                       <td className="a-nowrap">{b.code}</td>

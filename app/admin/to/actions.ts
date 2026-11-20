@@ -244,7 +244,7 @@ export async function adminDeleteBrandAction(id: string): Promise<ActionResult> 
     const [b, users, products] = await Promise.all([getBrand(id), listUsers(id), listProducts({ brandId: id })]);
     if (!b) throw new Error("이미 삭제됐어요.");
     if (users.length) throw new Error("이 브랜드의 계정을 먼저 삭제해 주세요.");
-    if (products.length) throw new Error(`제품 ${products.length}개가 있어요. 제품을 먼저 삭제하거나, 대신 '사용 중지'로 바꿔 주세요.`);
+    if (products.length) throw new Error(`제품 ${products.length}개가 있어요. 제품을 먼저 삭제하거나, 대신 '리스트에 노출'을 꺼 주세요.`);
     await deleteBrand(id);
     await logEvent({ ...actorOf(s), action: "brand_deleted", brand_id: null, product_id: null, detail: { name: b.name_ko, code: b.code } });
   } catch (e) {

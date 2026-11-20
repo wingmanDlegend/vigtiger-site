@@ -117,7 +117,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: SP
                       </td>
                       <td className="a-nowrap">
                         <a href={qs({ brand: p.brand_id })}>{b?.name_ko}</a>
-                        {b && !b.active && <div className="a-sub">사용 중지</div>}
+                        {b && !b.active && <div className="a-sub">브랜드 비노출</div>}
                       </td>
                       <td className="a-nowrap">{p.serial ?? "–"}</td>
                       <td className="a-nowrap">협찬 {p.sponsor ? "가능" : "-"} · 대여 {p.rental ? "가능" : "-"}</td>

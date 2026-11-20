@@ -61,7 +61,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           <a className="a-card db-kpi" href="/to/brands">
             <span className="db-kpi-label">협업 브랜드</span>
             <b className="db-kpi-value">{activeBrands.length}곳</b>
-            <span className="db-kpi-sub"><span>사용 중지 {brands.length - activeBrands.length}곳</span></span>
+            <span className="db-kpi-sub"><span>리스트 비노출 {brands.length - activeBrands.length}곳</span></span>
           </a>
           <a className={`a-card db-kpi ${noAccount.length ? "is-warn" : ""}`} href="/to/brands?account=none">
             <span className="db-kpi-label">계정 미발급 브랜드</span>

@@ -72,7 +72,7 @@ export default function BrandProfileForm({
               <input id="bb-sort" className="a-input" inputMode="numeric" value={bx.sort} onChange={(e) => setBx({ ...bx, sort: e.target.value.replace(/[^\d]/g, "") })} />
             </div>
             <label className="gb-check gb-field">
-              <input type="checkbox" checked={bx.active} onChange={(e) => setBx({ ...bx, active: e.target.checked })} /> 사용 중 (끄면 제품 리스트·인쇄에서 빠져요)
+              <input type="checkbox" checked={bx.active} onChange={(e) => setBx({ ...bx, active: e.target.checked })} /> 리스트에 노출 (끄면 to.vigtiger.com·제품 리스트·인쇄에서 빠져요. 담당자는 계속 제품을 등록·수정 요청할 수 있어요)
             </label>
           </div>
         </section>

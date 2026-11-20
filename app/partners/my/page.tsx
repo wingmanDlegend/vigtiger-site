@@ -38,6 +38,11 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
           desc="등록·수정·삭제는 대범한사람들 담당자가 확인하고 승인하면 티오 제품 리스트에 반영돼요."
           actions={<a className="a-btn" href="/my/new">+ 제품 등록</a>}
         />
+        {brand && !brand.active && (
+          <p className="a-note" role="note">
+            지금은 크리에이터용 제품 리스트(to.vigtiger.com)에 노출되지 않는 브랜드예요. 제품 등록·수정 요청은 그대로 할 수 있고, 노출은 대범한사람들 담당자가 정해요.
+          </p>
+        )}
         {sp.pw && <p className="a-saved" role="status">비밀번호를 바꿨어요.</p>}
         {sp.sent === "new" && <p className="a-saved" role="status">등록을 요청했어요. 승인되면 일련번호가 붙고 리스트에 올라가요.</p>}
         {sp.sent === "edit" && <p className="a-saved" role="status">수정을 요청했어요. 승인 전까지는 지금 게시된 내용이 그대로 보여요.</p>}

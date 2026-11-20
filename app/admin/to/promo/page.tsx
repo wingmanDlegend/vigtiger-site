@@ -35,7 +35,7 @@ export default async function PromoPage({ searchParams }: { searchParams: SP }) 
   const why = (p: ToProduct, hot = false): string | null => {
     const b = bmap.get(p.brand_id);
     if (p.status !== "approved") return "게시 중이 아니라 사이트에 안 보여요";
-    if (!b?.active) return "브랜드 사용 중지로 안 보여요";
+    if (!b?.active) return "브랜드가 리스트 비노출이라 안 보여요";
     if (hot && p.hot_until && p.hot_until < today) return "마감일이 지나 자동으로 내려갔어요";
     return null;
   };
