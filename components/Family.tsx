@@ -5,6 +5,7 @@ import { applyPath } from "@/lib/dictionary";
 import { getToCatalog, type PubProduct } from "@/lib/tosite/data";
 import { ArrowRight, ArrowUpRight } from "./Icons";
 import SiteLink from "./SiteLink";
+import FamilyRandomPreview, { type PoolItem } from "./FamilyRandomPreview";
 
 const T = {
   ko: {
@@ -97,22 +98,22 @@ async function preview() {
     const d = await getToCatalog();
     const withImg = (list: PubProduct[]) => list.filter((p) => p.image_url);
     const source = withImg(d.picks).length ? "picks" : withImg(d.hots).length ? "hots" : "all";
-    // 추천·핫딜이 없으면 분류마다 한 브랜드씩 골고루 (같은 브랜드만 4개 나오지 않게)
-    const spread = () => {
-      const out: PubProduct[] = [];
-      const seenCat = new Set<string>();
+    // 1·2) 이번 주 추천 → 핫딜: 관리자가 정한 순서대로 앞의 4개
+    const list = source === "picks" ? withImg(d.picks).slice(0, 4) : source === "hots" ? withImg(d.hots).slice(0, 4) : [];
+    // 3) 둘 다 없으면: 방문할 때마다 무작위 (브라우저에서 고름). 후보는 브랜드마다 최대 3개
+    const perBrand = new Map<string, number>();
+    const pool: PoolItem[] = [];
+    if (source === "all") {
       for (const p of withImg(d.products)) {
-        const cat = d.brandById.get(p.brand_id)?.category ?? "";
-        if (seenCat.has(cat)) continue;
-        seenCat.add(cat);
-        out.push(p);
-        if (out.length === 4) break;
+        const n = perBrand.get(p.brand_id) ?? 0;
+        if (n >= 3) continue;
+        perBrand.set(p.brand_id, n + 1);
+        const b = d.brandById.get(p.brand_id);
+        pool.push({ id: p.id, name: p.name, image: p.image_url!, brand: b?.name_ko ?? "", brandId: p.brand_id, cat: b?.category ?? "" });
       }
-      return out;
-    };
-    const list = (source === "picks" ? withImg(d.picks) : source === "hots" ? withImg(d.hots) : spread()).slice(0, 4);
+    }
     const brands = new Set(d.products.map((p) => p.brand_id)).size;
-    return { list, source, brands, products: d.products.length, brandById: d.brandById };
+    return { list, pool, source, brands, products: d.products.length, brandById: d.brandById };
   } catch {
     return null;
   }
@@ -138,9 +139,15 @@ export async function FamilyCrossroads({ lang, placement = "home" }: { lang: Lan
           <p className="family-who">{t.creator}</p>
           <h3>{t.toTitle}</h3>
           <p className="family-body">{pv && pv.products > 0 ? t.toBody(pv.brands, pv.products) : t.toBodyFallback}</p>
+          {pv && pv.source === "all" && pv.pool.length > 0 && (
+            <div className="family-preview">
+              <p className="family-preview-label">{t.preview}</p>
+              <FamilyRandomPreview pool={pv.pool} placement={placement} />
+            </div>
+          )}
           {pv && pv.list.length > 0 && (
             <div className="family-preview">
-              <p className="family-preview-label">{pv.source === "picks" ? t.picks : pv.source === "hots" ? t.hots : t.preview}</p>
+              <p className="family-preview-label">{pv.source === "picks" ? t.picks : t.hots}</p>
               <ul>
                 {pv.list.map((p) => (
                   <li key={p.id}>
