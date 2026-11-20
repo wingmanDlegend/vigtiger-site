@@ -10,6 +10,7 @@ import FamilyRandomPreview, { type PoolItem } from "./FamilyRandomPreview";
 const T = {
   ko: {
     bar: "대범한사람들 패밀리 사이트",
+    newWin: "새 창",
     toShort: "티오 TO · 크리에이터 무료 제품 대여",
     toMobile: "티오 · 무료 제품 대여",
     partnersMobile: "브랜드 파트너스",
@@ -40,6 +41,7 @@ const T = {
   },
   en: {
     bar: "VIGTIGER family sites",
+    newWin: "opens in a new tab",
     toShort: "Free product try-outs (Korean)",
     toMobile: "Free try-outs",
     partnersMobile: "Brand Partners",
@@ -78,11 +80,11 @@ export function FamilyBar({ lang }: { lang: Lang }) {
       <div className="container family-bar-inner">
         <span className="family-bar-label">{t.bar}</span>
         <nav aria-label={t.bar}>
-          <SiteLink site="to" path="/products" placement="family_bar">
+          <SiteLink site="to" path="/products" placement="family_bar" newTab ariaLabel={`${t.toShort} (${t.newWin})`}>
             <b>TO</b> <span className="fb-long">{t.toShort}</span>
             <span className="fb-short">{t.toMobile}</span> <ArrowUpRight size={14} />
           </SiteLink>
-          <SiteLink site="partners" path="/" placement="family_bar">
+          <SiteLink site="partners" path="/" placement="family_bar" newTab ariaLabel={`${t.partnersShort} (${t.newWin})`}>
             <span className="fb-long">{t.partnersShort}</span>
             <span className="fb-short">{t.partnersMobile}</span> <ArrowUpRight size={14} />
           </SiteLink>
