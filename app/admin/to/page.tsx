@@ -36,6 +36,8 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   const noAccount = activeBrands.filter((b) => !brandUsers.has(b.id));
   const brandName = new Map(brands.map((b) => [b.id, b.name_ko]));
 
+  const brandInfoReq = brandReq.filter((b) => b.pending_changes).length;
+  const brandVisReq = brandReq.filter((b) => b.visibility_request).length;
   return (
     <>
       <AdminTop current="to-home" />
@@ -46,11 +48,11 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         {error && <p className="a-error" role="alert">{error}</p>}
 
         <section className="db-kpis" aria-label="요약">
-          <a className={`a-card db-kpi ${queue.length + brandReq.length ? "is-warn" : ""}`} href="/to/review">
+          <a className={`a-card db-kpi ${queue.length + brandInfoReq + brandVisReq ? "is-warn" : ""}`} href="/to/review">
             <span className="db-kpi-label">승인 대기</span>
-            <b className="db-kpi-value">{queue.length + brandReq.length}건</b>
+            <b className="db-kpi-value">{queue.length + brandInfoReq + brandVisReq}건</b>
             <span className="db-kpi-sub">
-              <span>새 제품 {newReq} · 수정 {editReq} · 삭제 {delReq} · 브랜드 {brandReq.length}</span>
+              <span>새 제품 {newReq} · 수정 {editReq} · 삭제 {delReq} · 브랜드 정보 {brandInfoReq} · 노출 신청 {brandVisReq}</span>
             </span>
           </a>
           <a className="a-card db-kpi" href="/to/products?status=approved">

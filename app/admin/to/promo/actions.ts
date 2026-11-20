@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { actorOf, requireAdmin } from "@/lib/partners/auth";
-import { clearPromo, getProduct, listProducts, logEvent, patchProduct } from "@/lib/partners/db";
+import { clearPromo, getPromoRequest, getProduct, listProducts, logEvent, patchProduct, patchPromoRequest } from "@/lib/partners/db";
 import { TO_SITE_TAG } from "@/lib/tosite/data";
 
 // to.vigtiger.com '이번 주 추천' · '핫딜' 노출 관리 (관리자 전용)
@@ -90,4 +90,40 @@ export async function promoClearAction(fd: FormData) {
   const n = await clearPromo(kind);
   await logEvent({ ...actorOf(s), action: "promo_cleared", brand_id: null, product_id: null, detail: { kind, count: n } });
   done(fd, `${kind === "pick" ? "이번 주 추천" : "핫딜"} ${n}개를 모두 내렸어요.`);
+}
+
+// ---------- 브랜드가 신청한 추천·핫딜 ----------
+export async function promoRequestApproveAction(fd: FormData) {
+  const s = await requireAdmin();
+  const r = await getPromoRequest(String(fd.get("rid") ?? ""));
+  if (!r || r.status !== "pending") fail(fd, "이미 처리된 신청이에요.");
+  const p = await getProduct(r.product_id);
+  if (!p) fail(fd, "제품을 찾을 수 없어요 (삭제된 제품).");
+  if (p.status !== "approved") fail(fd, "게시 중(승인)인 제품이 아니라 올릴 수 없어요.");
+  const kind = r.kind;
+  const list = await listed(kind);
+  const nextSort = list.length ? Math.max(...list.map((x) => x[SORT[kind]])) + 1 : 1;
+  const row: Record<string, unknown> = { [FLAG[kind]]: true };
+  if (!p[FLAG[kind]]) row[SORT[kind]] = nextSort;
+  if (kind === "hot") {
+    row.hot_note = r.hot_note ?? p.hot_note ?? null;
+    row.hot_until = r.end_date ?? p.hot_until ?? null;
+  }
+  await patchProduct(p.id, row);
+  await patchPromoRequest(r.id, { status: "approved", decided_at: new Date().toISOString(), reject_reason: null });
+  await logEvent({ ...actorOf(s), action: "promo_request_approved", brand_id: r.brand_id, product_id: p.id, detail: { kind, name: p.name } });
+  revalidatePath("/partners/promo");
+  done(fd, `${p.name} — ${kind === "pick" ? "이번 주 추천" : "핫딜"}에 올렸어요.`);
+}
+
+export async function promoRequestRejectAction(fd: FormData) {
+  const s = await requireAdmin();
+  const r = await getPromoRequest(String(fd.get("rid") ?? ""));
+  if (!r || r.status !== "pending") fail(fd, "이미 처리된 신청이에요.");
+  const reason = String(fd.get("reason") ?? "").trim().replace(/\s+/g, " ").slice(0, 300);
+  if (!reason) fail(fd, "반려 사유를 적어 주세요. (브랜드 담당자에게 보여요)");
+  await patchPromoRequest(r.id, { status: "rejected", reject_reason: reason, decided_at: new Date().toISOString() });
+  await logEvent({ ...actorOf(s), action: "promo_request_rejected", brand_id: r.brand_id, product_id: r.product_id, detail: { kind: r.kind, reason } });
+  revalidatePath("/partners/promo");
+  done(fd, "신청을 반려했어요.");
 }

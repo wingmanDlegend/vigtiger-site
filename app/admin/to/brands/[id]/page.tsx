@@ -36,6 +36,11 @@ export default async function AdminBrand({ params, searchParams }: { params: Pro
           }
         />
         {sp.created && <p className="a-saved" role="status">브랜드를 추가했어요. 아래에서 담당자 계정을 발급해 주세요.</p>}
+        {b.visibility_request && (
+          <p className="a-note" role="note">
+            브랜드가 TO 서비스 <b>{b.visibility_request === "show" ? "노출 신청" : "노출 중지 신청"}</b>을 했어요. <a href="/to/review">승인 대기</a>에서 처리하거나, 아래 &lsquo;리스트에 노출&rsquo;을 직접 바꿔 저장해도 신청이 처리돼요.
+          </p>
+        )}
         {b.pending_changes && (
           <p className="a-note" role="note">
             담당자가 브랜드 정보 수정을 요청했어요. <a href="/to/review">승인 대기</a>에서 비교하고 처리할 수 있어요. (여기서 저장하면 요청과 별개로 바로 반영돼요.)

@@ -57,15 +57,17 @@ export async function navBadges(): Promise<Partial<Record<NavKey, number>>> {
       });
       return Number(res.headers.get("content-range")?.split("/")[1] ?? 0) || 0;
     };
-    const [applications, groupbuys, trends, hot, toProducts, toBrands] = await Promise.all([
+    const [applications, groupbuys, trends, hot, toProducts, toBrands, toVis, toPromo] = await Promise.all([
       count("applications?select=id&status=eq.new"),
       count("groupbuys?select=id&status=eq.done&settled=is.false"),
       count("insight_posts?select=id&status=eq.draft&kind=eq.trends"),
       count("insight_posts?select=id&status=eq.draft&kind=eq.hot"),
       count("to_products?select=id&or=(status.eq.pending,pending_changes.not.is.null,delete_requested.is.true)"),
       count("partner_brands?select=id&pending_changes=not.is.null"),
+      count("partner_brands?select=id&visibility_request=not.is.null"),
+      count("to_promo_requests?select=id&status=eq.pending"),
     ]);
-    return { applications, groupbuys, trends, hot, "to-review": toProducts + toBrands };
+    return { applications, groupbuys, trends, hot, "to-review": toProducts + toBrands + toVis, "to-promo": toPromo };
   } catch {
     return {};
   }

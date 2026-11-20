@@ -39,7 +39,8 @@ const ADMIN_URL = process.env.ADMIN_URL || "https://admin.vigtiger.com";
 
 export async function notifyPartners(text: string, path = "/to/review") {
   const hook = process.env.SLACK_WEBHOOK_URL;
-  if (!hook || !/^https:\/\/hooks\.slack\.com\//.test(hook)) return;
+  const local = process.env.ALLOW_LOCAL_WEBHOOK === "1" && hook?.startsWith("http://127.0.0.1"); // 로컬 테스트 전용
+  if (!hook || !(/^https:\/\/hooks\.slack\.com\//.test(hook) || local)) return;
   const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   try {
     await fetch(hook, {

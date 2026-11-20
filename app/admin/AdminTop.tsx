@@ -8,6 +8,7 @@ const BADGE_TITLE: Partial<Record<NavKey, string>> = {
   trends: "검토 대기 초안",
   hot: "검토 대기 초안",
   "to-review": "승인 대기 요청",
+  "to-promo": "브랜드 추천·핫딜 신청",
 };
 
 // 관리 사이트(admin.vigtiger.com) 공통 머리(로그인한 사람·홈페이지·로그아웃) + 왼쪽 사이드바 메뉴

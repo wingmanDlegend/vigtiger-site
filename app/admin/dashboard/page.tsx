@@ -8,8 +8,8 @@ import { STATUS_LABEL as GB_STATUS, period, type GroupBuy } from "@/lib/groupbuy
 import type { InsightPost } from "@/lib/insights";
 import { delta, kstDate, lastMonths, monthKey, monthLabel, monthLabelLong, todayKst } from "@/lib/admin/stats";
 import { C, ChartCard, Columns, HBars, Kpi, fmtNum, fmtWon, fmtWonShort } from "@/components/admin/Charts";
-import { listBrandChangeRequests, listBrands, listEvents, listProducts, listReviewQueue, listUsers, type PartnerEvent } from "@/lib/partners/db";
-import { CATEGORIES, type PartnerBrand, type PartnerUser, type ToProduct } from "@/lib/partners/model";
+import { listBrandChangeRequests, listBrands, listEvents, listProducts, listPromoRequests, listReviewQueue, listUsers, type PartnerEvent } from "@/lib/partners/db";
+import { CATEGORIES, type PartnerBrand, type PartnerUser, type PromoRequest, type ToProduct } from "@/lib/partners/model";
 import { eventLabel } from "../to/events";
 import AdminTop from "../AdminTop";
 import { PageHead } from "../SubNav";
@@ -26,9 +26,9 @@ async function safe<T>(p: Promise<T>, fallback: T): Promise<[T, string]> {
 }
 
 // 승인 처리로 셀 작업 (관리자가 처리한 것)
-const DECISIONS = new Set(["product_approved", "change_approved", "delete_approved", "rejected", "brand_change_approved", "brand_change_rejected"]);
+const DECISIONS = new Set(["product_approved", "change_approved", "delete_approved", "rejected", "brand_change_approved", "brand_change_rejected", "visibility_approved", "visibility_rejected", "promo_request_approved", "promo_request_rejected"]);
 // 브랜드 담당자가 올린 요청
-const REQUESTS = new Set(["product_submitted", "product_resubmitted", "change_requested", "delete_requested", "brand_change_requested"]);
+const REQUESTS = new Set(["product_submitted", "product_resubmitted", "change_requested", "delete_requested", "brand_change_requested", "visibility_requested_show", "visibility_requested_hide", "promo_requested"]);
 
 function GroupHead({ title, desc, links }: { title: string; desc: string; links: { href: string; label: string }[] }) {
   return (
@@ -48,7 +48,7 @@ function GroupHead({ title, desc, links }: { title: string; desc: string; links:
 
 export default async function Dashboard() {
   if (!(await isAuthed())) redirect("/login");
-  const [[apps, e1], [gbs, e2], [posts, e3], [toQueue, e4], [toBrandReq], [brands], [products], [users], [events]] = await Promise.all([
+  const [[apps, e1], [gbs, e2], [posts, e3], [toQueue, e4], [toBrandReq], [brands], [products], [users], [events], [promoReqs]] = await Promise.all([
     safe<ApplicationLite[]>(listAllApplicationsLite(), []),
     safe<GroupBuy[]>(listGroupbuys(), []),
     safe<InsightPost[]>(listInsights(), []),
@@ -58,6 +58,7 @@ export default async function Dashboard() {
     safe<ToProduct[]>(listProducts(), []),
     safe<PartnerUser[]>(listUsers(), []),
     safe<PartnerEvent[]>(listEvents({ limit: 500 }), []),
+    safe<PromoRequest[]>(listPromoRequests({ status: "pending" }), []),
   ]);
   const errors = [e1, e2, e3, e4].filter(Boolean);
 
@@ -79,7 +80,9 @@ export default async function Dashboard() {
   const revTrend = months.map((m) => ({ label: monthLabel(m), values: { v: sumRev(gbIn(m)) } }));
 
   // ---------- 티오 파트너스 ----------
-  const toWaiting = toQueue.length + toBrandReq.length;
+  const toBrandInfo = toBrandReq.filter((b) => b.pending_changes).length;
+  const toBrandVis = toBrandReq.filter((b) => b.visibility_request).length;
+  const toWaiting = toQueue.length + toBrandInfo + toBrandVis;
   const activeBrands = brands.filter((b) => b.active);
   const activeIds = new Set(activeBrands.map((b) => b.id));
   const live = products.filter((p) => p.status === "approved" && activeIds.has(p.brand_id));
@@ -128,7 +131,13 @@ export default async function Dashboard() {
             <li className={toWaiting ? "is-warn" : ""}>
               <a href="/to/review">
                 <b>티오 승인 대기 {fmtNum(toWaiting)}건</b>
-                <span>{toWaiting ? `새 제품 ${toQueue.filter((p) => p.status === "pending").length} · 수정·삭제 ${toQueue.filter((p) => p.status !== "pending").length} · 브랜드 ${toBrandReq.length}` : "브랜드 요청을 모두 처리했어요"}</span>
+                <span>{toWaiting ? `새 제품 ${toQueue.filter((p) => p.status === "pending").length} · 수정·삭제 ${toQueue.filter((p) => p.status !== "pending").length} · 브랜드 정보 ${toBrandInfo} · 노출 신청 ${toBrandVis}` : "브랜드 요청을 모두 처리했어요"}</span>
+              </a>
+            </li>
+            <li className={promoReqs.length ? "is-warn" : ""}>
+              <a href="/to/promo">
+                <b>추천·핫딜 신청 {fmtNum(promoReqs.length)}건</b>
+                <span>{promoReqs.length ? "브랜드가 신청한 이번 주 추천·핫딜을 확인해 주세요" : "확인할 신청이 없어요"}</span>
               </a>
             </li>
             {todayPosts.map(({ k, p }) => (

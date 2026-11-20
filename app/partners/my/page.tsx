@@ -41,7 +41,7 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
         />
         {brand && !brand.active && (
           <p className="a-note" role="note">
-            지금은 크리에이터용 제품 리스트(to.vigtiger.com)에 노출되지 않는 브랜드예요. 제품 등록·수정 요청은 그대로 할 수 있고, 노출은 대범한사람들 담당자가 정해요.
+            지금 크리에이터용 제품 리스트(to.vigtiger.com)에 노출되지 않는 브랜드입니다. 제품 등록·수정 요청은 그대로 할 수 있습니다. 브랜드의 노출을 원하신다면 <a href="/my/profile">브랜드 정보</a> 메뉴에서 노출 신청을 하세요.
           </p>
         )}
         {sp.pw && <p className="a-saved" role="status">비밀번호를 바꿨어요.</p>}
@@ -85,6 +85,11 @@ export default async function MyProducts({ searchParams }: { searchParams: SP })
                         <div>
                           <a className="a-name" href={`/my/${p.id}`}>{p.name}</a>
                           {p.section && <div className="a-sub">{p.section}</div>}
+                          {p.status === "approved" && (
+                            <a className="a-sub" href={`/promo?product=${p.id}`}>
+                              {p.pick_week || p.hot_deal ? `${p.pick_week ? "이번 주 추천" : ""}${p.pick_week && p.hot_deal ? "·" : ""}${p.hot_deal ? "핫딜" : ""} 진행 중` : "추천·핫딜 신청 →"}
+                            </a>
+                          )}
                           {p.status === "rejected" && p.reject_reason && <div className="p-reason">반려 사유: {p.reject_reason}</div>}
                           {p.status !== "rejected" && p.reject_reason && !p.pending_changes && !p.delete_requested && (
                             <div className="p-reason">지난 요청이 반려됐어요: {p.reject_reason}</div>

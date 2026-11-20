@@ -13,6 +13,7 @@ import {
   insertBrand,
   insertProduct,
   insertUser,
+  listBrands,
   listProducts,
   listUsers,
   logEvent,
@@ -24,6 +25,7 @@ import {
 } from "@/lib/partners/db";
 import {
   CATEGORIES,
+  brandDuplicates,
   cleanBrandProfile,
   cleanProduct,
   draftToRow,
@@ -106,6 +108,38 @@ export async function approveBrandAction(id: string): Promise<ActionResult> {
   } catch (e) {
     return err(e);
   }
+}
+
+/** 브랜드의 TO 서비스 노출 / 노출 중지 신청 처리 */
+export async function approveVisibilityAction(id: string): Promise<ActionResult> {
+  const s = await admin();
+  try {
+    const b = await getBrand(id);
+    if (!b?.visibility_request) return { ok: true, message: "처리할 신청이 없어요." };
+    const show = b.visibility_request === "show";
+    await patchBrand(id, { active: show, visibility_request: null, visibility_requested_at: null, visibility_reject_reason: null });
+    await logEvent({ ...actorOf(s), action: "visibility_approved", brand_id: id, product_id: null, detail: { to: show ? "show" : "hide" } });
+    refresh();
+    return { ok: true, message: `${b.name_ko} — TO 서비스 ${show ? "노출을 시작했어요" : "노출을 중지했어요"}.` };
+  } catch (e) {
+    return err(e);
+  }
+}
+
+export async function rejectVisibilityAction(id: string, reason: string): Promise<ActionResult> {
+  const s = await admin();
+  const r = cleanReason(reason);
+  if (!r) return { ok: false, message: "반려 사유를 적어 주세요." };
+  try {
+    const b = await getBrand(id);
+    if (!b?.visibility_request) return { ok: true, message: "처리할 신청이 없어요." };
+    await patchBrand(id, { visibility_request: null, visibility_requested_at: null, visibility_reject_reason: r });
+    await logEvent({ ...actorOf(s), action: "visibility_rejected", brand_id: id, product_id: null, detail: { was: b.visibility_request, reason: r } });
+  } catch (e) {
+    return err(e);
+  }
+  refresh();
+  return { ok: true, message: "노출 신청을 반려했어요." };
 }
 
 export async function rejectBrandAction(id: string, reason: string): Promise<ActionResult> {
@@ -216,6 +250,12 @@ export async function adminSaveBrandAction(id: string | null, raw: Record<string
   const b = cleanBrandProfile(raw);
   const errors = [...a.errors, ...b.errors];
   if (errors.length) return { ok: false, message: "입력 내용을 확인해 주세요.", errors };
+  try {
+    const dup = brandDuplicates(await listBrands(), { id, name_ko: a.value.name_ko, name_en: b.value.name_en, code: a.value.code });
+    if (dup.length) return { ok: false, message: "다른 브랜드와 겹치는 내용이 있어요. 확인 후 다시 입력해 주세요.", errors: dup };
+  } catch (e) {
+    return err(e, "중복 확인을 하지 못했어요.");
+  }
   let newId = id;
   try {
     const row = { ...a.value, ...profileToRow(b.value) };
@@ -225,7 +265,9 @@ export async function adminSaveBrandAction(id: string | null, raw: Record<string
         const ps = await listProducts({ brandId: id });
         if (ps.some((p) => p.serial)) throw new Error("이미 일련번호가 붙은 제품이 있어서 브랜드 코드를 바꿀 수 없어요.");
       }
-      await patchBrand(id, row);
+      const cur = await getBrand(id);
+      const resolves = cur?.visibility_request && (cur.visibility_request === "show") === a.value.active;
+      await patchBrand(id, resolves ? { ...row, visibility_request: null, visibility_requested_at: null } : row);
       await logEvent({ ...actorOf(s), action: "brand_edited", brand_id: id, product_id: null, detail: { name: a.value.name_ko } });
     } else {
       const nb = await insertBrand({ ...row, sort: a.value.sort || 9990 });

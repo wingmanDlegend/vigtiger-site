@@ -1,6 +1,6 @@
 import "server-only";
 import { cfg, isUuid } from "@/lib/admin/db";
-import type { PartnerBrand, PartnerUser, ToProduct } from "./model";
+import type { PartnerBrand, PartnerUser, PromoRequest, ToProduct } from "./model";
 import seed from "@/data/partners-seed.json";
 
 // partners 사이트 — Supabase(PostgREST)를 비밀 키로 호출 (서버 전용)
@@ -109,7 +109,7 @@ export async function listReviewQueue() {
   );
 }
 export async function listBrandChangeRequests() {
-  return rest<PartnerBrand[]>(`partner_brands?select=*&pending_changes=not.is.null&order=change_requested_at.asc`);
+  return rest<PartnerBrand[]>(`partner_brands?select=*&or=(pending_changes.not.is.null,visibility_request.not.is.null)&order=change_requested_at.asc.nullslast`);
 }
 export async function getProduct(id: string) {
   if (!isUuid(id)) return null;
@@ -130,6 +130,27 @@ export async function patchProduct(id: string, row: Record<string, unknown>) {
   if (!rows[0]) throw new Error("제품을 찾을 수 없어요.");
   return rows[0];
 }
+// ---------- 추천·핫딜 신청 (브랜드 → 관리자) ----------
+export async function listPromoRequests(q: { brandId?: string; status?: string; limit?: number } = {}) {
+  const p = new URLSearchParams({ select: "*", order: "created_at.desc", limit: String(q.limit ?? 200) });
+  if (q.brandId) p.set("brand_id", `eq.${q.brandId}`);
+  if (q.status) p.set("status", `eq.${q.status}`);
+  return rest<PromoRequest[]>(`to_promo_requests?${p}`);
+}
+export async function getPromoRequest(id: string) {
+  if (!isUuid(id)) return null;
+  const rows = await rest<PromoRequest[]>(`to_promo_requests?id=eq.${id}&select=*`);
+  return rows[0] ?? null;
+}
+export async function insertPromoRequest(row: Record<string, unknown>) {
+  const rows = await rest<PromoRequest[]>(`to_promo_requests`, { method: "POST", body: JSON.stringify(row), prefer: "return=representation" });
+  return rows[0];
+}
+export async function patchPromoRequest(id: string, row: Record<string, unknown>) {
+  if (!isUuid(id)) throw new Error("잘못된 ID");
+  await rest(`to_promo_requests?id=eq.${id}`, { method: "PATCH", body: JSON.stringify(row) });
+}
+
 /** to.vigtiger.com 이번 주 추천·핫딜을 한꺼번에 내리기 */
 export async function clearPromo(kind: "pick" | "hot") {
   const row = kind === "pick" ? { pick_week: false, pick_sort: 0 } : { hot_deal: false, hot_sort: 0, hot_note: null, hot_until: null };

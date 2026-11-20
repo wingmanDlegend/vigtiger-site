@@ -4,8 +4,9 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { TO_SITE_TAG } from "@/lib/tosite/data";
 import { redirect } from "next/navigation";
 import { actorOf, requireBrand } from "@/lib/partners/auth";
-import { deleteProduct, getBrand, getProduct, insertProduct, logEvent, maxSort, patchBrand, patchProduct } from "@/lib/partners/db";
+import { deleteProduct, getBrand, getProduct, insertProduct, listBrands, logEvent, maxSort, patchBrand, patchProduct } from "@/lib/partners/db";
 import {
+  brandDuplicates,
   brandToProfile,
   cleanBrandProfile,
   cleanProduct,
@@ -153,6 +154,10 @@ export async function updateProfileAction(raw: Record<string, unknown>): Promise
     const b = await getBrand(s.brandId);
     if (!b) throw new Error("브랜드를 찾을 수 없어요.");
     const keys = diffKeys(brandToProfile(b), value);
+    if (keys.includes("name_en") && value.name_en) {
+      const dup = brandDuplicates(await listBrands(), { id: b.id, name_en: value.name_en });
+      if (dup.length) return { ok: false, message: "다른 브랜드와 겹치는 내용이 있어요. 확인 후 다시 입력해 주세요.", errors: dup };
+    }
     if (keys.length === 0) {
       if (b.pending_changes) await patchBrand(b.id, { pending_changes: null, change_requested_at: null });
       revalidatePath("/partners/my/profile");
@@ -169,6 +174,43 @@ export async function updateProfileAction(raw: Record<string, unknown>): Promise
   revalidatePath("/admin/to/review");
   revalidatePath("/admin/dashboard");
   return { ok: true, message: "수정을 요청했어요. 관리자가 승인하면 반영돼요." };
+}
+
+// ---------- TO 서비스 노출 신청 (브랜드 단위) ----------
+// 노출 여부는 브랜드가 '신청'하고, 대범한사람들 담당자가 확인한 뒤 진행합니다.
+export async function requestVisibilityAction(): Promise<ActionResult> {
+  const s = await brandSession();
+  try {
+    const b = await getBrand(s.brandId);
+    if (!b) throw new Error("브랜드를 찾을 수 없어요.");
+    if (b.visibility_request) return { ok: true, message: "이미 신청한 내용이 있어요. 담당자가 확인 후 진행하겠습니다." };
+    const want: "show" | "hide" = b.active ? "hide" : "show";
+    await patchBrand(b.id, { visibility_request: want, visibility_requested_at: new Date().toISOString(), visibility_reject_reason: null });
+    await logEvent({ ...actorOf(s), action: want === "show" ? "visibility_requested_show" : "visibility_requested_hide", brand_id: b.id, product_id: null, detail: null });
+    await notifyPartners(`${b.name_ko} — TO 서비스 ${want === "show" ? "노출 신청" : "노출 중지 신청"}`);
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "신청하지 못했어요." };
+  }
+  revalidatePath("/partners/my/profile");
+  revalidatePath("/partners/my");
+  revalidatePath("/admin/to/review");
+  revalidatePath("/admin/dashboard");
+  return { ok: true, message: "신청했어요. 노출 여부는 브랜드에서 신청하는 것이기 때문에, 담당자가 확인 후 진행하겠습니다." };
+}
+
+export async function cancelVisibilityRequestAction(): Promise<ActionResult> {
+  const s = await brandSession();
+  try {
+    const b = await getBrand(s.brandId);
+    if (!b?.visibility_request) return { ok: true, message: "취소할 신청이 없어요." };
+    await patchBrand(b.id, { visibility_request: null, visibility_requested_at: null });
+    await logEvent({ ...actorOf(s), action: "visibility_request_canceled", brand_id: b.id, product_id: null, detail: { was: b.visibility_request } });
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "처리하지 못했어요." };
+  }
+  revalidatePath("/partners/my/profile");
+  revalidatePath("/admin/to/review");
+  return { ok: true, message: "신청을 취소했어요." };
 }
 
 export async function cancelProfileRequestAction(): Promise<ActionResult> {

@@ -173,3 +173,14 @@
 .p-terms dd { margin: 0; white-space: pre-wrap; }
 .p-vis-wrap { display: inline-flex; flex-direction: column; gap: 4px; }
 .p-vis-sec .p-vis { font-size: 14px; }
+/* 브랜드 TO 노출 신청 */
+.p-visreq { display: flex; flex-direction: column; gap: 10px; }
+.p-visreq-state b { padding: 2px 8px; border-radius: 6px; font-size: 13px; }
+.p-visreq-state b.is-on { background: #e9f7ee; color: #11552a; }
+.p-visreq-state b.is-off { background: #eeeeee; color: #4a4a4a; }
+.p-visreq-confirm { display: flex; flex-direction: column; gap: 8px; background: #fff8e6; border: 1px solid #ffe3a3; border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+.pr-has-req { border-color: #ffc6a8; background: #fffaf6; }
+.pr-req-terms { margin-top: 0; padding-left: 56px; max-width: none; }
+.pr-req-acts { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; padding-left: 56px; }
+@media (max-width: 560px) { .pr-req-terms, .pr-req-acts { padding-left: 0; } }
+.p-promo-form { display: flex; flex-direction: column; gap: 12px; }

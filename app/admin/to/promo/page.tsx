@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/partners/auth";
-import { listBrands, listProducts } from "@/lib/partners/db";
-import type { PartnerBrand, ToProduct } from "@/lib/partners/model";
+import { listBrands, listProducts, listPromoRequests } from "@/lib/partners/db";
+import { PROMO_KIND_LABEL, fmtDate, type PartnerBrand, type ToProduct } from "@/lib/partners/model";
 import { todayKst } from "@/lib/tosite/data";
 import AdminTop from "@/app/admin/AdminTop";
 import { PageHead as PHead } from "@/app/admin/SubNav";
 import { Thumb } from "@/components/partners/ui";
-import { promoAddAction, promoClearAction, promoMoveAction, promoRemoveAction, promoSaveHotAction } from "./actions";
+import { promoAddAction, promoClearAction, promoMoveAction, promoRemoveAction, promoRequestApproveAction, promoRequestRejectAction, promoSaveHotAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "추천·핫딜" };
@@ -18,7 +18,9 @@ export default async function PromoPage({ searchParams }: { searchParams: SP }) 
   await requireAdmin();
   const sp = await searchParams;
   const q = (sp.q ?? "").trim().slice(0, 60);
-  const [brands, all] = await Promise.all([listBrands(), listProducts()]);
+  const [brands, all, reqs] = await Promise.all([listBrands(), listProducts(), listPromoRequests({ status: "pending" })]);
+  const pmap = new Map(all.map((p) => [p.id, p]));
+  const reqList = [...reqs].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const bmap = new Map(brands.map((b) => [b.id, b]));
   const picks = all.filter((p) => p.pick_week).sort((a, b) => a.pick_sort - b.pick_sort);
   const hots = all.filter((p) => p.hot_deal).sort((a, b) => a.hot_sort - b.hot_sort);
@@ -61,6 +63,77 @@ export default async function PromoPage({ searchParams }: { searchParams: SP }) 
         />
         {sp.saved && <p className="a-saved" role="status">{sp.saved.slice(0, 120)}</p>}
         {sp.error && <p className="a-error" role="alert">{sp.error.slice(0, 120)}</p>}
+
+        <section className={`a-card pr-add ${reqList.length ? "pr-has-req" : ""}`} aria-labelledby="pr-req-title">
+          <h2 id="pr-req-title" className="pr-h2">
+            브랜드 신청 <b>{reqList.length}</b>
+          </h2>
+          {reqList.length === 0 ? (
+            <p className="a-sub">브랜드가 파트너스에서 신청한 추천·핫딜이 여기에 모여요. 지금은 확인할 신청이 없어요.</p>
+          ) : (
+            <ul className="pr-list">
+              {reqList.map((r) => {
+                const p = pmap.get(r.product_id);
+                const b = bmap.get(r.brand_id);
+                return (
+                  <li key={r.id} className="pr-row is-col">
+                    <div className="pr-row-top">
+                      {p ? <ProdCell p={p} b={b} warn={why(p)} /> : <span className="a-sub">삭제된 제품</span>}
+                      <div className="pr-acts">
+                        <span className={`pr-on ${r.kind === "hot" ? "is-hot" : ""}`}>{PROMO_KIND_LABEL[r.kind]} 신청</span>
+                      </div>
+                    </div>
+                    <dl className="p-terms pr-req-terms">
+                      <div>
+                        <dt>신청</dt>
+                        <dd>{fmtDate(r.created_at)} · {b?.name_ko}</dd>
+                      </div>
+                      {(r.start_date || r.end_date) && (
+                        <div>
+                          <dt>희망 기간</dt>
+                          <dd>
+                            {r.start_date ?? "바로"} ~ {r.end_date ?? "정하지 않음"}
+                            {r.start_date && r.start_date > today ? " (시작일에 맞춰 진행해 주세요)" : ""}
+                          </dd>
+                        </div>
+                      )}
+                      {r.hot_note && (
+                        <div>
+                          <dt>핫딜 문구</dt>
+                          <dd>{r.hot_note}</dd>
+                        </div>
+                      )}
+                      {r.message && (
+                        <div>
+                          <dt>전달 내용</dt>
+                          <dd>{r.message}</dd>
+                        </div>
+                      )}
+                    </dl>
+                    <div className="pr-req-acts">
+                      <form action={promoRequestApproveAction}>
+                        <input type="hidden" name="rid" value={r.id} />
+                        {q && <input type="hidden" name="q" value={q} />}
+                        <button className="a-btn p-sm" type="submit" disabled={!p}>
+                          {PROMO_KIND_LABEL[r.kind]}에 올리기
+                        </button>
+                      </form>
+                      <details className="pr-clear">
+                        <summary>반려</summary>
+                        <form action={promoRequestRejectAction}>
+                          <input type="hidden" name="rid" value={r.id} />
+                          {q && <input type="hidden" name="q" value={q} />}
+                          <input className="a-input" name="reason" maxLength={300} placeholder="반려 사유 (브랜드에게 보여요)" required />
+                          <button className="a-btn is-danger p-sm" type="submit">반려하기</button>
+                        </form>
+                      </details>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
 
         <section className="a-card pr-add" aria-labelledby="pr-add-title">
           <h2 id="pr-add-title" className="pr-h2">제품 찾아서 올리기</h2>

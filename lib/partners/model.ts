@@ -22,6 +22,10 @@ export type PartnerBrand = {
   pending_changes: Partial<BrandProfile> | null;
   change_requested_at: string | null;
   reject_reason: string | null;
+  /** 브랜드가 신청한 TO 서비스 노출 변경 (show 노출 신청 / hide 노출 중지 신청) — 관리자 확인 대기 */
+  visibility_request: "show" | "hide" | null;
+  visibility_requested_at: string | null;
+  visibility_reject_reason: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -89,6 +93,27 @@ export type PartnerUser = {
   token_version: number;
   last_login_at: string | null;
   created_at: string;
+};
+
+/** 브랜드가 신청하는 이번 주 추천 · 핫딜 */
+export type PromoKind = "pick" | "hot";
+export const PROMO_KIND_LABEL: Record<PromoKind, string> = { pick: "이번 주 추천", hot: "핫딜" };
+export type PromoRequestStatus = "pending" | "approved" | "rejected" | "canceled";
+export const PROMO_STATUS_LABEL: Record<PromoRequestStatus, string> = { pending: "확인 중", approved: "진행", rejected: "반려", canceled: "취소" };
+export type PromoRequest = {
+  id: string;
+  brand_id: string;
+  product_id: string;
+  kind: PromoKind;
+  hot_note: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  message: string | null;
+  status: PromoRequestStatus;
+  reject_reason: string | null;
+  created_by: string | null;
+  created_at: string;
+  decided_at: string | null;
 };
 
 export type OwnMall = "yes" | "no" | "discuss";
@@ -199,6 +224,31 @@ function percent(v: unknown): number | null {
   const s = String(v).replace(/[\s%]/g, "");
   if (!s) return null;
   return /^\d{1,3}(\.\d{1,2})?$/.test(s) ? Number(s) : NaN;
+}
+
+/** 브랜드 이름 비교용: 대소문자·띄어쓰기·기호 무시 */
+export const brandKey = (s: string | null | undefined) => (s ?? "").toLowerCase().replace(/[\s·.\-_()（）]/g, "");
+
+/** 다른 브랜드와 이름·코드가 겹치는지 — 겹치면 안내 문구 목록 */
+export function brandDuplicates(
+  others: Pick<PartnerBrand, "id" | "name_ko" | "name_en" | "code">[],
+  v: { id?: string | null; name_ko?: string; name_en?: string; code?: string },
+) {
+  const out: string[] = [];
+  const rest = others.filter((b) => b.id !== v.id);
+  if (v.name_ko) {
+    const hit = rest.find((b) => brandKey(b.name_ko) === brandKey(v.name_ko) || (b.name_en && brandKey(b.name_en) === brandKey(v.name_ko)));
+    if (hit) out.push(`브랜드 이름 '${v.name_ko}'이(가) 이미 등록된 브랜드 '${hit.name_ko}'(코드 ${hit.code})와(과) 겹쳐요. 확인 후 다시 입력해 주세요.`);
+  }
+  if (v.name_en) {
+    const hit = rest.find((b) => (b.name_en && brandKey(b.name_en) === brandKey(v.name_en)) || brandKey(b.name_ko) === brandKey(v.name_en));
+    if (hit) out.push(`영문 이름 '${v.name_en}'이(가) 이미 등록된 브랜드 '${hit.name_ko}'(코드 ${hit.code})와(과) 겹쳐요. 확인 후 다시 입력해 주세요.`);
+  }
+  if (v.code) {
+    const hit = rest.find((b) => b.code.toUpperCase() === v.code!.toUpperCase());
+    if (hit) out.push(`브랜드 코드 '${v.code}'은(는) 이미 '${hit.name_ko}' 브랜드가 쓰고 있어요. 다른 코드로 다시 입력해 주세요.`);
+  }
+  return out;
 }
 
 export function cleanProduct(raw: Record<string, unknown>): { value: ProductDraft; errors: string[] } {

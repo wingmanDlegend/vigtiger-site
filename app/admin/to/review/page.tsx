@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requireAdmin } from "@/lib/partners/auth";
-import { listBrandChangeRequests, listBrands, listReviewQueue } from "@/lib/partners/db";
+import { listBrandChangeRequests, listBrands, listProducts, listReviewQueue } from "@/lib/partners/db";
 import { PriceTerms } from "@/components/partners/ui";
 import { BRAND_FIELDS, PRODUCT_FIELDS, PRICE_KEYS, fieldText, brandToProfile, fmtDate, productToDraft, type BrandProfile, type ProductDraft } from "@/lib/partners/model";
 import AdminTop from "@/app/admin/AdminTop";
@@ -42,6 +42,12 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
   const done = (await searchParams).done?.slice(0, 200);
   const [queue, brandReq, brands] = await Promise.all([listReviewQueue(), listBrandChangeRequests(), listBrands()]);
   const bmap = new Map(brands.map((b) => [b.id, b]));
+  const visBrands = brandReq.filter((b) => b.visibility_request).map((b) => b.id);
+  const liveCount = new Map<string, number>();
+  if (visBrands.length) {
+    const ps = await listProducts({ status: "approved" });
+    for (const p of ps) if (p.to_visible !== false && visBrands.includes(p.brand_id)) liveCount.set(p.brand_id, (liveCount.get(p.brand_id) ?? 0) + 1);
+  }
   const kind = (p: (typeof queue)[number]) => (p.delete_requested ? "delete" : p.status === "pending" ? "new" : "edit");
   const KIND = { new: { label: "새 제품", cls: "is-new" }, edit: { label: "수정 요청", cls: "is-edit" }, delete: { label: "삭제 요청", cls: "is-del" } } as const;
 
@@ -106,7 +112,33 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
           );
         })}
 
-        {brandReq.map((b) => {
+        {brandReq
+          .filter((b) => b.visibility_request)
+          .map((b) => {
+            const show = b.visibility_request === "show";
+            const n = liveCount.get(b.id) ?? 0;
+            return (
+              <section key={`v-${b.id}`} className="a-card a-sec p-req" aria-label={`${b.name_ko} 노출 ${show ? "신청" : "중지 신청"}`}>
+                <div className="p-req-head">
+                  <span className={`p-tag ${show ? "is-new" : "is-del"}`}>{show ? "TO 노출 신청" : "TO 노출 중지 신청"}</span>
+                  <b>{b.name_ko}</b>
+                  <span className="a-sub">· 신청 {fmtDate(b.visibility_requested_at)}</span>
+                  <a className="a-sub p-push" href={`/to/brands/${b.id}`}>브랜드 보기 →</a>
+                </div>
+                <p>
+                  지금 <b>{b.active ? "노출 중" : "노출 안 함"}</b> → 승인하면 <b>{show ? "노출 시작" : "노출 중지"}</b>.{" "}
+                  <span className="a-sub">
+                    {show
+                      ? `게시 중이면서 TO 노출을 켠 제품 ${n}개가 to.vigtiger.com·제품 리스트에 나타나요.`
+                      : `지금 보이는 제품 ${n}개가 to.vigtiger.com·제품 리스트·인쇄에서 빠져요. 추천·핫딜에 올라 있던 제품도 함께 안 보여요.`}
+                  </span>
+                </p>
+                <ReviewActions id={b.id} target="visibility" approveLabel={show ? "노출 시작" : "노출 중지"} />
+              </section>
+            );
+          })}
+
+        {brandReq.filter((b) => b.pending_changes).map((b) => {
           const before = brandToProfile(b);
           const ch = b.pending_changes ?? {};
           const keys = BRAND_FIELDS.filter((f) => f.key in ch);

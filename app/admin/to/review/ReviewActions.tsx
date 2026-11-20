@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { approveBrandAction, approveProductAction, rejectBrandAction, rejectProductAction } from "../actions";
+import { approveBrandAction, approveProductAction, approveVisibilityAction, rejectBrandAction, rejectProductAction, rejectVisibilityAction } from "../actions";
 
-export default function ReviewActions({ id, target, approveLabel }: { id: string; target: "product" | "brand"; approveLabel: string }) {
+export default function ReviewActions({ id, target, approveLabel }: { id: string; target: "product" | "brand" | "visibility"; approveLabel: string }) {
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; message: string } | null>(null);
@@ -22,7 +22,7 @@ export default function ReviewActions({ id, target, approveLabel }: { id: string
     <div className="p-review-actions">
       {!rejecting ? (
         <>
-          <button type="button" className="a-btn" disabled={pending} onClick={() => run(() => (target === "product" ? approveProductAction(id) : approveBrandAction(id)))}>
+          <button type="button" className="a-btn" disabled={pending} onClick={() => run(() => (target === "product" ? approveProductAction(id) : target === "visibility" ? approveVisibilityAction(id) : approveBrandAction(id)))}>
             {pending ? "처리 중…" : approveLabel}
           </button>
           <button type="button" className="a-btn is-ghost" disabled={pending} onClick={() => setRejecting(true)}>반려</button>
@@ -40,7 +40,7 @@ export default function ReviewActions({ id, target, approveLabel }: { id: string
             autoFocus
           />
           <div className="a-row">
-            <button type="button" className="a-btn is-danger" disabled={pending} onClick={() => run(() => (target === "product" ? rejectProductAction(id, reason) : rejectBrandAction(id, reason)))}>
+            <button type="button" className="a-btn is-danger" disabled={pending} onClick={() => run(() => (target === "product" ? rejectProductAction(id, reason) : target === "visibility" ? rejectVisibilityAction(id, reason) : rejectBrandAction(id, reason)))}>
               반려하기
             </button>
             <button type="button" className="a-btn is-ghost" onClick={() => setRejecting(false)}>취소</button>

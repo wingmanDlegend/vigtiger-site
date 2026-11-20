@@ -5,6 +5,7 @@ import { BRAND_FIELDS, CATEGORY_LABEL, brandToProfile, fmtDate } from "@/lib/par
 import PTop, { PHead } from "../../PTop";
 import BrandProfileForm from "@/components/partners/BrandProfileForm";
 import { cancelProfileRequestAction, updateProfileAction } from "../actions";
+import VisibilityRequest from "./VisibilityRequest";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "브랜드 정보" };
@@ -24,6 +25,7 @@ export default async function BrandProfilePage() {
           title={`${b.name_ko} 브랜드 정보`}
           desc="제품 리스트의 브랜드 첫 장에 들어가는 내용이에요. 고치면 관리자 승인 후 반영돼요. (브랜드 이름·분류·코드는 담당자에게 요청해 주세요.)"
         />
+        <VisibilityRequest active={b.active} request={b.visibility_request ?? null} requestedAt={b.visibility_requested_at ?? null} rejectReason={b.visibility_reject_reason ?? null} />
         {b.pending_changes && (
           <p className="a-note" role="note">
             {fmtDate(b.change_requested_at)}에 수정을 요청했어요 ({asked.join(", ")}). 승인 전까지는 지금 내용이 그대로 보여요.
