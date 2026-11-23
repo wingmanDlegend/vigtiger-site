@@ -31,7 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function InsightsHome({ params }: Props) {
   const { lang } = await params;
   if (lang !== "ko") notFound();
-  const lists = await Promise.all(INSIGHT_KINDS.map((k) => listPublishedInsights(k, 5)));
+  // 업계 동향·Hot Contents 각각 최근 10일치 (하루 1편)
+  const lists = await Promise.all(INSIGHT_KINDS.map((k) => listPublishedInsights(k, 10)));
 
   return (
     <>
