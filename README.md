@@ -178,6 +178,6 @@ Vercel 프로젝트 → Settings → Domains 에서 `vigtiger.com`, `www.vigtige
 ## 신청 접수 확인 메일 (신청자에게)
 
 홈페이지 신청서 3종과 to.vigtiger.com 상담신청을 제출하면, 신청자 이메일로 "접수되었어요" 메일과 신청 내용 요약이 자동으로 가요 (`lib/confirmMail.ts`, `lib/mail.ts`).
-- 구글 워크스페이스 Gmail(SMTP + 앱 비밀번호)로 발송. Vercel 환경변수(Sensitive): `GMAIL_USER`, `GMAIL_APP_PASSWORD`, 선택 `MAIL_FROM`("대범한사람들 <no-reply@vigtiger.com>" — Gmail '다른 주소에서 메일 보내기'에 등록된 별칭이어야 함), `MAIL_REPLY_TO`(기본 vigtiger@vigtiger.com)
+- 구글 워크스페이스 Gmail(SMTP + 앱 비밀번호)로 발송: cs@vigtiger.com 계정으로 로그인해 별칭 `no-reply@vigtiger.com` 이름으로 보냄. Vercel 환경변수(Sensitive): `GMAIL_USER`(cs@vigtiger.com), `GMAIL_APP_PASSWORD`. 답장 주소(Reply-To)는 넣지 않음 — no-reply@가 cs@의 별칭이라 답장은 cs@ 받은편지함으로 들어감 (`MAIL_FROM`, `MAIL_REPLY_TO`는 바꿀 때만)
 - 환경변수가 없으면 보내지 않음. 메일이 실패해도 신청은 정상 저장
 - 같은 주소로 1시간에 3건 넘게 들어오면 회신 생략 (남의 주소로 메일을 반복해 보내는 악용 방지)
