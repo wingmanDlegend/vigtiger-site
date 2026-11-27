@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { after } from "next/server";
 import { FORMS, LIMITS } from "@/lib/forms";
 import { notifySlack } from "@/lib/notify";
+import { sendConfirmation } from "@/lib/confirmMail";
 import { getToCatalog } from "@/lib/tosite/data";
 
 // to.vigtiger.com 상담신청 — 홈페이지 신청서와 같은 applications 테이블(type='to')에 저장해
@@ -132,6 +133,7 @@ export async function submitToApply(input: ToApplyInput): Promise<ToApplyResult>
     return { ok: false, error: "server" };
   }
 
-  after(() => notifySlack(record));
+  // 담당자 슬랙 알림 + 신청자에게 접수 확인 메일 (응답을 기다리게 하지 않음)
+  after(() => Promise.all([notifySlack(record), sendConfirmation(record)]));
   return { ok: true };
 }

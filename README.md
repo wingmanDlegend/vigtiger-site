@@ -174,3 +174,10 @@ Vercel 프로젝트 → Settings → Domains 에서 `vigtiger.com`, `www.vigtige
 | 브랜드 담당자 | partners | 대표 관리자·직원 (브랜드 화면) | 자기 브랜드 제품 등록·수정·삭제 요청, 브랜드 정보 수정 요청 |
 
 이메일은 직원·브랜드 계정 전체에서 하나만 쓸 수 있고, 직원 계정은 partners에, 브랜드 계정은 admin에 로그인할 수 없습니다.
+
+## 신청 접수 확인 메일 (신청자에게)
+
+홈페이지 신청서 3종과 to.vigtiger.com 상담신청을 제출하면, 신청자 이메일로 "접수되었어요" 메일과 신청 내용 요약이 자동으로 가요 (`lib/confirmMail.ts`, `lib/mail.ts`).
+- 구글 워크스페이스 Gmail(SMTP + 앱 비밀번호)로 발송. Vercel 환경변수(Sensitive): `GMAIL_USER`, `GMAIL_APP_PASSWORD`, 선택 `MAIL_FROM`("대범한사람들 <no-reply@vigtiger.com>" — Gmail '다른 주소에서 메일 보내기'에 등록된 별칭이어야 함), `MAIL_REPLY_TO`(기본 vigtiger@vigtiger.com)
+- 환경변수가 없으면 보내지 않음. 메일이 실패해도 신청은 정상 저장
+- 같은 주소로 1시간에 3건 넘게 들어오면 회신 생략 (남의 주소로 메일을 반복해 보내는 악용 방지)

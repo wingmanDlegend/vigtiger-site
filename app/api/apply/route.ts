@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse, after } from "next/server";
 import { notifySlack } from "@/lib/notify";
+import { sendConfirmation } from "@/lib/confirmMail";
 import { FORMS, FORM_TYPES, LIMITS, type SiteFormType } from "@/lib/forms";
 
 // 신청서 접수: 서버에서 항목을 검증한 뒤 Supabase applications 테이블에 저장합니다.
@@ -104,6 +105,7 @@ export async function POST(req: Request) {
   }
 
   // 응답을 먼저 돌려준 뒤 슬랙 알림을 보냅니다 (신청자는 기다리지 않음).
-  after(() => notifySlack(record));
+  // 담당자 슬랙 알림 + 신청자에게 접수 확인 메일 (응답을 기다리게 하지 않음)
+  after(() => Promise.all([notifySlack(record), sendConfirmation(record)]));
   return NextResponse.json({ ok: true });
 }
